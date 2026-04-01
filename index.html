@@ -130,17 +130,6 @@
             }
         }
 
-        /* 🧠 MENSAJE INICIAL DEL BOT */
-        .initial-msg {
-            opacity: 0;
-            animation: slideIn 0.6s forwards;
-        }
-
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
         .message {
             max-width: 85%;
             padding: 15px 20px;
@@ -278,8 +267,7 @@
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 3px; }
 
-        /* 🎯 MENÚ LATERAL */
-        .sidebar {
+        /* 🎯 MENÚ LATERAL {
             position: fixed;
             top: 0;
             right: -300px;
@@ -351,15 +339,6 @@
                 <div class="welcome-title" id="saludoTitle">Buenos días</div>
                 <div class="welcome-subtitle">¿En qué te puedo ayudar hoy?</div>
             </div>
-
-            <!-- 🤖 MENSAJE INICIAL DEL BOT -->
-            <div class="message ai-msg initial-msg">
-                ¡Hola! 🚀 Soy <b>OcladeAI</b>, tu asistente de programación.<br><br>
-                💻 Te ayudo con código<br>
-                🐛 Debugging y errores<br>
-                📚 Explico conceptos<br>
-                🔷 100% código propio
-            </div>
         </div>
 
         <!-- ⌨️ INPUT AREA -->
@@ -402,13 +381,8 @@
         }
 
         // Inicializar al cargar
-        document.addEventListener('DOMContentLoaded', () =>udo();
-
-            // Esperar 1.5s para mostrar el mensaje inicial del bot
-            setTimeout(() => {
-                const msg = document.querySelector('.initial-msg');
-                if (msg) msg.style.opacity = '1';
-            }, 1500);
+        document.addEventListener('DOMContentLoaded', () => {
+            actualizarSaludo();
         });
 
         // 🔷 OCLADEAI - CEREBRO DE PROGRAMACIÓN
@@ -443,7 +417,7 @@
                 "syntaxerror": "Error de sintaxis: revisa paréntesis, comillas, puntos y comas.",
                 "undefined": "Variable no definida: verifica que declaraste la variable antes de usarla.",
                 "null": "Valor null: la variable existe pero no tiene valor asignado.",
-                "typeerror": "Error de tipo: estás usando un dato incorrecto (ej: sumar string + número).",
+                "typeerror": "Error de tipo: estáso (ej: sumar string + número).",
                 "referenceerror": "Referencia no válida: la variable o función no existe en ese scope.",
                 "404": "Error 404: la página o recurso no existe. Verifica la URL.",
                 "500": "Error 500: error del servidor. Revisa logs y configuración."
@@ -483,7 +457,7 @@
             analizarCodigo(codigo) {
                 let analisis = "🔍 **Análisis de Código**\n\n";
                 if (codigo.includes('function') || codigo.includes('=>')) analisis += "✅ Detecté una función.\n";
-                if (codigo.includes('console.log') || codigo.includes('print')) analisis += "✅ Detecté una salida/imprimir.\n";
+                if (codigo.includes || codigo.includes('print')) analisis += "✅ Detecté una salida/imprimir.\n";
                 if (codigo.includes('for') || codigo.includes('while')) analisis += "✅ Detecté un bucle.\n";
                 if (codigo.includes('if') || codigo.includes('else')) analisis += "✅ Detecté un condicional.\n";
                 if (codigo.includes('var') || codigo.includes('let') || codigo.includes('const')) analisis += "✅ Detecté declaración de variables.\n";
@@ -631,13 +605,6 @@
                 <div class="welcome-center" id="welcomeCenter">
                     <div class="welcome-title" id="saludoTitle">${generarSaludo()}</div>
                     <div class="welcome-subtitle">¿En qué te puedo ayudar hoy?</div>
-                </div>
-                <div class="message ai-msg initial-msg">
-                    ¡Hola! 🚀 Soy OcladeAI, tu asistente de programación.<br><br>
-                    💻 Te ayudo con código<br>
-                    🐛 Debugging y errores<br>
-                    📚 Explico conceptos<br>
-                    🔷 100% código propio
                 </div>
             `;
             actualizarSaludo();
