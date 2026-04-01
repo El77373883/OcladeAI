@@ -1,21 +1,20 @@
-// 🔷 OCLADEAI - CHAT RESPONSE ENGINE v2.0
-// 200 respuestas únicas, profesionales y precisas
-// Sin dependencias | 100% JavaScript puro
+// 🔷 OCLADEAI - CHAT RESPONSE ENGINE v4.0
+// 200 respuestas + Base de Conocimiento Local | Sin dependencias/APIs
+// 100% JavaScript puro
 
 const chatResponses = {
     // 🌟 SALUDOS (20)
     saludos: [
         "¡Hola! Soy OcladeAI, tu asistente de programación. ¿En qué puedo ayudarte hoy?",
-        "¡Hey! Bienvenido. ¿Qué estás construyendo o depurando?",
-        "Buenos días. Estoy listo para ayudarte con código, errores o conceptos.",
+        "¡Hey! Bienvenido. ¿Qué estás construyendo o dep "Buenos días. Estoy listo para ayudarte con código, errores o conceptos.",
         "¡Saludos, desarrollador! ¿Qué necesitas resolver ahora?",
         "Hola. Soy tu asistente técnico. ¿En qué lenguaje o tema trabajas?",
         "¡Bienvenido! ¿Necesitas ayuda con un error, un algoritmo o una arquitectura?",
         "Hola. ¿Estás en modo *debug*, *desarrollo* o *aprendizaje*?",
         "¡Hey! ¿Qué código te está desafiando hoy?",
         "Buenas. Estoy aquí para explicar, optimizar o corregir. ¿Por dónde empezamos?",
-        "Hola. ¿Quieres que analice un fragmento, explique un concepto o sugiera una solución?",
-        "¡Saludos! ¿Estás trabajando en frontend, backend, IA o algo más?",
+        "¡Hola de nuevo! ¿Qué proyecto estás trabajando?",
+        "¡Bienvenido! ¿Estás en frontend, backend, IA, Minecraft o algo más?",
         "Hola. ¿Necesitas una explicación clara, un ejemplo práctico o una guía paso a paso?",
         "¡Hey! ¿Tu prioridad es: velocidad, legibilidad, escalabilidad o corrección?",
         "Buenos días. ¿Qué parte de tu flujo de trabajo necesita apoyo?",
@@ -143,7 +142,7 @@ const chatResponses = {
         "Unauthorized (401): no has proporcionado credenciales válidas.",
         "Timeout: la operación tardó más de lo permitido y fue cancelada.",
         "Stack Overflow: recursión infinita o llamadas anidadas excesivas.",
-        "Out of Memory: el proceso agotó la memoria disponible.",
+       : el proceso agotó la memoria disponible.",
         "Invalid State: el objeto está en un estado que no permite la operación solicitada.",
         "Race Condition: el resultado depende del orden de ejecución de hilos o eventos.",
         "Deadlock: dos o más procesos esperan indefinidamente por recursos que el otro tiene.",
@@ -164,12 +163,12 @@ const chatResponses = {
 
     // 📈 MOTIVACIÓN & CONSEJOS (30)
     motivacion: [
-        "No hay program — solo personas que persisten ante los errores.",
+        "No hay programador perfecto — solo personas que persisten ante los errores.",
         "El primer código que escribes nunca es el último. Refactoriza con orgullo.",
         "Cada bug que resuelves te acerca a ser un mejor ingeniero.",
         "La programación no es memorizar sintaxis — es pensar en soluciones.",
         "Escribe código para que otros lo entiendan, no solo para que funcione.",
-        "La mejor herramienta de un desarrollador es la curiosidad.",
+        " de un desarrollador es la curiosidad.",
         "No temas preguntar: incluso los expertos buscan ayuda diariamente.",
         "El código limpio es un acto de respeto hacia tu futuro yo y tus compañeros.",
         "Aprender un nuevo lenguaje no es perder tiempo — es ganar perspectiva.",
@@ -235,12 +234,59 @@ const chatResponses = {
     ]
 };
 
-// 🧠 MEMORIA DEL CHAT (para contexto)
+// 🔍 BASE DE CONOCIMIENTO LOCAL (Simulación de navegación web)
+const knowledgeBase = {
+    // Minecraft Java Plugins
+    minecraft: [
+        "Plugin de ejemplo: Comando `/hello` en Java para Bukkit/Spigot:\n```java\npublic class HelloPlugin extends JavaPlugin {\n    @Override\n    public void onEnable() {\n        getCommand(\"hello\").setExecutor(new HelloCommand());\n    }\n}\n```\n\n```java\nclass HelloCommand implements CommandExecutor {\n    @Override\n    public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {\n        sender.sendMessage(\"¡Hola desde el plugin!\");\n        return true;\n    }\n}\n```",
+        "Para crear un plugin de Minecraft Java, necesitas:\n1. Extender `JavaPlugin`\n2. Registrar comandos y listeners\n3. Definir `plugin.yml` con nombre, versión, autor, etc.\n4. Usar eventos como `PlayerJoinEvent` para detect "Evento común: `PlayerJoinEvent`\n```java\n@EventHandler\npublic void onPlayerJoin(PlayerJoinEvent event) {\n    Player player = event.getPlayer();\n    player.sendMessage(\"¡Bienvenido a nuestro servidor!\");\n}\n```",
+        "Configuración típica de `plugin.yml`:\n```yaml\nname: MiPlugin\nversion: 1.0\nauthor: TuNombre\nmain: com.tunombre.MiPlugin\ncommands:\n  hello:\n    description: Dice hola\n    usage: /hello\n```"
+    ],
+    // Tutoriales generales
+    programacion: [
+        "Ejemplo de función en Python que suma dos números:\n```python\ndef sumar(a, b):\n    return a + b\n\nprint(sumar(5, 3))  # Imprime: 8\n```",
+        "Cómo crear una API REST simple con Express en Node.js:\n```js\nconst express = require('express');\nconst app = express();\n\napp.get('/api/hello', (req, res) => {\n    res.json({ message: 'Hola desde API!' });\n});\n\napp.listen(3000);\n```",
+        "Ejemplo de bucle en JavaScript que imprime números del 1 al 5:\n```js\nfor (let i = 1; i <= 5; i++) {\n    console.log(i);\n}\n```",
+        "Cómo leer un archivo de texto en Python:\n```python\nwith open('archivo.txt', 'r') as f:\n    contenido = f.read()\n    print(contenido)\n```",
+        "Cómo crear un array y recorrerlo en JavaScript:\n```js\nconst numeros = [1, 2, 3, 4, 5];\nnumeros.forEach(n => console.log(n));\n```"
+    ],
+    // Errores comunes y soluciones
+    errores: [
+        "Solución para `NullPointerException` en Java: Asegúrate de inicializar objetos antes de usarlos.\n```java\nString texto = null;\n// Antes de usar: if(texto != null) { ... }\n```",
+        "Cómo evitar `IndexError` en Python: Verifica los límites del array.\n```python\nlista = [1, 2, 3]\nif len(lista) > 2:\n    print(lista[2])\n```",
+        "Solución para `SyntaxError` en JavaScript: Revisa paréntesis, llaves y comillas.\n```js\n// Mal: if (true {\n// Bien: if (true) {\n```",
+        "Cómo solucionar `TypeError` en Python: Asegúrate de que los tipos coincidan.\n```python\nnumero = \"5\"\nresultado = int(numero) + 10  # Convertir antes de operar\n```"
+    ]
+};
+
+// 🧠 MEMORIA DEL CHAT
 let chatContext = {
     lastTopic: null,
     userLanguage: null,
     conversationStarted: false
 };
+
+// 🔍 BUSCADOR EN LA BASE DE CONOCIMIENTO
+function searchKnowledge(query) {
+    query = query.toLowerCase();
+
+    if (query.includes('minecraft') || query.includes('plugin') || query.includes('spigot') || query.includes('bukkit')) {
+        const results = knowledgeBase.minecraft;
+        return results[Math.floor(Math.random() * results.length)];
+    }
+
+    if (query.includes('error') || query.includes('bug') || query.includes('nullpointer')('indexerror')) {
+        const results = knowledgeBase.errores;
+        return results[Math.floor(Math.random() * results.length)];
+    }
+
+    if (query.includes('codigo') || query.includes('tutorial') || query.includes('como hago') || query.includes('ejemplo')) {
+        const results = knowledgeBase.programacion;
+        return results[Math.floor(Math.random() * results.length)];
+    }
+
+    return null;
+}
 
 // 🎯 SELECCIONADOR INTELIGENTE
 function getResponseForKeyword(keyword) {
@@ -272,7 +318,7 @@ function getResponseForKeyword(keyword) {
         "429": "errores", "502": "errores", "503": "errores", "504": "errores", "not found": "errores",
         "permission": "errores", "disk": "errores",
         // Motivación
-        "motivar": "motivacion", "inspirar": "motivacion", "consejo": "motivacion", "ayuda": "motivacion",
+        "motivar": "motivacion", "inspirar": "motivacion", "consejo":", "ayuda": "motivacion",
         "como": "motivacion", "porque": "motivacion", "mejorar": "motivacion", "aprender": "motivacion",
         // Inspiración
         "filosofia": "inspiracion", "elegancia": "inspiracion", "arte": "inspiracion", "diseño": "inspiracion",
@@ -295,9 +341,14 @@ function getResponseForKeyword(keyword) {
 
 // 🌐 GENERADOR DE RESPUESTA INTELIGENTE
 function generateSmartResponse(input) {
+    // 1. Intentar buscar en la base de conocimiento
+    const kbResult = searchKnowledge(input);
+    if (kbResult) {
+        return `🔍 He encontrado información relevante:\n\n${kbResult}`;
+    }
+
+    // 2. Buscar coincidencia directa
     const words = input.toLowerCase().split(/\W+/).filter(w => w.length > 2);
-    
-    // 1. Buscar coincidencia directa
     for (const word of words) {
         const category = getResponseForKeyword(word);
         if (category) {
@@ -309,7 +360,7 @@ function generateSmartResponse(input) {
         }
     }
 
-    // 2. Si no hay coincidencia, usar categoría general
+    // 3. Si no hay coincidencia, usar categoría general
     const allKeys = Object.keys(chatResponses);
     const randomKey = allKeys[Math.floor(Math.random() * allKeys.length)];
     const responses = chatResponses[randomKey];
@@ -321,6 +372,7 @@ if (typeof window !== 'undefined') {
     window.OcladeChat = {
         responses: chatResponses,
         generate: generateSmartResponse,
-        context: chatContext
+        context: chatContext,
+        knowledge: knowledgeBase
     };
 }
