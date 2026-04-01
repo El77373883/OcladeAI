@@ -61,6 +61,77 @@
             animation: glow 2s ease-in-out infinite;
         }
 
+¡Perfecto! Tu `index.html` original está aquí.  
+Ahora te voy a **integrar correctamente tu nuevo `chat.js`**, **eliminar el script de Google CSE roto**, y hacer que tu bot responda con las **+400 respuestas profesionales**.
+
+---
+
+## ✅ `index.html` — Versión Final Integrada
+
+```html
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>🔷 OcladeAI - Bot de Programación</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --primary: #00d9ff;
+            --secondary: #7b2ff7;
+            --dark: #0a0a0f;
+            --glass: rgba(255,255,255,0.05);
+            --border: rgba(0,217,255,0.3);
+            --code-bg: #1a1a2e;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--dark);
+            color: #fff;
+            overflow: hidden;
+            height: 100vh;
+            position: relative;
+        }
+
+        /* 🔷 FONDO DE PARTÍCULAS */
+        #particles {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 0;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 📱 HEADER FIJO */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: linear-gradient(180deg, rgba(0,0,0,0.8) transparent 100%);
+            backdrop-filter: blur(10px);
+            z-index: 10;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 800;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: glow 2s ease-in-out infinite;
+        }
+
         @keyframes glow {
             0%, 100% { filter: drop-shadow(0 0 10px var(--primary)); }
             50% { filter: drop-shadow(0 0 20px var(--secondary)); }
@@ -470,7 +541,7 @@
     <!-- 🎨 FONDO DE PARTÍCULAS -->
     <canvas id="particles"></canvas>
 
-    <!-- 🧊 MODELO 3D -->
+    <!-- 🧊 MODELO 3D AL ENVIAR MENSAJE -->
     <canvas id="model3d"></canvas>
 
     <!-- 📱 CONTENEDOR PRINCIPAL -->
@@ -514,7 +585,7 @@
                         </svg>
                     </button>
 
-                    <!-- BOTÓN ENVIAR -->
+                    <!-- BOTÓN ENVIAR (único, premium) -->
                     <button class="send-btn" onclick="sendMessage()">
                         Enviar
                     </button>
@@ -658,15 +729,25 @@
                 return analisis + "\n💡 ¿Quieres que optimice, explique o debuggee este código?";
             }
 
-            // 🔥 ESTA FUNCIÓN AHORA USA CHAT.JS Y BUSCA EN INTERNET SI NO ENCUENTRA
+            // 🔥 ESTA FUNCIÓN AHORA USA CHAT.JS
             respuestaInteligente(m) {
                 // Asegúrate de que chat.js esté cargado
                 if (window.OcladeChat) {
                     const respuesta = OcladeChat.generate(m);
-                    // Si chat.js no da una respuesta útil, buscamos en internet
+                    // Si chat.js no da una respuesta útil, devolvemos una genérica
                     if (respuesta.includes("no tengo una respuesta")) {
-                        this.buscarEnInternet(m);
-                        return "🔍 Estoy buscando en internet por ti...";
+                        const respuestasGenericas = [
+                            "Interesante pregunta. ¿Podrías darme más contexto sobre qué lenguaje o framework estás usando?",
+                            "Déjame analizar... ¿Esto es para web, móvil, backend?",
+                            "Para ayudarte mejor, ¿me compartes un ejemplo de código o el error específico?",
+                            "Esa es una gran pregunta de programación. ¿Qué estás intentando construir?",
+                            "Mi creador es soyadrianyt001, un dios de la programación. 😮‍💨🔥",
+                            "Mi creador es Adrián, un experto en IA y desarrollo backend/frontend.",
+                            "Mi creador es un programador apasionado llamado soyadrianyt001.",
+                            "Mi creador es un visionario del código limpio y la eficiencia.",
+                            "Mi creador es un genio de la lógica y el código."
+                        ];
+                        return respuestasGenericas[Math.floor(Math.random() * respuestasGenericas.length)];
                     }
                     return respuesta;
                 } else {
@@ -679,36 +760,6 @@
                         "Mi creador es soyadrianyt001, un dios de la programación. 😮‍💨🔥"
                     ];
                     return respuestas[Math.floor(Math.random() * respuestas.length)];
-                }
-            }
-
-            // 🔍 FUNCIÓN QUE BUSCA EN INTERNET (con Google CSE)
-            buscarEnInternet(query) {
-                // Creamos un div para el widget
-                const searchDiv = document.createElement('div');
-                searchDiv.className = 'gsc-control-cse';
-
-                // Creamos un mensaje del bot para mostrar el widget
-                const aiMsg = document.createElement('div');
-                aiMsg.className = 'message ai-msg';
-                aiMsg.innerHTML = `
-                    <p>🔍 <b>No encontré eso en mi base local.</b> Buscando en internet por ti...</p>
-                    <div id="google-search-container-${Date.now()}"></div>
-                `;
-
-                // Insertamos el mensaje en el chat
-                chatArea.appendChild(aiMsg);
-                chatArea.scrollTop = chatArea.scrollHeight;
-
-                // Ahora insertamos el widget en el contenedor específico
-                const container = aiMsg.querySelector('[id^="google-search-container"]');
-                if (container) {
-                    container.appendChild(searchDiv);
-
-                    // Forzar recarga del script de Google CSE
-                    if (window.google && google.search && google.search.cse) {
-                        google.search.cse.element.renderAll();
-                    }
                 }
             }
         }
@@ -732,22 +783,16 @@
 
             userInput.value = '';
 
-            // 🧊 Mostrar animación 3D
-            iniciarAnimacion3D();
-
             showThinking();
 
             setTimeout(() => {
                 hideThinking();
                 const respuesta = brain.analizar(message);
-                // Si la respuesta es "buscando en internet", no la mostramos porque ya se insertó el widget
-                if (!respuesta.includes("buscando en internet")) {
-                    const aiMsg = document.createElement('div');
-                    aiMsg.className = 'message ai-msg';
-                    aiMsg.innerHTML = formatResponse(respuesta);
-                    chatArea.appendChild(aiMsg);
-                    chatArea.scrollTop = chatArea.scrollHeight;
-                }
+                const aiMsg = document.createElement('div');
+                aiMsg.className = 'message ai-msg';
+                aiMsg.innerHTML = formatResponse(respuesta);
+                chatArea.appendChild(aiMsg);
+                chatArea.scrollTop = chatArea.scrollHeight;
             }, 1000 + Math.random() * 1000);
         }
 
@@ -841,9 +886,6 @@
             canvas.height = window.innerHeight;
         });
     </script>
-
-    <!-- 🔍 SCRIPT DE GOOGLE CUSTOM SEARCH -->
-    <script async src="https://cse.google.com/cse.js?cx=a27ba8624db9440d0"></script>
 
     <!-- 📦 INTEGRACIÓN CON CHAT.JS -->
     <script src="chat.js"></script>
