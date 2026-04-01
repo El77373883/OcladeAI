@@ -382,7 +382,7 @@
             </div>
         </div>
 
-        <!-- ⌨ AREA -->
+        <!-- ⌨️ INPUT AREA -->
         <div class="input-area">
             <div class="input-container">
                 <input type="text" id="userInput" placeholder="Escribe tu código o pregunta..." autocomplete="off">
@@ -412,7 +412,7 @@
                     </button>
                 </div>
             </div>
-div>
+        </div>
     </div>
 
     <!-- 🧠 LÓGICA DEL BOT -->
@@ -470,7 +470,7 @@ div>
             }
         };
 
-        // 🔷 CEREBRO
+        // 🔷 CEREBRO ACTUALIZADO
         const conocimiento = {
             saludos: ["hola", "hey", "buenos", "hi"],
             despedidas: ["adios", "chau", "hasta", "bye"],
@@ -482,8 +482,7 @@ div>
                 "java": "Java es orientado a objetos, usado en Android y enterprise. ¿Qué necesitas?",
                 "c++": "C++ es de alto rendimiento, usado en juegos y sistemas. ¿En qué te ayudo?",
                 "sql": "SQL maneja bases de datos. Consultas, tablas, relaciones. ¿Qué consulta necesitas?",
-                "php": "PHP es para backend web. Dinámico y fácil de desplegar. ¿Qué quieres desarrollar?",
-                "react": "React es una librería de JS para interfaces. Componentes, estado, hooks. ¿Qué quieres construir?",
+                "php": "PHP es para backend web. Dinámico y fácil de desplegar. ¿Qué                "react": "React es una librería de JS para interfaces. Componentes, estado, hooks. ¿Qué quieres construir?",
                 "node": "Node.js ejecuta JavaScript en el servidor. APIs, servidores, real-time. ¿Qué necesitas?"
             },
             conceptos: {
@@ -492,7 +491,7 @@ div>
                 "bucle": "Un bucle repite código. for, while, forEach. Ej: for(let i=0; i<5; i++) { console.log(i); }",
                 "condicional": "Un condicional toma decisiones. if, else, switch. Ej: if(x > 5) { return true; }",
                 "array": "Un array es una lista de valores. Ej: let nums = [1, 2, 3, 4, 5];",
-                "objeto": "Un objeto guarda datos en pares clave-valor. Ej: let user = {: 'Oclade', edad: 1};",
+                "objeto": "Un objeto guarda datos en pares clave-valor. Ej: let user = {nombre: 'Oclade', edad: 1};",
                 "clase": "Una clase es un molde para crear objetos. Programación orientada a objetos.",
                 "api": "Una API permite que dos programas se comuniquen. REST, GraphQL, endpoints.",
                 "git": "Git controla versiones de código. Commit, push, pull, branch, merge.",
@@ -500,7 +499,7 @@ div>
             },
             errores: {
                 "syntaxerror": "Error de sintaxis: revisa paréntesis, comillas, puntos y comas.",
- "undefined": "Variable no definida: verifica que declaraste la variable antes de usarla.",
+                "undefined": "Variable no definida: verifica que declaraste la variable antes de usarla.",
                 "null": "Valor null: la variable existe pero no tiene valor asignado.",
                 "typeerror": "Error de tipo: estás usando un dato incorrecto (ej: sumar string + número).",
                 "referenceerror": "Referencia no válida: la variable o función no existe en ese scope.",
@@ -536,6 +535,7 @@ div>
                     return this.analizarCodigo(m);
                 }
 
+                // ✅ AHORA USA CHAT.JS PARA RESPUESTAS INTELIGENTES
                 return this.respuestaInteligente(m);
             }
 
@@ -549,14 +549,21 @@ div>
                 return analisis + "\n💡 ¿Quieres que optimice, explique o debuggee este código?";
             }
 
+            // 🔥 ESTA FUNCIÓN AHORA USA CHAT.JS
             respuestaInteligente(m) {
-                const respuestas = [
-                    "Interesante pregunta. ¿Podrías darme más contexto sobre qué lenguaje o framework estás usando?",
-                    "Déjame analizar... ¿Esto es para web, móvil, backend?",
-                    "Para ayudarte mejor, ¿me compartes un ejemplo de código o el error específico?",
-                    "Esa es una gran pregunta de programación. ¿Qué estás intentando construir?"
-                ];
-                return respuestas[Math.floor(Math.random() * respuestas.length)];
+                // Asegúrate de que chat.js esté cargado
+                if (window.OcladeChat) {
+                    return OcladeChat.generate(m);
+                } else {
+                    // Fallback si chat.js no se carga
+                    const respuestas = [
+                        "Interesante pregunta. ¿Podrías darme más contexto sobre qué lenguaje o framework estás usando?",
+                        "Déjame analizar... ¿Esto es para web, móvil, backend?",
+                        "Para ayudarte mejor, ¿me compartes un ejemplo de código o el error específico?",
+                        "Esa es una gran pregunta de programación. ¿Qué estás intentando construir?"
+                    ];
+                    return respuestas[Math.floor(Math.random() * respuestas.length)];
+                }
             }
         }
 
@@ -682,5 +689,8 @@ div>
             canvas.height = window.innerHeight;
         });
     </script>
+
+    <!-- 📦 INTEGRACIÓN CON CHAT.JS -->
+    <script src="chat.js"></script>
 </body>
 </html>
