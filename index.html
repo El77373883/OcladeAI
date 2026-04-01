@@ -66,7 +66,7 @@
             50% { filter: drop-shadow(0 0 20px var(--secondary)); }
         }
 
-        .menu-btn {
+        .new-chat-btn {
             background: var(--glass);
             border: 1px solid var(--border);
             border-radius: 12px;
@@ -80,7 +80,7 @@
             gap: 8px;
         }
 
-        .menu-btn:active {
+        .new-chat-btn:active {
             background: var(--primary);
             transform: scale(0.95);
         }
@@ -425,13 +425,52 @@
             pointer-events: none;
             display: none;
         }
+
+        /* 🌐 WIDGET DE GOOGLE CSE */
+        .gsc-control-cse {
+            padding: 10px !important;
+            background: transparent !important;
+            border: none !important;
+            max-width: 100% !important;
+        }
+
+        .gsc-input-box {
+            background: var(--glass) !important;
+            border: 1px solid var(--border) !important;
+            border-radius: 12px !important;
+            padding: 8px !important;
+        }
+
+        .gsc-search-button {
+            background: linear-gradient(135deg, var(--primary), var(--secondary)) !important;
+            border-radius: 8px !important;
+            color: white !important;
+        }
+
+        .gsc-results-wrapper-overlay {
+            background: var(--dark) !important;
+            border: 1px solid var(--border) !important;
+            border-radius: 12px !important;
+        }
+
+        .gsc-result-info {
+            color: #aaa !important;
+        }
+
+        .gsc-url-top {
+            color: var(--primary) !important;
+        }
+
+        .gsc-webResult .gsc-result {
+            border-bottom: 1px solid var(--border) !important;
+        }
     </style>
 </head>
 <body>
     <!-- 🎨 FONDO DE PARTÍCULAS -->
     <canvas id="particles"></canvas>
 
-    <!-- 🧊 MODELO 3D AL ENVIAR MENSAJE -->
+    <!-- 🧊 MODELO 3D -->
     <canvas id="model3d"></canvas>
 
     <!-- 📱 CONTENEDOR PRINCIPAL -->
@@ -439,7 +478,7 @@
         <!-- HEADER -->
         <div class="header">
             <div class="logo">🔷 OcladeAI</div>
-            <button class="menu-btn" onclick="toggleMenu()">☰</button>
+            <button class="new-chat-btn" onclick="limpiarChat()">+ Nuevo Chat</button>
         </div>
 
         <!-- 💬 ÁREA DE CHAT -->
@@ -475,27 +514,13 @@
                         </svg>
                     </button>
 
-                    <!-- BOTÓN ENVIAR (único, premium) -->
+                    <!-- BOTÓN ENVIAR -->
                     <button class="send-btn" onclick="sendMessage()">
                         Enviar
                     </button>
                 </div>
             </div>
         </div>
-    </div>
-
-    <!-- 🎯 MENÚ LATERAL -->
-    <div class="sidebar" id="sidebar">
-        <button class="close-btn" onclick="toggleMenu()">✕</button>
-        <h3>🔷 OcladeAI</h3>
-        <ul>
-            <li onclick="limpiarChat(); toggleMenu();">🗑️ Nueva Conversación</li>
-            <li onclick="alert('Historial de conversaciones próximamente.'); toggleMenu();">💬 Ver Conversaciones</li>
-            <li onclick="mostrarAyuda(); toggleMenu();">❓ Ayuda</li>
-            <li onclick="mostrarLenguajes(); toggleMenu();">💻 Lenguajes</li>
-            <li onclick="mostrarConceptos(); toggleMenu();">📚 Conceptos</li>
-            <li onclick="about(); toggleMenu();">ℹ️ Acerca de</li>
-        </ul>
     </div>
 
     <!-- 🧠 LÓGICA DEL BOT -->
@@ -552,12 +577,6 @@
                 closeDropdown();
             }
         };
-
-        // 🎯 MENÚ LATERAL
-        function toggleMenu() {
-            const sidebar = document.getElementById('sidebar');
-            sidebar.classList.toggle('active');
-        }
 
         // 🔷 CEREBRO ACTUALIZADO
         const conocimiento = {
@@ -639,14 +658,15 @@
                 return analisis + "\n💡 ¿Quieres que optimice, explique o debuggee este código?";
             }
 
-            // 🔥 ESTA FUNCIÓN AHORA USA CHAT.JS
+            // 🔥 ESTA FUNCIÓN AHORA USA CHAT.JS Y BUSCA EN INTERNET SI NO ENCUENTRA
             respuestaInteligente(m) {
                 // Asegúrate de que chat.js esté cargado
                 if (window.OcladeChat) {
                     const respuesta = OcladeChat.generate(m);
                     // Si chat.js no da una respuesta útil, buscamos en internet
                     if (respuesta.includes("no tengo una respuesta")) {
-                        return "🔍 No tengo eso en mi base local, pero puedo ayudarte con conceptos generales de programación.";
+                        this.buscarEnInternet(m);
+                        return "🔍 Estoy buscando en internet por ti...";
                     }
                     return respuesta;
                 } else {
@@ -661,44 +681,42 @@
                     return respuestas[Math.floor(Math.random() * respuestas.length)];
                 }
             }
+
+            // 🔍 FUNCIÓN QUE BUSCA EN INTERNET (con Google CSE)
+            buscarEnInternet(query) {
+                // Creamos un div para el widget
+                const searchDiv = document.createElement('div');
+                searchDiv.className = 'gsc-control-cse';
+
+                // Creamos un mensaje del bot para mostrar el widget
+                const aiMsg = document.createElement('div');
+                aiMsg.className = 'message ai-msg';
+                aiMsg.innerHTML = `
+                    <p>🔍 <b>No encontré eso en mi base local.</b> Buscando en internet por ti...</p>
+                    <div id="google-search-container-${Date.now()}"></div>
+                `;
+
+                // Insertamos el mensaje en el chat
+                chatArea.appendChild(aiMsg);
+                chatArea.scrollTop = chatArea.scrollHeight;
+
+                // Ahora insertamos el widget en el contenedor específico
+                const container = aiMsg.querySelector('[id^="google-search-container"]');
+                if (container) {
+                    container.appendChild(searchDiv);
+
+                    // Forzar recarga del script de Google CSE
+                    if (window.google && google.search && google.search.cse) {
+                        google.search.cse.element.renderAll();
+                    }
+                }
+            }
         }
 
         const brain = new OcladeBrain();
         const chatArea = document.getElementById('chatArea');
         const userInput = document.getElementById('userInput');
         const sendBtn = document.querySelector('.send-btn');
-
-        // 🧊 ANIMACIÓN 3D AL ENVIAR MENSAJE
-        function iniciarAnimacion3D() {
-            const canvas = document.getElementById('model3d');
-            const ctx = canvas.getContext('2d');
-            canvas.width = 80;
-            canvas.height = 80;
-            canvas.style.display = 'block';
-
-            let rotation = 0;
-
-            function dibujarCubo() {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                ctx.save();
-                ctx.translate(canvas.width / 2, canvas.height / 2);
-                ctx.rotate(rotation);
-                ctx.strokeStyle = '#00d9ff';
-                ctx.lineWidth = 2;
-                ctx.strokeRect(-20, -20, 40, 40);
-                ctx.restore();
-                rotation += 0.05;
-            }
-
-            const interval = setInterval(() => {
-                dibujarCubo();
-            }, 30);
-
-            setTimeout(() => {
-                clearInterval(interval);
-                canvas.style.display = 'none';
-            }, 1500);
-        }
 
         function sendMessage() {
             const message = userInput.value.trim();
@@ -722,12 +740,15 @@
             setTimeout(() => {
                 hideThinking();
                 const respuesta = brain.analizar(message);
-                const aiMsg = document.createElement('div');
-                aiMsg.className = 'message ai-msg';
-                aiMsg.innerHTML = formatResponse(respuesta);
-                chatArea.appendChild(aiMsg);
-                chatArea.scrollTop = chatArea.scrollHeight;
-            }, 1500 + Math.random() * 1000);
+                // Si la respuesta es "buscando en internet", no la mostramos porque ya se insertó el widget
+                if (!respuesta.includes("buscando en internet")) {
+                    const aiMsg = document.createElement('div');
+                    aiMsg.className = 'message ai-msg';
+                    aiMsg.innerHTML = formatResponse(respuesta);
+                    chatArea.appendChild(aiMsg);
+                    chatArea.scrollTop = chatArea.scrollHeight;
+                }
+            }, 1000 + Math.random() * 1000);
         }
 
         function showThinking() {
@@ -807,30 +828,6 @@
             actualizarSaludo();
         }
 
-        function mostrarAyuda() {
-            addMessage("❓ **AYUDA**\n\n• Escribe el nombre de un lenguaje (Python, JavaScript, etc.)\n• Pregunta sobre conceptos (variable, función, bucle)\n• Comparte errores para debuggear\n• Pega código para analizar", 'ai-msg');
-        }
-
-        function mostrarLenguajes() {
-            addMessage("💻 **LENGUAJES SOPORTADOS**\n\nPython • JavaScript • HTML • CSS\nJava • C++ • SQL • PHP\nReact • Node.js • Git", 'ai-msg');
-        }
-
-        function mostrarConceptos() {
-            addMessage("📚 **CONCEPTOS**\n\nVariables • Funciones • Bucles\nCondicionales • Arrays • Objetos\nClases • APIs • Git • Debugging", 'ai-msg');
-        }
-
-        function about() {
-            addMessage("🔷 **OcladeAI v1.0**\n\n✨ Bot de programación\n📱 100% desde iPhone\n🌐 GitHub + Vercel\n🧠 Sin dependencias\n💻 Código 100% propio", 'ai-msg');
-        }
-
-        function addMessage(text, className) {
-            const div = document.createElement('div');
-            div.className = `message ${className}`;
-            div.innerHTML = formatResponse(text);
-            chatArea.appendChild(div);
-            chatArea.scrollTop = chatArea.scrollHeight;
-        }
-
         function generarSaludo() {
             const ahora = new Date();
             const hora = ahora.getHours();
@@ -844,6 +841,9 @@
             canvas.height = window.innerHeight;
         });
     </script>
+
+    <!-- 🔍 SCRIPT DE GOOGLE CUSTOM SEARCH -->
+    <script async src="https://cse.google.com/cse.js?cx=a27ba8624db9440d0"></script>
 
     <!-- 📦 INTEGRACIÓN CON CHAT.JS -->
     <script src="chat.js"></script>
