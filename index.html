@@ -61,77 +61,6 @@
             animation: glow 2s ease-in-out infinite;
         }
 
-¡Perfecto! Tu `index.html` original está aquí.  
-Ahora te voy a **integrar correctamente tu nuevo `chat.js`**, **eliminar el script de Google CSE roto**, y hacer que tu bot responda con las **+400 respuestas profesionales**.
-
----
-
-## ✅ `index.html` — Versión Final Integrada
-
-```html
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>🔷 OcladeAI - Bot de Programación</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        :root {
-            --primary: #00d9ff;
-            --secondary: #7b2ff7;
-            --dark: #0a0a0f;
-            --glass: rgba(255,255,255,0.05);
-            --border: rgba(0,217,255,0.3);
-            --code-bg: #1a1a2e;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: var(--dark);
-            color: #fff;
-            overflow: hidden;
-            height: 100vh;
-            position: relative;
-        }
-
-        /* 🔷 FONDO DE PARTÍCULAS */
-        #particles {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            z-index: 0;
-        }
-
-        .container {
-            position: relative;
-            z-index: 1;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* 📱 HEADER FIJO */
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 20px;
-            background: linear-gradient(180deg, rgba(0,0,0,0.8) transparent 100%);
-            backdrop-filter: blur(10px);
-            z-index: 10;
-        }
-
-        .logo {
-            font-size: 24px;
-            font-weight: 800;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: glow 2s ease-in-out infinite;
-        }
-
         @keyframes glow {
             0%, 100% { filter: drop-shadow(0 0 10px var(--primary)); }
             50% { filter: drop-shadow(0 0 20px var(--secondary)); }
@@ -267,6 +196,7 @@ Ahora te voy a **integrar correctamente tu nuevo `chat.js`**, **eliminar el scri
             border: 1px solid var(--border);
             border-radius: 25px;
             padding: 5px;
+            position: relative;
         }
 
         #userInput {
@@ -484,17 +414,32 @@ Ahora te voy a **integrar correctamente tu nuevo `chat.js`**, **eliminar el scri
             cursor: pointer;
         }
 
-        /* 🧊 ANIMACIÓN 3D */
-        #model3d {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
+        /* 🧊 ANIMACIÓN 3D (al lado del input) */
+        #loader-container {
+            position: absolute;
+            right: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(10,10,15,0.8);
+            padding: 8px 12px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            backdrop-filter: blur(10px);
             z-index: 20;
-            width: 80px;
-            height: 80px;
-            pointer-events: none;
             display: none;
+        }
+
+        #model3d {
+            width: 30px;
+            height: 30px;
+            pointer-events: none;
+        }
+
+        #loader-text {
+            font-size: 14px;
+            color: #aaa;
+            font-weight: 500;
         }
 
         /* 🌐 WIDGET DE GOOGLE CSE */
@@ -592,6 +537,12 @@ Ahora te voy a **integrar correctamente tu nuevo `chat.js`**, **eliminar el scri
                 </div>
             </div>
         </div>
+    </div>
+
+    <!-- 🧊 CONTENEDOR DE ANIMACIÓN 3D (al lado del input) -->
+    <div id="loader-container">
+        <canvas id="model3d-inline" width="30" height="30"></canvas>
+        <div id="loader-text">Pensando...</div>
     </div>
 
     <!-- 🧠 LÓGICA DEL BOT -->
@@ -769,6 +720,71 @@ Ahora te voy a **integrar correctamente tu nuevo `chat.js`**, **eliminar el scri
         const userInput = document.getElementById('userInput');
         const sendBtn = document.querySelector('.send-btn');
 
+        // 🧊 ANIMACIÓN 3D AL ENVIAR MENSAJE
+        const canvasInline = document.getElementById('model3d-inline');
+        const ctxInline = canvasInline.getContext('2d');
+        let rotation = 0;
+        let animationFrameId = null;
+        let textIndex = 0;
+        const texts = ["Pensando...", "Analizando...", "Optimizando...", "Corrigiendo...", "Generando respuesta..."];
+
+        function iniciarAnimacion3D() {
+            document.getElementById('loader-container').style.display = 'flex';
+
+            function dibujarCubo() {
+                ctxInline.clearRect(0, 0, canvasInline.width, canvasInline.height);
+                ctxInline.save();
+                ctxInline.translate(canvasInline.width / 2, canvasInline.height / 2);
+                ctxInline.rotate(rotation);
+                
+                // Dibujar cara frontal (azul)
+                ctxInline.fillStyle = '#00d9ff';
+                ctxInline.fillRect(-8, -8, 16, 16);
+                
+                // Dibujar cara lateral (morada)
+                ctxInline.fillStyle = '#7b2ff7';
+                ctxInline.beginPath();
+                ctxInline.moveTo(0, -8);
+                ctxInline.lineTo(8, 0);
+                ctxInline.lineTo(8, 16);
+                ctxInline.lineTo(0, 16);
+                ctxInline.fill();
+                
+                // Dibujar cara superior (transparente)
+                ctxInline.fillStyle = 'rgba(255,255,255,0.1)';
+                ctxInline.beginPath();
+                ctxInline.moveTo(-8, -8);
+                ctxInline.lineTo(0, -8);
+                ctxInline.lineTo(8, 0);
+                ctxInline.lineTo(0, 0);
+                ctxInline.fill();
+
+                ctxInline.restore();
+                rotation += 0.05;
+            }
+
+            function actualizarTexto() {
+                document.getElementById('loader-text').textContent = texts[textIndex];
+                textIndex = (textIndex + 1) % texts.length;
+            }
+
+            function animate() {
+                dibujarCubo();
+                actualizarTexto();
+                animationFrameId = requestAnimationFrame(animate);
+            }
+
+            animate();
+        }
+
+        function detenerAnimacion3D() {
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+                animationFrameId = null;
+            }
+            document.getElementById('loader-container').style.display = 'none';
+        }
+
         function sendMessage() {
             const message = userInput.value.trim();
             if (!message) return;
@@ -783,17 +799,22 @@ Ahora te voy a **integrar correctamente tu nuevo `chat.js`**, **eliminar el scri
 
             userInput.value = '';
 
+            // 🧊 Mostrar animación 3D
+            iniciarAnimacion3D();
+
             showThinking();
 
             setTimeout(() => {
                 hideThinking();
+                // 🧊 Ocultar animación 3D
+                detenerAnimacion3D();
                 const respuesta = brain.analizar(message);
                 const aiMsg = document.createElement('div');
                 aiMsg.className = 'message ai-msg';
                 aiMsg.innerHTML = formatResponse(respuesta);
                 chatArea.appendChild(aiMsg);
                 chatArea.scrollTop = chatArea.scrollHeight;
-            }, 1000 + Math.random() * 1000);
+            }, 1500 + Math.random() * 1000);
         }
 
         function showThinking() {
