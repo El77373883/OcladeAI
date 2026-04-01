@@ -359,7 +359,48 @@
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 3px; }
+
+        /* 🌐 GOOGLE CUSTOM SEARCH WIDGET */
+        .gsc-control-cse {
+            padding: 10px !important;
+            background: transparent !important;
+            border: none !important;
+            max-width: 100% !important;
+        }
+
+        .gsc-input-box {
+            background: var(--glass) !important;
+            border: 1px solid var(--border) !important;
+            border-radius: 12px !important;
+            padding: 8px !important;
+        }
+
+        .gsc-search-button {
+            background: linear-gradient(135deg, var(--primary), var(--secondary)) !important;
+            border-radius: 8px !important;
+            color: white !important;
+        }
+
+        .gsc-results-wrapper-overlay {
+            background: var(--dark) !important;
+            border: 1px solid var(--border) !important;
+            border-radius: 12px !important;
+        }
+
+        .gsc-result-info {
+            color: #aaa !important;
+        }
+
+        .gsc-url-top {
+            color: !important;
+        }
+
+        .gsc-webResult .gsc-result {
+            border-bottom: 1px solid var(--border) !important;
+        }
     </style>
+    <!-- 🔍 SCRIPT DE GOOGLE CUSTOM SEARCH -->
+    <script async src="https://cse.google.com/cse.js?cx=a27ba8624db9440d0"></script>
 </head>
 <body>
     <!-- 🎨 FONDO DE PARTÍCULAS -->
@@ -395,7 +436,7 @@
                         <div class="model-dropdown" id="modelDropdown">
                             <div class="model-option selected" onclick="selectModel(this, 'Oclade Code 1.0')">Oclade Code 1.0</div>
                             <div class="model-option" onclick="selectModel(this, 'Oclade Debug Pro')">Oclade Debug Pro</div>
-                            <div class="model-option" onclick="selectModel(this, 'Oclade Learn AI')">Oclade Learn AI</div>
+                            <div class="model-optionModel(this, 'Oclade Learn AI')">Oclade Learn AI</div>
                         </div>
                     </div>
 
@@ -472,7 +513,7 @@
 
         // 🔷 CEREBRO ACTUALIZADO
         const conocimiento = {
-            saludos: ["hola", "hey", "buenos", "hi"],
+ ["hola", "hey", "buenos", "hi"],
             despedidas: ["adios", "chau", "hasta", "bye"],
             lenguajes: {
                 "python": "Python es un lenguaje interpretado, ideal para IA, datos y backend. ¿Qué quieres hacer con Python?",
@@ -482,7 +523,8 @@
                 "java": "Java es orientado a objetos, usado en Android y enterprise. ¿Qué necesitas?",
                 "c++": "C++ es de alto rendimiento, usado en juegos y sistemas. ¿En qué te ayudo?",
                 "sql": "SQL maneja bases de datos. Consultas, tablas, relaciones. ¿Qué consulta necesitas?",
-                "php": "PHP es para backend web. Dinámico y fácil de desplegar. ¿Qué                "react": "React es una librería de JS para interfaces. Componentes, estado, hooks. ¿Qué quieres construir?",
+                "php": "PHP es para backend web. Dinámico y fácil de desplegar. ¿Qué quieres desarrollar?",
+                "react": "React es una librería de JS para interfaces. Componentes, estado, hooks. ¿Qué quieres construir?",
                 "node": "Node.js ejecuta JavaScript en el servidor. APIs, servidores, real-time. ¿Qué necesitas?"
             },
             conceptos: {
@@ -511,7 +553,7 @@
         class OcladeBrain {
             constructor() { this.historial = []; }
 
-            analizar(mensaje) {
+           ) {
                 const m = mensaje.toLowerCase().trim();
 
                 if (conocimiento.saludos.some(p => m.includes(p))) {
@@ -549,21 +591,52 @@
                 return analisis + "\n💡 ¿Quieres que optimice, explique o debuggee este código?";
             }
 
-            // 🔥 ESTA FUNCIÓN AHORA USA CHAT.JS
+            // 🔥 ESTA FUNCIÓN AHORA USA CHAT.JS + BUSCA EN INTERNET SI NO ENCUENTRA
             respuestaInteligente(m) {
                 // Asegúrate de que chat.js esté cargado
                 if (window.OcladeChat) {
-                    return OcladeChat.generate(m);
+                    const respuesta = OcladeChat.generate(m);
+                    // Si chat.js no da una respuesta útil, buscamos en internet
+                    if (respuesta.includes("no tengo una respuesta")) {
+                        return this.buscarEnInternet(m);
+                    }
+                    return respuesta;
                 } else {
                     // Fallback si chat.js no se carga
-                    const respuestas = [
-                        "Interesante pregunta. ¿Podrías darme más contexto sobre qué lenguaje o framework estás usando?",
-                        "Déjame analizar... ¿Esto es para web, móvil, backend?",
-                        "Para ayudarte mejor, ¿me compartes un ejemplo de código o el error específico?",
-                        "Esa es una gran pregunta de programación. ¿Qué estás intentando construir?"
-                    ];
-                    return respuestas[Math.floor(Math.random() * respuestas.length)];
+                    return this.buscarEnInternet(m);
                 }
+            }
+
+            // 🔍 FUNCIÓN QUE BUSCA EN INTERNET
+            buscarEnInternet(query) {
+                // Creamos un div para el widget de búsqueda
+                const searchDiv = document.createElement('div');
+                searchDiv.className = 'gsc-control-cse';
+
+                // Creamos un div contenedor para el chat
+                const aiMsg = document.createElement('div');
+                aiMsg.className = 'message ai-msg';
+                aiMsg.innerHTML = `
+                    <p>🔍 <b>No encontré eso en mi base local.</b> Voy a buscar en la web por ti...</p>
+                    <div id="google-search-container-${Date.now()}"></div>
+                `;
+
+                // Insertamos el mensaje en el chat
+                chatArea.appendChild(aiMsg);
+                chatArea.scrollTop = chatArea.scrollHeight;
+
+                // Ahora insertamos el widget en el contenedor específico
+                const container = aiMsg.querySelector('[id^="google-search-container"]');
+                if (container) {
+                    container.appendChild(searchDiv);
+                    
+                    // Forzar recarga del script de Google CSE
+                    if (window.google && google.search && google.search.cse) {
+                        google.search.cse.element.renderAll();
+                    }
+                }
+
+                return "🔍 Estoy buscando en internet por ti..."; // Este mensaje no se mostrará porque ya se insertó el widget
             }
         }
 
@@ -589,13 +662,15 @@
             showThinking();
 
             setTimeout(() => {
-                hideThinking();
                 const respuesta = brain.analizar(message);
-                const aiMsg = document.createElement('div');
-                aiMsg.className = 'message ai-msg';
-                aiMsg.innerHTML = formatResponse(respuesta);
-                chatArea.appendChild(aiMsg);
-                chatArea.scrollTop = chatArea.scrollHeight;
+                // Solo mostramos la respuesta si no se insertó el widget de búsqueda
+                if (!respuesta.includes("buscando en internet")) {
+                    const aiMsg = document.createElement('div');
+                    aiMsg.className = 'message ai-msg';
+                    aiMsg.innerHTML = formatResponse(respuesta);
+                    chatArea.appendChild(aiMsg);
+                    chatArea.scrollTop = chatArea.scrollHeight;
+                }
             }, 1000 + Math.random() * 1000);
         }
 
