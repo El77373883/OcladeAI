@@ -1,252 +1,590 @@
-* { margin: 0; padding: 0; box-sizing: border-box; }
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>🔷 OcladeAI - Bot de Programación</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --primary: #00d9ff;
+            --secondary: #7b2ff7;
+            --dark: #0a0a0f;
+            --glass: rgba(255,255,255,0.05);
+            --border: rgba(0,217,255,0.3);
+            --code-bg: #1a1a2e;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--dark);
+            color: #fff;
+            overflow: hidden;
+            height: 100vh;
+        }
+        
+        /* 🔷 FONDO DE PARTÍCULAS */
+        #particles {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 0;
+        }
+        
+        .container {
+            position: relative;
+            z-index: 1;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* 📱 HEADER */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: linear-gradient(180deg, rgba(0,0,0,0.8) 0%, transparent 100%);
+            backdrop-filter: blur(10px);
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: 800;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: glow 2s ease-in-out infinite;
+        }
+        
+        @keyframes glow {
+            0%, 100% { filter: drop-shadow(0 0 10px var(--primary)); }
+            50% { filter: drop-shadow(0 0 20px var(--secondary)); }
+        }
+        
+        .menu-btn {
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 10px 15px;
+            color: #fff;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .menu-btn:active {
+            background: var(--primary);
+            transform: scale(0.95);
+        }
+        
+        /* 💬 CHAT */
+        .chat-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .message {
+            max-width: 85%;
+            padding: 15px 20px;
+            border-radius: 20px;
+            animation: slideIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            line-height: 1.5;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(30px) scale(0.9); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        
+        .user-msg {
+            align-self: flex-end;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-bottom-right-radius: 5px;
+        }
+        
+        .ai-msg {
+            align-self: flex-start;
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-bottom-left-radius: 5px;
+            backdrop-filter: blur(10px);
+        }
+        
+        /* 📝 BLOQUES DE CÓDIGO */
+        .code-block {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            overflow-x: auto;
+            white-space: pre;
+        }
+        
+        /* ⌨️ INPUT */
+        .input-area {
+            padding: 20px;
+            background: linear-gradient(0deg, rgba(0,0,0,0.9) 0%, transparent 100%);
+            backdrop-filter: blur(10px);
+        }
+        
+        .input-container {
+            display: flex;
+            gap: 10px;
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: 25px;
+            padding: 5px;
+        }
+        
+        #userInput {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: #fff;
+            padding: 15px 20px;
+            font-size: 16px;
+            outline: none;
+        }
+        
+        #sendBtn {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: none;
+            border-radius: 20px;
+            padding: 15px 25px;
+            color: #fff;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        #sendBtn:active {
+            transform: scale(0.95);
+        }
+        
+        /* 🔄 PENSANDO */
+        .thinking {
+            display: flex;
+            gap: 5px;
+            padding: 15px 20px;
+        }
+        
+        .thinking span {
+            width: 8px;
+            height: 8px;
+            background: var(--primary);
+            border-radius: 50%;
+            animation: bounce 1.4s infinite;
+        }
+        
+        .thinking span:nth-child(2) { animation-delay: 0.2s; }
+        .thinking span:nth-child(3) { animation-delay: 0.4s; }
+        
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+        
+        /* 📱 RESPONSIVE */
+        @media (max-width: 768px) {
+            .logo { font-size: 20px; }
+            .message { max-width: 90%; }
+        }
+        
+        /* 🌟 SCROLLBAR */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 3px; }
+        
+        /* 🎯 MENÚ LATERAL */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            right: -300px;
+            width: 300px;
+            height: 100vh;
+            background: rgba(10,10,15,0.95);
+            backdrop-filter: blur(20px);
+            border-left: 1px solid var(--border);
+            z-index: 100;
+            transition: right 0.3s ease;
+            padding: 20px;
+        }
+        
+        .sidebar.active {
+            right: 0;
+        }
+        
+        .sidebar h3 {
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+        
+        .sidebar ul {
+            list-style: none;
+        }
+        
+        .sidebar li {
+            padding: 15px 0;
+            border-bottom: 1px solid var(--glass);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .sidebar li:hover {
+            color: var(--primary);
+            padding-left: 10px;
+        }
+        
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            color: #fff;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <!-- 🎨 FONDO DE PARTÍCULAS -->
+    <canvas id="particles"></canvas>
+    
+    <!-- 📱 CONTENEDOR PRINCIPAL -->
+    <div class="container">
+        <!-- HEADER -->
+        <div class="header">
+            <div class="logo">🔷 OcladeAI</div>
+            <button class="menu-btn" onclick="toggleMenu()">☰</button>
+        </div>
+        
+        <!-- 💬 ÁREA DE CHAT -->
+        <div class="chat-area" id="chatArea">
+            <div class="message ai-msg">
+                ¡Hola! 🚀 Soy <b>OcladeAI</b>, tu asistente de programación.<br><br>
+                💻 Te ayudo con código<br>
+                🐛 Debugging y errores<br>
+                📚 Explico conceptos<br>
+                🔷 100% código propio<br><br>
+                ¿Qué quieres programar hoy?
+            </div>
+        </div>
+        
+        <!-- ⌨️ INPUT AREA -->
+        <div class="input-area">
+            <div class="input-container">
+                <input type="text" id="userInput" placeholder="Escribe tu código o pregunta..." autocomplete="off">
+                <button id="sendBtn" onclick="sendMessage()">➤</button>
+            </div>
+        </div>
+    </div>
 
-:root {
-    --primary: #00d9ff;
-    --secondary: #7b2ff7;
-    --dark: #0a0a0f;
-    --glass: rgba(255,255,255,0.05);
-    --border: rgba(0,217,255,0.3);
-    --code-bg: #1a1a2e;
-}
+    <!-- 🧠 LÓGICA DEL BOT -->
+    <script>
+        // 🔷 OCLADEAI - CEREBRO DE PROGRAMACIÓN
+        // 100% JavaScript puro, sin dependencias
 
-body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: var(--dark);
-    color: #fff;
-    overflow: hidden;
-    height: 100vh;
-}
+        // ═══════════════════════════════════════════════════════════════
+        // 🧠 BASE DE CONOCIMIENTO DE PROGRAMACIÓN
+        // ═══════════════════════════════════════════════════════════════
+        const conocimiento = {
+            saludos: ["hola", "hey", "buenos", "hi"],
+            despedidas: ["adios", "chau", "hasta", "bye"],
+            lenguajes: {
+                "python": "Python es un lenguaje interpretado, ideal para IA, datos y backend. ¿Qué quieres hacer con Python?",
+                "javascript": "JavaScript es el lenguaje de la web. Sirve para frontend, backend (Node.js) y apps móviles. ¿En qué te ayudo?",
+                "html": "HTML es el esqueleto de las páginas web. Define la estructura con etiquetas. ¿Necesitas ayuda con alguna etiqueta?",
+                "css": "CSS da estilo a tu web. Colores, fuentes, layouts, animaciones. ¿Qué quieres estilizar?",
+                "java": "Java es orientado a objetos, usado en Android y enterprise. ¿Qué necesitas?",
+                "c++": "C++ es de alto rendimiento, usado en juegos y sistemas. ¿En qué te ayudo?",
+                "sql": "SQL maneja bases de datos. Consultas, tablas, relaciones. ¿Qué consulta necesitas?",
+                "php": "PHP es para backend web. Dinámico y fácil de desplegar. ¿Qué quieres desarrollar?",
+                "react": "React es una librería de JS para interfaces. Componentes, estado, hooks. ¿Qué quieres construir?",
+                "node": "Node.js ejecuta JavaScript en el servidor. APIs, servidores, real-time. ¿Qué necesitas?"
+            },
+            conceptos: {
+                "variable": "Una variable es un contenedor para guardar datos. Ej: let nombre = 'OcladeAI';",
+                "funcion": "Una función es un bloque de código reutilizable. Ej: function saludar() { return 'Hola'; }",
+                "bucle": "Un bucle repite código. for, while, forEach. Ej: for(let i=0; i<5; i++) { console.log(i); }",
+                "condicional": "Un condicional toma decisiones. if, else, switch. Ej: if(x > 5) { return true; }",
+                "array": "Un array es una lista de valores. Ej: let nums = [1, 2, 3, 4, 5];",
+                "objeto": "Un objeto guarda datos en pares clave-valor. Ej: let user = {nombre: 'Oclade', edad: 1};",
+                "clase": "Una clase es un molde para crear objetos. Programación orientada a objetos.",
+                "api": "Una API permite que dos programas se comuniquen. REST, GraphQL, endpoints.",
+                "git": "Git controla versiones de código. Commit, push, pull, branch, merge.",
+                "debug": "Debugging es encontrar y corregir errores. Usa console.log, breakpoints, debugger."
+            },
+            errores: {
+                "syntaxerror": "Error de sintaxis: revisa paréntesis, comillas, puntos y comas.",
+                "undefined": "Variable no definida: verifica que declaraste la variable antes de usarla.",
+                "null": "Valor null: la variable existe pero no tiene valor asignado.",
+                "typeerror": "Error de tipo: estás usando un dato incorrecto (ej: sumar string + número).",
+                "referenceerror": "Referencia no válida: la variable o función no existe en ese scope.",
+                "404": "Error 404: la página o recurso no existe. Verifica la URL.",
+                "500": "Error 500: error del servidor. Revisa logs y configuración."
+            }
+        };
 
-/* 🔷 FONDO DE PARTÍCULAS */
-#particles {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    z-index: 0;
-}
+        // ═══════════════════════════════════════════════════════════════
+        // 🧠 MOTOR DE ANÁLISIS
+        // ═══════════════════════════════════════════════════════════════
+        class OcladeBrain {
+            constructor() {
+                this.historial = [];
+            }
 
-.container {
-    position: relative;
-    z-index: 1;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-}
+            analizar(mensaje) {
+                const m = mensaje.toLowerCase().trim();
+                
+                // 1. Saludos
+                if (conocimiento.saludos.some(p => m.includes(p))) {
+                    return "¡Hola! 🚀 Soy OcladeAI, tu asistente de programación. ¿En qué lenguaje o tema te ayudo hoy?";
+                }
 
-/* 📱 HEADER */
-.header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px 20px;
-    background: linear-gradient(180deg, rgba(0,0,0,0.8) 0%, transparent 100%);
-    backdrop-filter: blur(10px);
-}
+                // 2. Despedidas
+                if (conocimiento.despedidas.some(p => m.includes(p))) {
+                    return "¡Hasta pronto! 🔷 Recuerda: el código es poesía lógica. ¡Vuelve cuando necesites ayuda!";
+                }
 
-.logo {
-    font-size: 24px;
-    font-weight: 800;
-    background: linear-gradient(90deg, var(--primary), var(--secondary));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    animation: glow 2s ease-in-out infinite;
-}
+                // 3. Lenguajes de programación
+                for (const [lang, respuesta] of Object.entries(conocimiento.lenguajes)) {
+                    if (m.includes(lang)) {
+                        return respuesta;
+                    }
+                }
 
-@keyframes glow {
-    0%, 100% { filter: drop-shadow(0 0 10px var(--primary)); }
-    50% { filter: drop-shadow(0 0 20px var(--secondary)); }
-}
+                // 4. Conceptos de programación
+                for (const [concepto, explicacion] of Object.entries(conocimiento.conceptos)) {
+                    if (m.includes(concepto)) {
+                        return `📚 **${concepto.toUpperCase()}**\n\n${explicacion}`;
+                    }
+                }
 
-.menu-btn {
-    background: var(--glass);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 10px 15px;
-    color: #fff;
-    font-size: 20px;
-    cursor: pointer;
-    transition: all 0.3s;
-}
+                // 5. Errores comunes
+                for (const [error, solucion] of Object.entries(conocimiento.errores)) {
+                    if (m.includes(error)) {
+                        return `🐛 **ERROR DETECTADO**\n\n${solucion}`;
+                    }
+                }
 
-.menu-btn:active {
-    background: var(--primary);
-    transform: scale(0.95);
-}
+                // 6. Detección de código (si contiene caracteres de programación)
+                if (/[{};=function\(\)console\.log]/.test(m)) {
+                    return this.analizarCodigo(m);
+                }
 
-/* 💬 CHAT */
-.chat-area {
-    flex: 1;
-    overflow-y: auto;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
+                // 7. Respuesta por defecto
+                return this.respuestaInteligente(m);
+            }
 
-.message {
-    max-width: 85%;
-    padding: 15px 20px;
-    border-radius: 20px;
-    animation: slideIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-    line-height: 1.5;
-}
+            analizarCodigo(codigo) {
+                let analisis = "🔍 **Análisis de Código**\n\n";
+                
+                if (codigo.includes('function') || codigo.includes('=>')) {
+                    analisis += "✅ Detecté una función.\n";
+                }
+                if (codigo.includes('console.log') || codigo.includes('print')) {
+                    analisis += "✅ Detecté una salida/imprimir.\n";
+                }
+                if (codigo.includes('for') || codigo.includes('while')) {
+                    analisis += "✅ Detecté un bucle.\n";
+                }
+                if (codigo.includes('if') || codigo.includes('else')) {
+                    analisis += "✅ Detecté un condicional.\n";
+                }
+                if (codigo.includes('var') || codigo.includes('let') || codigo.includes('const')) {
+                    analisis += "✅ Detecté declaración de variables.\n";
+                }
 
-@keyframes slideIn {
-    from { opacity: 0; transform: translateY(30px) scale(0.9); }
-    to { opacity: 1; transform: translateY(0) scale(1); }
-}
+                analisis += "\n💡 ¿Quieres que optimice, explique o debuggee este código?";
+                return analisis;
+            }
 
-.user-msg {
-    align-self: flex-end;
-    background: linear-gradient(135deg, var(--primary), var(--secondary));
-    border-bottom-right-radius: 5px;
-}
+            respuestaInteligente(m) {
+                const respuestas = [
+                    "🤔 Interesante pregunta. ¿Podrías darme más contexto sobre qué lenguaje o framework estás usando?",
+                    "💭 Déjame analizar... ¿Esto es para web, móvil, backend o IA?",
+                    "🔷 Para ayudarte mejor, ¿me compartes un ejemplo de código o el error específico?",
+                    "📋 Esa es una gran pregunta de programación. ¿Qué estás intentando construir?"
+                ];
+                return respuestas[Math.floor(Math.random() * respuestas.length)];
+            }
+        }
 
-.ai-msg {
-    align-self: flex-start;
-    background: var(--glass);
-    border: 1px solid var(--border);
-    border-bottom-left-radius: 5px;
-    backdrop-filter: blur(10px);
-}
+        const brain = new OcladeBrain();
 
-/* 📝 BLOQUES DE CÓDIGO */
-.code-block {
-    background: var(--code-bg);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 15px;
-    margin: 10px 0;
-    font-family: 'Courier New', monospace;
-    font-size: 14px;
-    overflow-x: auto;
-    white-space: pre;
-}
+        // ═══════════════════════════════════════════════════════════════
+        // 💬 INTERFAZ DE CHAT
+        // ═══════════════════════════════════════════════════════════════
+        const chatArea = document.getElementById('chatArea');
+        const userInput = document.getElementById('userInput');
+        const sendBtn = document.getElementById('sendBtn');
 
-/* ⌨️ INPUT */
-.input-area {
-    padding: 20px;
-    background: linear-gradient(0deg, rgba(0,0,0,0.9) 0%, transparent 100%);
-    backdrop-filter: blur(10px);
-}
+        function sendMessage() {
+            const message = userInput.value.trim();
+            if (!message) return;
 
-.input-container {
-    display: flex;
-    gap: 10px;
-    background: var(--glass);
-    border: 1px solid var(--border);
-    border-radius: 25px;
-    padding: 5px;
-}
+            // Mensaje del usuario
+            addMessage(message, 'user-msg');
+            userInput.value = '';
 
-#userInput {
-    flex: 1;
-    background: transparent;
-    border: none;
-    color: #fff;
-    padding: 15px 20px;
-    font-size: 16px;
-    outline: none;
-}
+            // Indicador de pensando
+            showThinking();
 
-#sendBtn {
-    background: linear-gradient(135deg, var(--primary), var(--secondary));
-    border: none;
-    border-radius: 20px;
-    padding: 15px 25px;
-    color: #fff;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.3s;
-}
+            // Simular "procesamiento" del bot
+            setTimeout(() => {
+                hideThinking();
+                const respuesta = brain.analizar(message);
+                addMessage(respuesta, 'ai-msg');
+            }, 1000 + Math.random() * 1000);
+        }
 
-#sendBtn:active {
-    transform: scale(0.95);
-}
+        function add) {
+            const div = document.createElement('div');
+            div.className = `message ${className}`;
+            div.innerHTML = formatResponse(text);
+            chatArea.appendChild(div);
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
 
-/* 🔄 PENSANDO */
-.thinking {
-    display: flex;
-    gap: 5px;
-    padding: 15px 20px;
-}
+        function showThinking() {
+            const div = document.createElement('div');
+            div.className = 'message ai-msg thinking';
+            div.id = 'thinking';
+            div.innerHTML = '<span></span><span></span><span></span>';
+            chatArea.appendChild(div);
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
 
-.thinking span {
-    width: 8px;
-    height: 8px;
-    background: var(--primary);
-    border-radius: 50%;
-    animation: bounce 1.4s infinite;
-}
+        function hideThinking() {
+            const thinking = document.getElementById('thinking');
+            if (thinking) thinking.remove();
+        }
 
-.thinking span:nth-child(2) { animation-delay: 0.2s; }
-.thinking span:nth-child(3) { animation-delay: 0.4s; }
+        function formatResponse(text) {
+            // Negritas
+            text = text.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
+            // Saltos de línea
+            text = text.replace(/\n/g, '<br>');
+            // Bloques de código (detectar por indentación o backticks)
+            text = text.replace(/```([\s\S]*?)```/g, '<div class="code-block">$1</div>');
+            return text;
+        }
 
-@keyframes bounce {
-    0%, 80%, 100% { transform: scale(0); }
-    40% { transform: scale(1); }
-}
+        // Enter para enviar
+        userInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendMessage();
+        });
 
-/* 📱 RESPONSIVE */
-@media (max-width: 768px) {
-    .logo { font-size: 20px; }
-    .message { max-width: 90%; }
-}
+        // ═══════════════════════════════════════════════════════════════
+        // 🎨 FONDO DE PARTÍCULAS ANIMADAS
+        // ═══════════════════════════════════════════════════════════════
+        const canvas = document.getElementById('particles');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
 
-/* 🌟 SCROLLBAR */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 3px; }
+        const particles = [];
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 3;
+                this.speedX = Math.random() * 1 - 0.5;
+                this.speedY = Math.random() * 1 - 0.5;
+                this.color = Math.random() > 0.5 ? '#00d9ff' : '#7b2ff7';
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                if(this.x > canvas.width) this.x = 0;
+                if(this.x < 0) this.x = canvas.width;
+                if(this.y > canvas.height) this.y = 0;
+                if(this.y < 0) this.y = canvas.height;
+            }
+            draw() {
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
 
-/* 🎯 MENÚ LATERAL */
-.sidebar {
-    position: fixed;
-    top: 0;
-    right: -300px;
-    width: 300px;
-    height: 100vh;
-    background: rgba(10,10,15,0.95);
-    backdrop-filter: blur(20px);
-    border-left: 1px solid var(--border);
-    z-index: 100;
-    transition: right 0.3s ease;
-    padding: 20px;
-}
+        for(let i = 0; i < 100; i++) particles.push(new Particle());
 
-.sidebar.active {
-    right: 0;
-}
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => { p.update(); p.draw(); });
+            requestAnimationFrame(animate);
+        }
+        animate();
 
-.sidebar h3 {
-    color: var(--primary);
-    margin-bottom: 20px;
-}
+        // ═══════════════════════════════════════════════════════════════
+        // 🎯 MENÚ LATERAL
+        // ═══════════════════════════════════════════════════════════════
+        function toggleMenu() {
+            let sidebar = document.querySelector('.sidebar');
+            if (!sidebar) {
+                sidebar = document.createElement('div');
+                sidebar.className = 'sidebar';
+                sidebar.innerHTML = `
+                    <button class="close-btn" onclick="toggleMenu()">✕</button>
+                    <h3>🔷 OcladeAI</h3>
+                    <ul>
+                        <li onclick="limpiarChat()">🗑️ Limpiar Chat</li>
+                        <li onclick="mostrarAyuda()">❓ Ayuda</li>
+                        <li onclick="mostrarLenguajes()">💻 Lenguajes</li>
+                        <li onclick="mostrarConceptos()">📚 Conceptos</li>
+                        <li onclick="about()">ℹ️ Acerca de</li>
+                    </ul>
+                `;
+                document.body.appendChild(sidebar);
+            }
+            sidebar.classList.toggle('active');
+        }
 
-.sidebar ul {
-    list-style: none;
-}
+        function limpiarChat() {
+            chatArea.innerHTML = '<div class="message ai-msg">💬 Chat limpiado. ¿Qué quieres programar?</div>';
+            toggleMenu();
+        }
 
-.sidebar li {
-    padding: 15px 0;
-    border-bottom: 1px solid var(--glass);
-    cursor: pointer;
-    transition: all 0.3s;
-}
+        function mostrarAyuda() {
+            addMessage("❓ **AYUDA**\n\n• Escribe el nombre de un lenguaje (Python, JavaScript, etc.)\n• Pregunta sobre conceptos (variable, función, bucle)\n• Comparte errores para debuggear\n• Pega código para analizar", 'ai-msg');
+            toggleMenu();
+        }
 
-.sidebar li:hover {
-    color: var(--primary);
-    padding-left: 10px;
-}
+        function mostrarLenguajes() {
+            addMessage("💻 **LENGUAJES SOPORTADOS**\n\nPython • JavaScript • HTML • CSS\nJava • C++ • SQL • PHP\nReact • Node.js • Git", 'ai-msg');
+            toggleMenu();
+        }
 
-.close-btn {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    background: var(--glass);
-    border: 1px solid var(--border);
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    color: #fff;
-    cursor: pointer;
-}
+        function mostrarConceptos() {
+            addMessage("📚 **CONCEPTOS**\n\nVariables • Funciones • Bucles\nCondicionales • Arrays • Objetos\nClases • APIs • Git • Debugging", 'ai-msg');
+            toggleMenu();
+        }
+
+        function about() {
+            addMessage("🔷 **OcladeAI v1.0**\n\n✨ Bot de programación\n📱 100% desde iPhone\n🌐 GitHub + Vercel\n🧠 Sin dependencias\n💻 Código 100% propio", 'ai-msg');
+            toggleMenu();
+        }
+
+        // Resize
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+    </script>
+</body>
+</html>
