@@ -118,7 +118,7 @@ class OcladeBrain {
 
     respuestaInteligente(m) {
         const respuestas = [
-            "🤔 Interesante pregunta. ¿Podrías darme más contexto sobre qué lenguaje o框架 estás usando?",
+            "🤔 Interesante pregunta. ¿Podrías darme más contexto sobre qué lenguaje o framework estás usando?",
             "💭 Déjame analizar... ¿Esto es para web, móvil, backend o IA?",
             "🔷 Para ayudarte mejor, ¿me compartes un ejemplo de código o el error específico?",
             "📋 Esa es una gran pregunta de programación. ¿Qué estás intentando construir?"
@@ -141,28 +141,44 @@ function sendMessage() {
     if (!message) return;
 
     // Mensaje del usuario
-    addMessage(message, 'user-msg');
+    const userMsgElement = addMessageToChat(message, 'user-msg');
+    if (window.ocAnimations) {
+        ocAnimations.efectoOnda(userMsgElement); // 🌊 Onda al enviar
+    }
     userInput.value = '';
 
-    // Indicador de pensando
-    showThinking();
+    // Indicador de pensando ÉPICO 🔥
+    if (window.ocAnimations) {
+        ocAnimations.mostrarPensando();
+    } else {
+        showThinking(); // Fallback si no hay animaciones
+    }
 
     // Simular "procesamiento" del bot
     setTimeout(() => {
-        hideThinking();
+        if (window.ocAnimations) {
+            ocAnimations.ocultarPensando(); // Oculta el pensando
+        } else {
+            hideThinking(); // Fallback
+        }
         const respuesta = brain.analizar(message);
-        addMessage(respuesta, 'ai-msg');
+        const aiMsgElement = addMessageToChat(respuesta, 'ai-msg');
+        if (window.ocAnimations) {
+            ocAnimations.animarMensaje(aiMsgElement); // 🌀 Animación al recibir
+        }
     }, 1000 + Math.random() * 1000);
 }
 
-function addMessage(text, className) {
+function addMessageToChat(text, className) {
     const div = document.createElement('div');
     div.className = `message ${className}`;
     div.innerHTML = formatResponse(text);
     chatArea.appendChild(div);
     chatArea.scrollTop = chatArea.scrollHeight;
+    return div; // Devuelve el elemento para animaciones
 }
 
+// Fallback para showThinking/hideThinking si no se usa animation.js
 function showThinking() {
     const div = document.createElement('div');
     div.className = 'message ai-msg thinking';
@@ -265,22 +281,33 @@ function limpiarChat() {
 }
 
 function mostrarAyuda() {
-    addMessage("❓ **AYUDA**\n\n• Escribe el nombre de un lenguaje (Python, JavaScript, etc.)\n• Pregunta sobre conceptos (variable, función, bucle)\n• Comparte errores para debuggear\n• Pega código para analizar", 'ai-msg');
+    const msgElement = addMessageToChat("❓ **AYUDA**\n\n• Escribe el nombre de un lenguaje (Python, JavaScript, etc.)\n• Pregunta sobre conceptos (variable, función, bucle)\n• Comparte errores para debuggear\n• Pega código para analizar", 'ai-msg');
+    if (window.ocAnimations) {
+        ocAnimations.animarMensaje(msgElement);
+    }
     toggleMenu();
 }
 
 function mostrarLenguajes() {
-    addMessage("💻 **LENGUAJES SOPORTADOS**\n\nPython • JavaScript • HTML • CSS\nJava • C++ • SQL • PHP\nReact • Node.js • Git", 'ai-msg');
+    const msgElement = addMessageToChat("💻 **LENGUAJES SOPORTADOS**\n\nPython • JavaScript • HTML • CSS\nJava • C++ • SQL • PHP\nReact • Node.js • Git", 'ai-msg');
+    if (window.ocAnimations) {
+        ocAnimations.animarMensaje(msgElement);
+    }
     toggleMenu();
 }
 
 function mostrarConceptos() {
-    addMessage("📚 **CONCEPTOS**\n\nVariables • Funciones • Bucles\nCondicionales • Arrays • Objetos\nClases • APIs • Git • Debugging", 'ai-msg');
+    const msgElement = addMessageToChat("📚 **CONCEPTOS**\n\nVariables • Funciones • Bucles\nCondicionales • Arrays • Objetos\nClases • APIs • Git • Debugging", 'ai-msg');
+    if (window.ocAnimations).animarMensaje(msgElement);
+    }
     toggleMenu();
 }
 
 function about() {
-    addMessage("🔷 **OcladeAI v1.0**\n\n✨ Bot de programación\n📱 100% desde iPhone\n🌐 GitHub + Vercel\n🧠 Sin dependencias\n💻 Código 100% propio", 'ai-msg');
+    const msgElement = addMessageToChat("🔷 **OcladeAI v1.0**\n\n✨ Bot de programación\n📱 100% desde iPhone\n🌐 GitHub + Vercel\n🧠 Sin dependencias\n💻 Código 100% propio", 'ai-msg');
+    if (window.ocAnimations) {
+        ocAnimations.animarMensaje(msgElement);
+    }
     toggleMenu();
 }
 
