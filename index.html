@@ -96,7 +96,7 @@
             position: relative;
         }
 
-        /* 🎉 SALUDO CENTRAL (al cargar) */
+        /* 🎉 SALUDO CENTRAL */
         .welcome-center {
             position: absolute;
             top: 50%;
@@ -124,14 +124,8 @@
         }
 
         @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translate(-50%, 20px);
-            }
-            to {
-                opacity: 1;
-                transform: translate(-50%, 0);
-            }
+            from { opacity: 0; transform: translate(-50%, 20px); }
+            to { opacity: 1; transform: translate(-50%, 0); }
         }
 
         .message {
@@ -145,7 +139,7 @@
         .user-msg {
             align-self: flex-end;
             background: linear-gradient(135deg, var(--primary), var(--secondary));
-            border-bottom-right-radius: 5px;
+            border-bottom-radius: 5px;
             transform: translateX(20px);
             opacity: 0;
             animation: slideInRight 0.5s forwards;
@@ -220,13 +214,13 @@
             align-items: center;
         }
 
-        /* 🧠 SELECTOR DE MODELO */
-        .model-selector-container {
+        /* 🧠 SELECTOR DE MODELO (sin emojis) */
+        .model-selector {
             position: relative;
             display: inline-block;
         }
 
-        .model-selector-btn {
+        .model-btn {
             background: var(--glass);
             border: 1px solid var(--border);
             border-radius: 12px;
@@ -240,7 +234,7 @@
             transition: all 0.3s;
         }
 
-        .model-selector-btn:hover {
+        .model-btn:hover {
             background: rgba(0,217,255,0.1);
         }
 
@@ -281,7 +275,8 @@
             font-weight: bold;
         }
 
-        .attach-btn, .send-btn {
+        /* 📎 BOTÓN ADJUNTAR */
+        .attach-btn {
             background: var(--glass);
             border: 1px solid var(--border);
             border-radius: 50%;
@@ -294,16 +289,28 @@
             transition: all 0.3s;
         }
 
-        .attach-btn:hover, .send-btn:hover {
+        .attach-btn:hover {
             background: var(--primary);
         }
 
+        /* 🟦 BOTÓN ENVIAR (único, premium) */
         .send-btn {
             background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: none;
             border-radius: 20px;
-            width: auto;
             padding: 0 20px;
             color: white;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .send-btn:active {
+            transform: scale(0.95);
         }
 
         /* 🔄 PENSANDO */
@@ -363,29 +370,27 @@
         <!-- HEADER -->
         <div class="header">
             <div class="logo">🔷 OcladeAI</div>
-            <button class="new-chat-btn" onclick="limpiarChat()">
-                <span>+</span> Nuevo Chat
-            </button>
+            <button class="new-chat-btn" onclick="limpiarChat()">+ Nuevo Chat</button>
         </div>
 
         <!-- 💬 ÁREA DE CHAT -->
         <div class="chat-area" id="chatArea">
-            <!-- 🎉 SALUDO CENTRAL (se elimina al enviar primer mensaje) -->
+            <!-- 🎉 SALUDO CENTRAL -->
             <div class="welcome-center" id="welcomeCenter">
                 <div class="welcome-title" id="saludoTitle">Buenos días</div>
                 <div class="welcome-subtitle">¿En qué te puedo ayudar hoy?</div>
             </div>
         </div>
 
-        <!-- ⌨️ INPUT AREA -->
+        <!-- ⌨ AREA -->
         <div class="input-area">
             <div class="input-container">
                 <input type="text" id="userInput" placeholder="Escribe tu código o pregunta..." autocomplete="off">
                 <div class="input-actions">
-                    <!-- 🧠 SELECTOR DE MODELO -->
-                    <div class="model-selector-container">
-                        <button class="model-selector-btn" onclick="toggleModelDropdown()">
-                            <span>🤖</span> Oclade Code 1.0
+                    <!-- SELECTOR DE MODELO -->
+                    <div class="model-selector">
+                        <button class="model-btn" onclick="toggleModelDropdown()">
+                            Oclade Code 1.0
                         </button>
                         <div class="model-dropdown" id="modelDropdown">
                             <div class="model-option selected" onclick="selectModel(this, 'Oclade Code 1.0')">Oclade Code 1.0</div>
@@ -394,22 +399,25 @@
                         </div>
                     </div>
 
+                    <!-- BOTÓN ADJUNTAR -->
                     <button class="attach-btn" title="Adjuntar archivo">
                         <svg width="18" height="18" fill="#fff" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path d="M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5c0-1.38 1.12-2.5 2.5-2.5s2.5 1.12 2.5 2.5v10.5c0 .55-.45 1-1 1s-1-.45-1-1V6H10v9.5c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V5c0-2.21-1.79-4-4-4S7 2.79 7 5v12.5c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5V6h-1.5z"/>
                         </svg>
                     </button>
-                    <button class="send-btn" onclick="sendMessage()" id="sendBtn">
+
+                    <!-- BOTÓN ENVIAR (único, premium) -->
+                    <button class="send-btn" onclick="sendMessage()">
                         Enviar
                     </button>
                 </div>
             </div>
-        </div>
+div>
     </div>
 
     <!-- 🧠 LÓGICA DEL BOT -->
     <script>
-        // 🎉 GENERAR SALUDO DINÁMICO (buenos días/tardes/noches)
+        // 🎉 SALUDO DINÁMICO
         function actualizarSaludo() {
             const ahora = new Date();
             const hora = ahora.getHours();
@@ -421,7 +429,6 @@
             document.getElementById('saludoTitle').textContent = saludo;
         }
 
-        // Eliminar saludo central al enviar primer mensaje
         function eliminarSaludo() {
             const welcome = document.getElementById('welcomeCenter');
             if (welcome) {
@@ -433,7 +440,6 @@
             }
         }
 
-        // Inicializar al cargar
         document.addEventListener('DOMContentLoaded', () => {
             actualizarSaludo();
         });
@@ -448,7 +454,7 @@
 
         function selectModel(element, modelName) {
             selectedModel = modelName;
-            document.querySelector('.model-selector-btn span:last-child').textContent = modelName;
+            document.querySelector('.model-btn').textContent = modelName;
             document.querySelectorAll('.model-option').forEach(opt => opt.classList.remove('selected'));
             element.classList.add('selected');
             closeDropdown();
@@ -458,14 +464,13 @@
             document.getElementById('modelDropdown').classList.remove('show');
         }
 
-        // Cerrar dropdown si se hace click fuera
-        window.onclick = function(event) {
-            if (!event.target.matches('.model-selector-btn') && !event.target.closest('.model-selector-container')) {
+        window.onclick = function(e) {
+            if (!e.target.matches('.model-btn') && !e.target.closest('.model-selector')) {
                 closeDropdown();
             }
-        }
+        };
 
-        // 🔷 OCLADEAI - CEREBRO DE PROGRAMACIÓN
+        // 🔷 CEREBRO
         const conocimiento = {
             saludos: ["hola", "hey", "buenos", "hi"],
             despedidas: ["adios", "chau", "hasta", "bye"],
@@ -487,7 +492,7 @@
                 "bucle": "Un bucle repite código. for, while, forEach. Ej: for(let i=0; i<5; i++) { console.log(i); }",
                 "condicional": "Un condicional toma decisiones. if, else, switch. Ej: if(x > 5) { return true; }",
                 "array": "Un array es una lista de valores. Ej: let nums = [1, 2, 3, 4, 5];",
-                "objeto": "Un objeto guarda datos en pares clave-valor. Ej: let user = {nombre: 'Oclade', edad: 1};",
+                "objeto": "Un objeto guarda datos en pares clave-valor. Ej: let user = {: 'Oclade', edad: 1};",
                 "clase": "Una clase es un molde para crear objetos. Programación orientada a objetos.",
                 "api": "Una API permite que dos programas se comuniquen. REST, GraphQL, endpoints.",
                 "git": "Git controla versiones de código. Commit, push, pull, branch, merge.",
@@ -495,7 +500,7 @@
             },
             errores: {
                 "syntaxerror": "Error de sintaxis: revisa paréntesis, comillas, puntos y comas.",
-                "undefined": "Variable no definida: verifica que declaraste la variable antes de usarla.",
+ "undefined": "Variable no definida: verifica que declaraste la variable antes de usarla.",
                 "null": "Valor null: la variable existe pero no tiene valor asignado.",
                 "typeerror": "Error de tipo: estás usando un dato incorrecto (ej: sumar string + número).",
                 "referenceerror": "Referencia no válida: la variable o función no existe en ese scope.",
@@ -509,22 +514,22 @@
 
             analizar(mensaje) {
                 const m = mensaje.toLowerCase().trim();
-                
+
                 if (conocimiento.saludos.some(p => m.includes(p))) {
-                    return `🤖 Usando modelo: **${selectedModel}**\n\n¡Hola! 🚀 Soy OcladeAI, tu asistente de programación. ¿En qué lenguaje o tema te ayudo hoy?`;
+                    return `Usando modelo: ${selectedModel}\n\n¡Hola! Soy OcladeAI, tu asistente de programación. ¿En qué lenguaje o tema te ayudo hoy?`;
                 }
                 if (conocimiento.despedidas.some(p => m.includes(p))) {
-                    return "¡Hasta pronto! 🔷 Recuerda: el código es poesía lógica. ¡Vuelve cuando necesites ayuda!";
+                    return "¡Hasta pronto! Recuerda: el código es poesía lógica. ¡Vuelve cuando necesites ayuda!";
                 }
 
                 for (const [lang, respuesta] of Object.entries(conocimiento.lenguajes)) {
                     if (m.includes(lang)) return respuesta;
                 }
                 for (const [concepto, explicacion] of Object.entries(conocimiento.conceptos)) {
-                    if (m.includes(concepto)) return `📚 **${concepto.toUpperCase()}**\n\n${explicacion}`;
+                    if (m.includes(concepto)) return `**${concepto.toUpperCase()}**\n\n${explicacion}`;
                 }
                 for (const [error, solucion] of Object.entries(conocimiento.errores)) {
-                    if (m.includes(error)) return `🐛 **ERROR DETECTADO**\n\n${solucion}`;
+                    if (m.includes(error)) return `**ERROR DETECTADO**\n\n${solucion}`;
                 }
 
                 if (/[{};=function\(\)console\.log]/.test(m)) {
@@ -535,7 +540,7 @@
             }
 
             analizarCodigo(codigo) {
-                let analisis = "🔍 **Análisis de Código**\n\n";
+                let analisis = "**Análisis de Código**\n\n";
                 if (codigo.includes('function') || codigo.includes('=>')) analisis += "✅ Detecté una función.\n";
                 if (codigo.includes('console.log') || codigo.includes('print')) analisis += "✅ Detecté una salida/imprimir.\n";
                 if (codigo.includes('for') || codigo.includes('while')) analisis += "✅ Detecté un bucle.\n";
@@ -546,10 +551,10 @@
 
             respuestaInteligente(m) {
                 const respuestas = [
-                    "🤔 Interesante pregunta. ¿Podrías darme más contexto sobre qué lenguaje o framework estás usando?",
-                    "💭 Déjame analizar... ¿Esto es para web, móvil, backend o IA?",
-                    "🔷 Para ayudarte mejor, ¿me compartes un ejemplo de código o el error específico?",
-                    "📋 Esa es una gran pregunta de programación. ¿Qué estás intentando construir?"
+                    "Interesante pregunta. ¿Podrías darme más contexto sobre qué lenguaje o framework estás usando?",
+                    "Déjame analizar... ¿Esto es para web, móvil, backend?",
+                    "Para ayudarte mejor, ¿me compartes un ejemplo de código o el error específico?",
+                    "Esa es una gran pregunta de programación. ¿Qué estás intentando construir?"
                 ];
                 return respuestas[Math.floor(Math.random() * respuestas.length)];
             }
@@ -558,16 +563,14 @@
         const brain = new OcladeBrain();
         const chatArea = document.getElementById('chatArea');
         const userInput = document.getElementById('userInput');
-        const sendBtn = document.getElementById('sendBtn');
+        const sendBtn = document.querySelector('.send-btn');
 
         function sendMessage() {
             const message = userInput.value.trim();
             if (!message) return;
 
-            // Eliminar saludo central si aún está
             eliminarSaludo();
 
-            // Mensaje del usuario
             const userMsg = document.createElement('div');
             userMsg.className = 'message user-msg';
             userMsg.innerHTML = formatResponse(message);
@@ -576,10 +579,8 @@
 
             userInput.value = '';
 
-            // Indicador de pensando
             showThinking();
 
-            // Simular procesamiento
             setTimeout(() => {
                 hideThinking();
                 const respuesta = brain.analizar(message);
@@ -612,7 +613,6 @@
                 .replace(/```([\s\S]*?)```/g, '<div class="code-block">$1</div>');
         }
 
-        // Enter para enviar
         userInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') sendMessage();
         });
@@ -677,7 +677,6 @@
             return "Buenas noches";
         }
 
-        // Resize
         window.addEventListener('resize', () => {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
