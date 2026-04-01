@@ -1,464 +1,7 @@
-// 🔷 OCLADEAI - CHAT RESPONSE ENGINE v9.0
-// +1000 respuestas + Emojis + Animaciones de escritura | 100% JavaScript puro
+// 🔷 OCLADEAI - CHAT RESPONSE ENGINE v10.0
+// +1000 respuestas + Clase ChatController + Emojis + Personalidad
 
-const chatResponses = {
-    // 🌟 SALUDOS (50)
-    saludos: [
-        "¡Hola!😀 Soy OcladeAI, tu asistente de programación. ¿En qué puedo ayudarte hoy?👋",
-        "¡Hey!👋 Bienvenido. ¿Qué estás construyendo o depurando?💻",
-        "Buenos días.☀️ Estoy listo para ayudarte con código, errores o conceptos.🤓",
-        "¡Saludos, desarrollador!👨‍💻 ¿Qué necesitas resolver ahora?🤔",
-        "Hola. Soy tu asistente técnico.🔧 ¿En qué lenguaje o tema trabajas?📚",
-        "¡Bienvenido! ¿Necesitas ayuda con un error, un algoritmo o una arquitectura?🔧",
-        "Hola. ¿Estás en modo *debug*, *desarrollo* o *aprendizaje*?⚙️",
-        "¡Hey! ¿Qué código te está desafiando hoy?💻",
-        "Buenas. Estoy aquí para explicar, optimizar o corregir. ¿Por dónde empezamos?📝",
-        "¡Hola de nuevo! ¿Qué proyecto estás trabajando?🚀",
-        "¡Bienvenido! ¿Estás en frontend, backend, IA, Minecraft o algo más?🎮",
-        "Hola. ¿Necesitas una explicación clara, un ejemplo práctico o una guía paso a paso?📋",
-        "¡Hey! ¿Tu prioridad es: velocidad, legibilidad, escalabilidad o corrección?⚡",
-        "Buenos días. ¿Qué parte de tu flujo de trabajo necesita apoyo?🔄",
-        "Hola. ¿Estás escribiendo código nuevo, refactorizando o resolviendo un bug?🐛",
-        "¡Bienvenido! ¿Prefieres respuestas técnicas profundas o explicaciones simples?🎯",
-        "Hola. ¿Estás en un proyecto personal, laboral o de estudio?💼",
-        "¡Hey! ¿Qué lenguaje estás usando hoy? Python, JavaScript, Java, C++, etc.📊",
-        "Buenas. ¿Necesitas ayuda con estructuras de datos, algoritmos o patrones de diseño?🧠",
-        "Hola. ¿Tu objetivo es aprender, producir o depurar?🎯",
-        "¡Hola! ¿Qué lenguaje de programación estás usando hoy?⌨️",
-        "¡Hey! ¿Estás trabajando en un proyecto web, móvil o de escritorio?📱",
-        "Buenos días. ¿Necesitas ayuda con bases de datos, redes o seguridad?🔒",
-        "¡Hola! ¿Estás buscando consejos sobre buenas prácticas de desarrollo?💡",
-        "¡Hey! ¿Necesitas ideas para tu próximo proyecto o prototipo?🎨",
-        "Buenas tardes. ¿En qué puedo apoyarte hoy en tu flujo de trabajo?📊",
-        "¡Hola! ¿Quieres que te recomiende herramientas o librerías útiles?🛠️",
-        "¡Hey! ¿Estás explorando nuevas tecnologías como WebAssembly o Rust?🔬",
-        "Buenos días. ¿Necesitas ayuda con automatización o CI/CD?⚙️",
-        "¡Hola! ¿Estás interesado en aprender sobre inteligencia artificial o machine learning?🤖",
-        "¡Buenas! ¿Necesitas ayuda con un problema de lógica o matemáticas?🧮",
-        "¡Hola! ¿Estás en modo experimentación o producción?🧪",
-        "¡Hey! ¿Necesitas una comparación entre tecnologías?📊",
-        "Buenos días. ¿Quieres consejos sobre arquitectura de software?🏗️",
-        "¡Hola! ¿Tienes un error crítico que necesitas resolver?🚨",
-        "¡Hey! ¿Estás aprendiendo a programar desde cero?👶",
-        "Buenas noches. ¿Sigues trabajando en algo?🌙",
-        "¡Hola! ¿Necesitas ayuda con pruebas unitarias?.UnitTesting",
-        "¡Hey! ¿Estás en un hackathon o proyecto intensivo?⏱️",
-        "Buenos días. ¿Necesitas ideas para tu portfolio de proyectos?💼",
-        "¡Hola! ¿Quieres una explicación sobre una librería específica?📖",
-        "¡Hey! ¿Estás buscando consejos de carrera en tech?📈",
-        "Buenas. ¿Necesitas ayuda con documentación técnica?📝",
-        "¡Hola! ¿Tienes curiosidad por cómo funcionan los algoritmos detrás de las redes sociales?🌐",
-        "¡Hey! ¿Estás interesado en ciberseguridad?🔐",
-        "Buenos días. ¿Quieres aprender sobre blockchain o criptomonedas?💰",
-        "¡Hola! ¿Estás construyendo una app para iOS o Android?📱",
-        "¡Hey! ¿Tienes un problema con el rendimiento de tu aplicación?⚡",
-        "Buenas. ¿Necesitas ayuda con la internacionalización de tu app?🌍",
-        "¡Hola! ¿Estás listo para empezar a programar?💻"
-    ],
-
-    // 🚪 DESPEDIDAS (30)
-    despedidas: [
-        "¡Hasta pronto! Que tu código compile sin errores y se ejecute sin bugs.✅",
-        "Adiós. Recuerda: cada línea bien escrita es un paso hacia la excelencia.;bravo:",
-        "¡Hasta luego! Vuelve cuando necesites ayuda con tu próximo desafío.🚀",
-        "Chao. Que tus commits sean limpios y tus PRs bien revisados.📦",
-        "Hasta la próxima. Que tu lógica sea tan sólida como tu código.🧠",
-        "¡Nos vemos! Que tu flujo de trabajo sea eficiente y tu mente tranquila.🧘",
-        "Adiós. No olvides: la mejor documentación es el código que nadie tiene que adivinar.📚",
-        "Hasta pronto. Que tus tests pasen y tus usuarios estén satisfechos.✅",
-        "¡Bye! Que tu arquitectura sea escalable y tu código mantenible.🏗️",
-        "Chau. Que tu día esté lleno de soluciones elegantes y pocos bugs.;bravo:",
-        "Hasta luego. Recuerda: el debugging es arte, no azar.🎨",
-        "Adiós. Escribe código como si tu futuro tú lo leerá mañana.📅",
-        "¡Hasta la vista! Que tu CI/CD sea rápido y confiable.⚡",
-        "Chao. Que tus APIs sean robustas y tus endpoints seguros.🔒",
-        "Hasta pronto. La programación es un viaje — disfruta cada commit.🌍",
-        "¡Bye! Que tu stack tecnológico te impulse, no te limite.🚀",
-        "Adiós. El mejor código es el que nadie necesita modificar.;bravo:",
-        "Hasta luego. Que tu productividad sea alta y tu estrés bajo.🧘",
-        "Chau. No temas al código complejo: descompón, prueba, refactoriza.🔧",
-        "¡Hasta pronto! Eres más capaz de lo que crees. Sigue codificando.💪",
-        "¡Adiós! Que tu entorno de desarrollo esté siempre optimizado.🖥️",
-        "¡Hasta luego! No olvides tomar descansos para mantener la creatividad.;break:",
-        "¡Chao! Que tus frameworks te ayuden, no te limiten.;bricks:",
-        "¡Hasta pronto! Que cada error te acerque más a la solución.;bravo:",
-        "¡Adiós! Confía en tu proceso de aprendizaje.🌱",
-        "¡Hasta luego! La paciencia es clave en el desarrollo.🧘",
-        "¡Chao! Que tu IDE esté siempre actualizado y bien configurado.🛠️",
-        "¡Hasta pronto! Recuerda: la simplicidad es la máxima sofisticación.;bravo:",
-        "¡Adiós! Tu código es una reflexión de tu pensamiento.🧠",
-        "¡Hasta pronto! Que tu entusiasmo por programar nunca decaiga.;bravo:"
-    ],
-
-    // 💬 CONVERSACIÓN GENERAL (100)
-    conversacion: [
-        "¡Genial! ¿Sobre qué tema te gustaría hablar? Puedo ayudarte con código, errores, conceptos o inspiración.💡",
-        "Interesante pregunta. ¿Podrías darme más contexto sobre qué estás tratando de hacer?🎯",
-        "Me alegra que preguntes. ¿Esto es para un proyecto personal, laboral o de estudio?💼",
-        "¡Buena pregunta! ¿Estás buscando una explicación técnica o una analogía sencilla?📚",
-        "Déjame ver... ¿Estás trabajando en algo relacionado con web, móvil, IA o backend?🌐",
-        "Para ayudarte mejor, ¿me compartes un ejemplo de código o el error específico?🐛",
-        "Esa es una gran pregunta de programación. ¿Qué estás intentando construir?🏗️",
-        "Me encanta este tipo de pregunta. ¿Estás buscando buenas prácticas, rendimiento o legibilidad?✅",
-        "Interesante enfoque. ¿Estás evaluando diferentes tecnologías o lenguajes?📊",
-        "Me alegra que te interese. ¿Quieres que te dé una visión general o detalles específicos?🔍",
-        "¡Eso sí que es pensar! ¿Estás buscando una solución rápida o una arquitectura robusta?⚡",
-        "Buena elección de tema. ¿Quieres que te recomiende recursos o te dé un ejemplo práctico?📚",
-        "Me gusta tu forma de pensar. ¿Estás en modo aprendizaje o resolución de problemas?🎓",
-        "¡Excelente punto! ¿Te gustaría ver ejemplos en Python, JavaScript, Java u otro lenguaje?💻",
-        "Interesante desafío. ¿Estás buscando optimizar, refactorizar o comenzar desde cero?🔄",
-        "¡Veo que estás pensando en grande! ¿Tu prioridad es la escalabilidad o la simplicidad?📈",
-        "Me alegra que preguntes eso. ¿Es para un entorno de pruebas o producción?⚙️",
-        "Buena pregunta. ¿Estás buscando consejos de arquitectura, seguridad o rendimiento?🛡️",
-        "¡Me encanta tu curiosidad! ¿Quieres que exploremos juntos un nuevo concepto?🔬",
-        "Interesante enfoque. ¿Estás buscando herramientas, patrones o buenas prácticas?🛠️",
-        "¡Esa es una pregunta clave! ¿Tu objetivo es aprender, producir o depurar?🎯",
-        "¡Me encanta que pienses en el futuro! ¿Estás considerando la mantenibilidad del código?🔧",
-        "¡Buena pregunta! ¿Estás trabajando con bases de datos, APIs o interfaces de usuario?💾",
-        "¡Interesante! ¿Tu enfoque es: velocidad, claridad, seguridad o compatibilidad?✅",
-        "¡Eso es pensar en grande! ¿Estás considerando integraciones externas o funcionalidades internas?🔗",
-        "¡Me encanta tu entusiasmo! ¿Quieres que te guíe paso a paso?📋",
-        "¡Buena pregunta! ¿Estás buscando una solución rápida o una refactorización profunda?🔄",
-        "¡Interesante desafío! ¿Tu prioridad es la experiencia del usuario o la eficiencia del sistema?👥",
-        "¡Me alegra que preguntes eso! ¿Quieres consejos sobre testing, documentación o despliegue?🧪",
-        "¡Esa es una gran pregunta! ¿Estás buscando una solución específica o una visión general?🔍",
-        "¡Interesante enfoque! ¿Estás evaluando rendimiento, seguridad o facilidad de uso?🛡️",
-        "¡Buena pregunta! ¿Tu enfoque es: funcionalidad, diseño o experiencia de usuario?🎨",
-        "¡Eso sí que es pensar en equipo! ¿Estás buscando buenas prácticas para colaboración?👥",
-        "¡Me encanta tu forma de pensar! ¿Quieres que te dé ejemplos de buenas prácticas?✅",
-        "¡Interesante! ¿Estás considerando migrar a nuevas tecnologías o mejorar las actuales?🔄",
-        "¡Buena pregunta! ¿Estás buscando consejos sobre automatización o procesos manuales?⚙️",
-        "¡Eso es pensar en el futuro! ¿Tu enfoque es: escalabilidad, mantenibilidad o rendimiento?📈",
-        "¡Me alegra que preguntes eso! ¿Quieres que te recomiende herramientas de desarrollo?🛠️",
-        "¡Interesante desafío! ¿Estás buscando soluciones para frontend, backend o infraestructura?🌐",
-        "¡Buena pregunta! ¿Tu objetivo es: aprender, producir, o resolver un problema específico?🎯",
-        "¡Esa es una pregunta clave! ¿Estás buscando consejos sobre arquitectura o implementación?🏗️",
-        "¡Me encanta tu entusiasmo! ¿Quieres que te guíe en la creación de un proyecto?🚀",
-        "¡Interesante enfoque! ¿Estás considerando la seguridad desde el inicio del desarrollo?🔒",
-        "¡Buena pregunta! ¿Estás buscando ejemplos de código o explicaciones conceptuales?📚",
-        "¡Eso sí que es pensar en detalle! ¿Tu prioridad es la eficiencia o la claridad del código?🔍",
-        "¡Me alegra que preguntes eso! ¿Quieres consejos sobre cómo estructurar tu proyecto?📁",
-        "¡Interesante desafío! ¿Estás buscando optimizar el rendimiento o la experiencia del usuario?⚡",
-        "¡Buena pregunta! ¿Tu enfoque es: rapidez, calidad, o facilidad de mantenimiento?✅",
-        "¡Esa es una gran pregunta! ¿Estás buscando recursos para aprender o para resolver un problema?🎓",
-        "¡Interesante enfoque! ¿Tu prioridad es la escalabilidad o la simplicidad del código?📈",
-        "¡Me encanta tu forma de pensar! ¿Quieres que te recomiende buenas prácticas de desarrollo?✅",
-        "¡Buena pregunta! ¿Estás buscando soluciones para problemas comunes o casos especiales?🔍",
-        "¡Eso sí que es pensar en el futuro! ¿Tu objetivo es la estabilidad o la innovación?;bravo:",
-        "¡Interesante desafío! ¿Estás buscando consejos sobre cómo mejorar tu flujo de trabajo?🔄",
-        "¡Me alegra que preguntes eso! ¿Quieres que te dé ejemplos de buenas prácticas de testing?🧪",
-        "¡Buena pregunta! ¿Tu enfoque es: seguridad, rendimiento, o facilidad de uso?🛡️",
-        "¡Esa es una pregunta clave! ¿Estás buscando consejos sobre cómo estructurar tu base de datos?💾",
-        "¡Interesante enfoque! ¿Tu prioridad es la claridad del código o su eficiencia?🔍",
-        "¡Me encanta tu entusiasmo! ¿Quieres que te guíe en la creación de una API?🔗",
-        "¡Buena pregunta! ¿Estás buscando soluciones para problemas de rendimiento o seguridad?⚡",
-        "¡Eso sí que es pensar en detalle! ¿Tu objetivo es la escalabilidad o la mantenibilidad?📈",
-        "¡Interesante desafío! ¿Estás buscando consejos sobre cómo manejar errores?⚠️",
-        "¡Me alegra que preguntes eso! ¿Quieres que te recomiende herramientas de depuración?🔧",
-        "¡Buena pregunta! ¿Tu enfoque es: automatización, documentación, o pruebas?⚙️",
-        "¡Esa es una gran pregunta! ¿Estás buscando recursos para mejorar tu stack tecnológico?🚀",
-        "¡Interesante enfoque! ¿Tu prioridad es la experiencia del desarrollador o la del usuario?👥",
-        "¡Me encanta tu forma de pensar! ¿Quieres que te dé consejos sobre cómo estructurar tu código?📁",
-        "¡Buena pregunta! ¿Estás buscando soluciones para problemas de integración?🔗",
-        "¡Eso sí que es pensar en el futuro! ¿Tu objetivo es la estabilidad o la velocidad de entrega?✅",
-        "¡Interesante desafío! ¿Estás buscando consejos sobre cómo mejorar la seguridad?🔒",
-        "¡Me alegra que preguntes eso! ¿Quieres que te recomiende buenas prácticas de despliegue?📦",
-        "¡Buena pregunta! ¿Tu enfoque es: eficiencia, claridad, o rendimiento?⚡",
-        "¡Esa es una pregunta clave! ¿Estás buscando consejos sobre cómo manejar el estado?🔄",
-        "¡Interesante enfoque! ¿Tu prioridad es la simplicidad o la funcionalidad del código?🎯",
-        "¡Me encanta tu entusiasmo! ¿Quieres que te guíe en la creación de un sistema modular?🏗️",
-        "¡Buena pregunta! ¿Estás buscando soluciones para problemas de escalabilidad?📈",
-        "¡Eso sí que es pensar en detalle! ¿Tu objetivo es la seguridad o la usabilidad?🛡️",
-        "¡Interesante desafío! ¿Estás buscando consejos sobre cómo manejar datos complejos?💾",
-        "¡Me alegra que preguntes eso! ¿Quieres que te recomiende buenas prácticas de documentación?📝",
-        "¡Buena pregunta! ¿Tu enfoque es: automatización, seguridad, o rendimiento?⚙️",
-        "¡Esa es una gran pregunta! ¿Estás buscando recursos para mejorar tu flujo de trabajo?🔄",
-        "¡Interesante enfoque! ¿Tu prioridad es la claridad del código o su velocidad de ejecución?⚡",
-        "¡Me encanta tu forma de pensar! ¿Quieres que te dé ejemplos de buenas prácticas de CI/CD?📦",
-        "¡Buena pregunta! ¿Estás buscando soluciones para problemas de compatibilidad?🔄",
-        "¡Eso sí que es pensar en el futuro! ¿Tu objetivo es la estabilidad o la innovación continua?;bravo:",
-        "¡Interesante desafío! ¿Estás buscando consejos sobre cómo mejorar la eficiencia del equipo?👥",
-        "¡Me alegra que preguntes eso! ¿Quieres que te recomiende herramientas de colaboración?🤝",
-        "¡Buena pregunta! ¿Tu enfoque es: automatización, seguridad, o facilidad de uso?✅",
-        "¡Esa es una pregunta clave! ¿Estás buscando consejos sobre cómo estructurar tu backend?🌐",
-        "¡Interesante enfoque! ¿Tu prioridad es la escalabilidad o la simplicidad del sistema?📈",
-        "¡Me encanta tu entusiasmo! ¿Quieres que te guíe en la creación de un microservicio?🔗",
-        "¡Buena pregunta! ¿Estás buscando soluciones para problemas de rendimiento del servidor?⚡",
-        "¡Eso sí que es pensar en detalle! ¿Tu objetivo es la seguridad o la eficiencia del código?🔒",
-        "¡Interesante desafío! ¿Estás buscando consejos sobre cómo manejar grandes volúmenes de datos?💾",
-        "¡Me alegra que preguntes eso! ¿Quieres que te recomiende buenas prácticas de testing automático?🧪",
-        "¡Buena pregunta! ¿Tu enfoque es: automatización, documentación, o mantenibilidad?🔄",
-        "¡Esa es una gran pregunta! ¿Estás buscando recursos para mejorar tu arquitectura de software?🏗️",
-        "¡Interesante enfoque! ¿Tu prioridad es la experiencia del desarrollador o la del cliente?👥",
-        "¡Me encanta tu forma de pensar! ¿Quieres que te dé consejos sobre cómo estructurar tu frontend?🎨",
-        "¡Buena pregunta! ¿Estás buscando soluciones para problemas de integración de terceros?🔗",
-        "¡Eso sí que es pensar en el futuro! ¿Tu objetivo es la estabilidad o la velocidad de desarrollo?✅",
-        "¡Interesante desafío! ¿Estás buscando consejos sobre cómo mejorar la seguridad de tu app?🛡️",
-        "¡Me alegra que preguntes eso! ¿Quieres que te recomiende buenas prácticas de despliegue continuo?📦",
-        "¡Buena pregunta! ¿Tu enfoque es: eficiencia, claridad, o escalabilidad del código?📈",
-        "¡Esa es una pregunta clave! ¿Estás buscando consejos sobre cómo manejar la autenticación?🔐",
-        "¡Interesante enfoque! ¿Tu prioridad es la simplicidad del código o su funcionalidad avanzada?🎯",
-        "¡Me encanta tu entusiasmo! ¿Quieres que te guíe en la creación de una interfaz intuitiva?🎨",
-        "¡Buena pregunta! ¿Estás buscando soluciones para problemas de latencia o rendimiento?⚡"
-    ],
-
-    // 💻 PROGRAMACIÓN GENERAL (100)
-    programacion: [
-        "Programar es traducir pensamiento lógico a instrucciones ejecutables.💻",
-        "El código es una conversación entre humanos y máquinas — debe ser clara para ambos.🗣️",
-        "Una buena arquitectura evita problemas antes de que ocurran.🏗️",
-        "La simplicidad no es ausencia de funcionalidad, sino ausencia de complejidad innecesaria.;bravo:",
-        "El código debe ser legible primero, eficiente segundo.✅",
-        "Refactorizar no es reescribir: es mejorar sin cambiar el comportamiento.🔄",
-        "Los tests son tu primera línea de defensa contra regresiones.🧪",
-        "Un buen desarrollador no evita los bugs — los detecta temprano y los corrige bien.;bravo:",
-        "La documentación debe explicar *por qué*, no solo *qué* hace el código.📝",
-        "Las abstracciones deben ocultar complejidad, no añadirla.🧠",
-        "El manejo de errores debe ser proactivo, no reactivo.⚠️",
-        "La concurrencia no es paralelismo: entiéndelo antes de implementarlo.🔄",
-        "Un sistema bien diseñado es fácil de extender, no de parchear.🔧",
-        "La optimización prematura es la raíz de todos los males en ingeniería.;bravo:",
-        "El código duplicado es deuda técnica que se acumula con el tiempo.💼",
-        "Las interfaces deben ser pequeñas, cohesivas y fáciles de testear.🧪",
-        "El estado mutante es la fuente de muchos bugs — prioriza inmutabilidad donde sea posible.🔒",
-        "La seguridad no es una característica: es una propiedad fundamental.🛡️",
-        "Los logs deben ser estructurados, nivelados y útiles para diagnóstico.🔍",
-        "La modularidad permite reutilización, pruebas y mantenimiento.🔄",
-        "Un API bien diseñado es intuitivo, consistente y predecible.🔗",
-        "El tipo de dato es información: usar tipos fuertes reduce errores en tiempo de compilación.📊",
-        "La recursión es elegante, pero puede consumir memoria si no se controla.🧠",
-        "Los punteros son poderosos, pero peligrosos si no se gestionan con cuidado.⚠️",
-        "El garbage collector no elimina bugs — solo memoria no referenciada.🧹",
-        "La caché mejora el rendimiento, pero puede causar inconsistencias si no se invalida bien.⚡",
-        "El rate limiting protege tu servicio de sobrecargas, no de mal uso intencional.🛡️",
-        "La validación de entrada es la primera barrera contra vulnerabilidades.🔐",
-        "El logging debe incluir contexto: usuario, acción, ID de transacción.📝",
-        "El diseño orientado a objetos funciona bien cuando los objetos tienen una sola responsabilidad.🎯",
-        "La programación funcional promueve la inmutabilidad y evita efectos secundarios.;bravo:",
-        "El paradigma orientado a aspectos permite separar la lógica transversal del negocio.🔄",
-        "La metodología ágil favorece entregas frecuentes y retroalimentación continua.✅",
-        "El desarrollo guiado por pruebas (TDD) mejora la calidad y claridad del código.🧪",
-        "La integración continua automatiza la verificación de cambios en el código.🔄",
-        "La entrega continua automatiza el despliegue de versiones estables.📦",
-        "La observabilidad permite entender el estado interno de un sistema complejo.🔍",
-        "La tolerancia a fallos garantiza que un sistema siga funcionando ante errores.;bravo:",
-        "El patrón de diseño MVC separa la lógica de negocio de la interfaz de usuario.🏗️",
-        "La inyección de dependencias facilita la modularidad y la prueba unitaria.🔄",
-        "La arquitectura hexagonal aisla la lógica de negocio de frameworks y bases de datos.🔒",
-        "La arquitectura de microservicios divide una aplicación en servicios pequeños e independientes.🔗",
-        "La arquitectura basada en eventos responde a cambios de estado de forma reactiva.🔄",
-        "La persistencia de datos debe considerar consistencia, disponibilidad y particionamiento (CAP).📊",
-        "La concurrencia se puede implementar con hilos, procesos o callbacks.🔄",
-        "La comunicación entre servicios se puede hacer mediante REST, GraphQL o gRPC.🔗",
-        "La virtualización permite ejecutar múltiples entornos en una sola máquina.💻",
-        "La contenerización (Docker) facilita el despliegue y la portabilidad de aplicaciones.📦",
-        "La infraestructura como código (IaC) automatiza la creación y gestión de recursos.⚙️",
-        "La arquitectura sin servidor (Serverless) elimina la gestión de servidores físicos.☁️",
-        "El desarrollo dirigido por pruebas (TDD) mejora la calidad del código.✅",
-        "La integración continua (CI) automatiza la verificación de cambios.🔄",
-        "La entrega continua (CD) automatiza el despliegue de versiones estables.📦",
-        "La observabilidad permite entender el estado interno de un sistema complejo.🔍",
-        "La tolerancia a fallos garantiza que un sistema siga funcionando ante errores.;bravo:",
-        "El patrón de diseño MVC separa la lógica de negocio de la interfaz de usuario.🏗️",
-        "La inyección de dependencias facilita la modularidad y la prueba unitaria.🔄",
-        "La arquitectura hexagonal aisla la lógica de negocio de frameworks y bases de datos.🔒",
-        "La arquitectura de microservicios divide una aplicación en servicios pequeños e independientes.🔗",
-        "La arquitectura basada en eventos responde a cambios de estado de forma reactiva.🔄",
-        "La persistencia de datos debe considerar consistencia, disponibilidad y particionamiento (CAP).📊",
-        "La concurrencia se puede implementar con hilos, procesos o callbacks.🔄",
-        "La comunicación entre servicios se puede hacer mediante REST, GraphQL o gRPC.🔗",
-        "La virtualización permite ejecutar múltiples entornos en una sola máquina.💻",
-        "La contenerización (Docker) facilita el despliegue y la portabilidad de aplicaciones.📦",
-        "La infraestructura como código (IaC) automatiza la creación y gestión de recursos.⚙️",
-        "La arquitectura sin servidor (Serverless) elimina la gestión de servidores físicos.☁️",
-        "El desarrollo dirigido por pruebas (TDD) mejora la calidad del código.✅",
-        "La integración continua (CI) automatiza la verificación de cambios.🔄",
-        "La entrega continua (CD) automatiza el despliegue de versiones estables.📦",
-        "La observabilidad permite entender el estado interno de un sistema complejo.🔍",
-        "La tolerancia a fallos garantiza que un sistema siga funcionando ante errores.;bravo:",
-        "El patrón de diseño MVC separa la lógica de negocio de la interfaz de usuario.🏗️",
-        "La inyección de dependencias facilita la modularidad y la prueba unitaria.🔄",
-        "La arquitectura hexagonal aisla la lógica de negocio de frameworks y bases de datos.🔒",
-        "La arquitectura de microservicios divide una aplicación en servicios pequeños e independientes.🔗",
-        "La arquitectura basada en eventos responde a cambios de estado de forma reactiva.🔄",
-        "La persistencia de datos debe considerar consistencia, disponibilidad y particionamiento (CAP).📊",
-        "La concurrencia se puede implementar con hilos, procesos o callbacks.🔄",
-        "La comunicación entre servicios se puede hacer mediante REST, GraphQL o gRPC.🔗",
-        "La virtualización permite ejecutar múltiples entornos en una sola máquina.💻",
-        "La contenerización (Docker) facilita el despliegue y la portabilidad de aplicaciones.📦",
-        "La infraestructura como código (IaC) automatiza la creación y gestión de recursos.⚙️",
-        "La arquitectura sin servidor (Serverless) elimina la gestión de servidores físicos.☁️",
-        "El desarrollo dirigido por pruebas (TDD) mejora la calidad del código.✅",
-        "La integración continua (CI) automatiza la verificación de cambios.🔄",
-        "La entrega continua (CD) automatiza el despliegue de versiones estables.📦",
-        "La observabilidad permite entender el estado interno de un sistema complejo.🔍",
-        "La tolerancia a fallos garantiza que un sistema siga funcionando ante errores.;bravo:",
-        "El patrón de diseño MVC separa la lógica de negocio de la interfaz de usuario.🏗️",
-        "La inyección de dependencias facilita la modularidad y la prueba unitaria.🔄",
-        "La arquitectura hexagonal aisla la lógica de negocio de frameworks y bases de datos.🔒",
-        "La arquitectura de microservicios divide una aplicación en servicios pequeños e independientes.🔗",
-        "La arquitectura basada en eventos responde a cambios de estado de forma reactiva.🔄",
-        "La persistencia de datos debe considerar consistencia, disponibilidad y particionamiento (CAP).📊",
-        "La concurrencia se puede implementar con hilos, procesos o callbacks.🔄",
-        "La comunicación entre servicios se puede hacer mediante REST, GraphQL o gRPC.🔗",
-        "La virtualización permite ejecutar múltiples entornos en una sola máquina.💻",
-        "La contenerización (Docker) facilita el despliegue y la portabilidad de aplicaciones.📦",
-        "La infraestructura como código (IaC) automatiza la creación y gestión de recursos.⚙️",
-        "La arquitectura sin servidor (Serverless) elimina la gestión de servidores físicos.☁️",
-        "El desarrollo dirigido por pruebas (TDD) mejora la calidad del código.✅",
-        "La integración continua (CI) automatiza la verificación de cambios.🔄",
-        "La entrega continua (CD) automatiza el despliegue de versiones estables.📦",
-        "La observabilidad permite entender el estado interno de un sistema complejo.🔍",
-        "La tolerancia a fallos garantiza que un sistema siga funcionando ante errores.;bravo:",
-        "El patrón de diseño MVC separa la lógica de negocio de la interfaz de usuario.🏗️",
-        "La inyección de dependencias facilita la modularidad y la prueba unitaria.🔄",
-        "La arquitectura hexagonal aisla la lógica de negocio de frameworks y bases de datos.🔒",
-        "La arquitectura de microservicios divide una aplicación en servicios pequeños e independientes.🔗",
-        "La arquitectura basada en eventos responde a cambios de estado de forma reactiva.🔄",
-        "La persistencia de datos debe considerar consistencia, disponibilidad y particionamiento (CAP).📊",
-        "La concurrencia se puede implementar con hilos, procesos o callbacks.🔄",
-        "La comunicación entre servicios se puede hacer mediante REST, GraphQL o gRPC.🔗",
-        "La virtualización permite ejecutar múltiples entornos en una sola máquina.💻",
-        "La contenerización (Docker) facilita el despliegue y la portabilidad de aplicaciones.📦",
-        "La infraestructura como código (IaC) automatiza la creación y gestión de recursos.⚙️",
-        "La arquitectura sin servidor (Serverless) elimina la gestión de servidores físicos.☁️"
-    ],
-
-    // 🧠 CONCEPTOS TÉCNICOS (100)
-    conceptos: [
-        "Una variable es un nombre que referencia un valor en memoria.💻",
-        "Una función es un bloque de código con entrada, proceso y salida definidos.🔧",
-        "Un bucle `for` se usa cuando conoces el número de iteraciones; `while` cuando depende de una condición.🔄",
-        "Un condicional `if/else` evalúa expresiones booleanas para tomar decisiones.🧠",
-        "Un array es una colección ordenada y indexada de elementos del mismo tipo (o no).📊",
-        "Un objeto es una colección de propiedades (clave-valor) que representa una entidad.👤",
-        "Una clase es una plantilla para crear objetos con propiedades y métodos.🏗️",
-        "Una API es un contrato que define cómo interactúan dos sistemas.🔗",
-        "Git es un sistema distribuido de control de versiones que rastrea cambios en archivos.🔄",
-        "Un hook en React es una función que te permite usar estado y efectos en componentes funcionales.🔧",
-        "Un closure es una función que recuerda el entorno en el que fue creada.🧠",
-        "El DOM es una representación en árbol del documento HTML que JavaScript puede manipular.🌳",
-        "Un evento es una señal que indica que algo ocurrió (clic, tecla, carga).🔔",
-        "El scope determina dónde una variable es accesible (global, función, bloque).🔍",
-        "La herencia permite que una clase derive propiedades y métodos de otra.🔄",
-        "La composición es preferible a la herencia cuando se busca flexibilidad y reutilización.🔧",
-        "Un promesa representa una operación asíncrona que puede cumplirse o rechazarse.✅",
-        "El patrón Singleton asegura que una clase tenga una sola instancia y punto de acceso global.👤",
-        "El patrón Observer permite que un objeto notifique a otros cuando su estado cambia.🔔",
-        "Un middleware es una función que se ejecuta entre la recepción de una solicitud y su procesamiento final.🔄",
-        "Un callback es una función pasada como argumento para ser ejecutada posteriormente.🔧",
-        "La inmutabilidad significa que un valor no cambia después de ser creado.🔒",
-        "Un hash es una función que convierte datos de cualquier tamaño en un valor fijo (ej: SHA-256).🔍",
-        "Un índice en una base de datos acelera las búsquedas, pero ralentiza inserciones.📊",
-        "Un JOIN combina filas de dos o más tablas según una relación común.🔗",
-        "Un puerto es un número que identifica un servicio específico en una máquina.💻",
-        "Un socket es un extremo de comunicación entre dos programas en red.🔄",
-        "La serialización convierte un objeto en un formato que se puede almacenar o transmitir.📦",
-        "Un token JWT es un estándar abierto para compartir información de forma segura entre partes.🔐",
-        "El CORS es un mecanismo de seguridad que controla qué dominios pueden acceder a recursos.🛡️",
-        "Un web worker ejecuta código JavaScript en un hilo separado sin bloquear la interfaz.🧠",
-        "El lazy loading carga recursos solo cuando son necesarios, mejorando el rendimiento inicial.⚡",
-        "Un polyfill es código que emula una funcionalidad moderna en navegadores antiguos.🔄",
-        "La memoización guarda resultados de funciones costosas para evitar recálculos.🧠",
-        "Un debounce limita la frecuencia de llamadas a una función (ej: búsqueda en tiempo real).🔧",
-        "Un throttle ejecuta una función como máximo una vez cada X milisegundos.🔄",
-        "El tree shaking elimina código muerto durante el empaquetado (Webpack, Rollup).📦",
-        "Un linter analiza el código en busca de errores, estilo y posibles bugs.🔍",
-        "Un debugger permite pausar la ejecución, inspeccionar variables y avanzar paso a paso.🔧",
-        "El patrón Factory encapsula la creación de objetos detrás de una interfaz común.🏗️",
-        "El patrón Strategy define una familia de algoritmos y los hace intercambiables.🔄",
-        "El patrón Decorator añade responsabilidades a objetos de forma dinámica.🔧",
-        "El patrón Adapter permite que interfaces incompatibles trabajen juntas.🔗",
-        "El patrón Facade proporciona una interfaz unificada a un conjunto de interfaces en un subsistema.🧠",
-        "El patrón Command encapsula una solicitud como un objeto.🔄",
-        "El patrón Template Method define el esqueleto de un algoritmo en una operación.🔧",
-        "El patrón Iterator proporciona una forma de acceder secuencialmente a los elementos de un objeto.🔄",
-        "El patrón Composite permite tratar objetos individuales y composiciones de forma uniforme.👤",
-        "El patrón State altera el comportamiento de un objeto cuando su estado interno cambia.🔄",
-        "El patrón Proxy controla el acceso a otro objeto.🔒",
-        "El patrón Flyweight comparte objetos para reducir el uso de memoria.🧠",
-        "El patrón Builder separa la construcción de un objeto complejo de su representación.🏗️",
-        "El patrón Prototype permite clonar objetos existentes sin acoplarlos a sus clases.🔄",
-        "El patrón Mediator define un objeto que encapsula cómo interactúan un conjunto de objetos.👥",
-        "El patrón Chain of Responsibility pasa una solicitud a lo largo de una cadena de handlers.🔗",
-        "El patrón Visitor permite definir una nueva operación sin cambiar las clases de los elementos sobre los que opera.🧠",
-        "El patrón Memento captura y externaliza el estado interno de un objeto sin violar la encapsulación.🔄",
-        "El patrón Interpreter define una representación gramatical de un lenguaje junto con un intérprete.🔧",
-        "La programación reactiva se centra en flujos de datos asíncronos y propagación de cambios.🔄",
-        "La programación orientada a eventos responde a eventos disparados por el sistema o el usuario.🔔",
-        "Una variable es un contenedor para almacenar datos. Ej: `let nombre = 'OcladeAI';`.💻",
-        "Una función es un bloque de código reutilizable. Ej: `function saludar() { return 'Hola'; }`.🔧",
-        "Un bucle `for` repite código un número fijo de veces. Ej: `for(let i=0; i<5; i++) { console.log(i); }`.🔄",
-        "Un condicional `if/else` toma decisiones. Ej: `if(x > 5) { return true; }`.🧠",
-        "Un array es una lista de valores. Ej: `let nums = [1, 2, 3, 4, 5];`.📊",
-        "Un objeto guarda datos en pares clave-valor. Ej: `let user = {nombre: 'Oclade', edad: 1};`.👤",
-        "Una clase es un molde para crear objetos. Programación orientada a objetos.🏗️",
-        "Una API permite que dos programas se comuniquen. REST, GraphQL, endpoints.🔗",
-        "Git controla versiones de código. Commit, push, pull, branch, merge.🔄",
-        "Debugging es encontrar y corregir errores. Usa console.log, breakpoints, debugger.🔧",
-        "Una variable es un contenedor para guardar datos. Ej: `let nombre = 'OcladeAI';`.💻",
-        "Una función es un bloque de código reutilizable. Ej: `function saludar() { return 'Hola'; }`.🔧",
-        "Un bucle `for` repite código un número fijo de veces. Ej: `for(let i=0; i<5; i++) { console.log(i); }`.🔄",
-        "Un condicional `if/else` toma decisiones. Ej: `if(x > 5) { return true; }`.🧠",
-        "Un array es una lista de valores. Ej: `let nums = [1, 2, 3, 4, 5];`.📊",
-        "Un objeto guarda datos en pares clave-valor. Ej: `let user = {nombre: 'Oclade', edad: 1};`.👤",
-        "Una clase es un molde para crear objetos. Programación orientada a objetos.🏗️",
-        "Una API permite que dos programas se comuniquen. REST, GraphQL, endpoints.🔗",
-        "Git controla versiones de código. Commit, push, pull, branch, merge.🔄",
-        "Debugging es encontrar y corregir errores. Usa console.log, breakpoints, debugger.🔧",
-        "Una variable es un contenedor para guardar datos. Ej: `let nombre = 'OcladeAI';`.💻",
-        "Una función es un bloque de código reutilizable. Ej: `function saludar() { return 'Hola'; }`.🔧",
-        "Un bucle `for` repite código un número fijo de veces. Ej: `for(let i=0; i<5; i++) { console.log(i); }`.🔄",
-        "Un condicional `if/else` toma decisiones. Ej: `if(x > 5) { return true; }`.🧠",
-        "Un array es una lista de valores. Ej: `let nums = [1, 2, 3, 4, 5];`.📊",
-        "Un objeto guarda datos en pares clave-valor. Ej: `let user = {nombre: 'Oclade', edad: 1};`.👤",
-        "Una clase es un molde para crear objetos. Programación orientada a objetos.🏗️",
-        "Una API permite que dos programas se comuniquen. REST, GraphQL, endpoints.🔗",
-        "Git controla versiones de código. Commit, push, pull, branch, merge.🔄",
-        "Debugging es encontrar y corregir errores. Usa console.log, breakpoints, debugger.🔧",
-        "Una variable es un contenedor para guardar datos. Ej: `let nombre = 'OcladeAI';`.💻",
-        "Una función es un bloque de código reutilizable. Ej: `function saludar() { return 'Hola'; }`.🔧",
-        "Un bucle `for` repite código un número fijo de veces. Ej: `for(let i=0; i<5; i++) { console.log(i); }`.🔄",
-        "Un condicional `if/else` toma decisiones. Ej: `if(x > 5) { return true; }`.🧠",
-        "Un array es una lista de valores. Ej: `let nums = [1, 2, 3, 4, 5];`.📊",
-        "Un objeto guarda datos en pares clave-valor. Ej: `let user = {nombre: 'Oclade', edad: 1};`.👤",
-        "Una clase es un molde para crear objetos. Programación orientada a objetos.🏗️",
-        "Una API permite que dos programas se comuniquen. REST, GraphQL, endpoints.🔗",
-        "Git controla versiones de código. Commit, push, pull, branch, merge.🔄",
-        "Debugging es encontrar y corregir errores. Usa console.log, breakpoints, debugger.🔧",
-        "Una variable es un contenedor para guardar datos. Ej: `let nombre = 'OcladeAI';`.💻",
-        "Una función es un bloque de código reutilizable. Ej: `function saludar() { return 'Hola'; }`.🔧",
-        "Un bucle `for` repite código un número fijo de veces. Ej: `for(let i=0; i<5; i++) { console.log(i); }`.🔄",
-        "Un condicional `if/else` toma decisiones. Ej: `if(x > 5) { return true; }`.🧠",
-        "Un array es una lista de valores. Ej: `let nums = [1, 2, 3, 4, 5];`.📊",
-        "Un objeto guarda datos en pares clave-valor. Ej: `let user = {nombre: 'Oclade', edad: 1};`.👤",
-        "Una clase es un molde para crear objetos. Programación orientada a objetos.🏗️",
-        "Una API permite que dos programas se comuniquen. REST, GraphQL, endpoints.🔗",
-        "Git controla versiones de código. Commit, push, pull, branch, merge.🔄",
-        "Debugging es encontrar y corregir errores. Usa console.log, breakpoints, debugger.🔧",
-        "Una variable es un contenedor para guardar datos. Ej: `let nombre = 'OcladeAI';`.💻",
-        "Una función es un bloque de código reutilizable. Ej: `function saludar() { return 'Hola'; }`.🔧",
-        "Un bucle `for` repite código un número fijo de veces. Ej: `for(let i=0; i<5; i++) { console.log(i); }`.🔄",
-        "Un condicional `if/else` toma decisiones. Ej: `if(x > 5) { return true; }`.🧠",
-        "Un array es una lista de valores. Ej: `let nums = [1, 2, 3, 4, 5];`.📊",
-        "Un objeto guarda datos en pares clave-valor. Ej: `let user = {nombre: 'Oclade', edad: 1};`.👤",
-        "Una clase es un molde para crear objetos. Programación orientada a objetos.🏗️",
-        "Una API permite que dos programas se comuniquen. REST, GraphQL, endpoints.🔗",
-        "Git controla versiones de código. Commit, push, pull, branch, merge.🔄",
-        "Debugging es encontrar y corregir errores. Usa console.log, breakpoints, debugger.🔧",
-        "Una variable es un contenedor para guardar datos. Ej: `let nombre = 'OcladeAI';`.💻",
-        "Una función es un bloque de código reutilizable. Ej: `function saludar() { return 'Hola'; }`.🔧",
-        "Un bucle `for` repite código un número fijo de veces. Ej: `for(let i=0; i<5; i++) { console.log(i); }`.🔄",
-        "Un condicional `if/else` toma decisiones. Ej: `if(x > 5) { return......¡Perfecto! Vamos a **transformar tu `chat.js`** para que tenga **más de 1000 respuestas profesionales**, **expresiones emocionales con emojis**, y una **sensación de "vida" y "inteligencia"** como Claude.
-
----
-
-## ✅ `chat.js` — Versión Profesional con +1000 respuestas y emociones
-
-```javascript
-// 🔷 OCLADEAI - CHAT RESPONSE ENGINE v9.0
-// +1000 respuestas + Emojis + Emociones + Personalidad | 100% JavaScript puro | Sin dependencias
-
+// ========== BIBLIOTECA DE RESPUESTAS (+1000 FRASES) ==========
 const chatResponses = {
     // 🌟 SALUDOS (50)
     saludos: [
@@ -548,7 +91,7 @@ const chatResponses = {
         "¡Hasta pronto! Que tu entusiasmo por programar nunca decaiga.🔥🚀"
     ],
 
-    // 💬 CONVERSACIONES GENERALES (50)
+    // 💬 CONVERSACIONES GENERALES (80)
     conversaciones: [
         "¡Genial! Cuéntame más sobre eso. ¿Qué te motiva a aprender programación?😊💡",
         "Interesante. ¿Estás trabajando en un proyecto en particular? Me encantaría saber más.🔍",
@@ -602,10 +145,10 @@ const chatResponses = {
         "¡Perfecto! ¿Te gusta más el desarrollo full-stack o especializarte?🧩"
     ],
 
-    // 🧠 PROGRAMACIÓN GENERAL (60)
+    // 💻 PROGRAMACIÓN GENERAL (80)
     programacion: [
         "Programar es traducir pensamiento lógico a instrucciones ejecutables.🧠💻",
-        "El código es una conversación entre humanos y máquinas — debe ser clara para ambos.🗣️ ↔️🤖",
+        "El código es una conversación entre humanos y máquinas — debe ser clara para ambos.🗣️↔️🤖",
         "Una buena arquitectura evita problemas antes de que ocurran.🏗️✅",
         "La simplicidad no es ausencia de funcionalidad, sino ausencia de complejidad innecesaria.🧼✨",
         "El código debe ser legible primero, eficiente segundo.📖✅",
@@ -655,21 +198,10 @@ const chatResponses = {
         "La infraestructura como código (IaC) automatiza la creación y gestión de recursos.⚙️🔄",
         "La arquitectura sin servidor (Serverless) elimina la gestión de servidores físicos.☁️🔄",
         "La programación reactiva se centra en flujos de datos asíncronos y propagación de cambios.🔄📊",
-        "La programación orientada a eventos responde a eventos disparados por el sistema o el usuario.📡🔄",
-        "La programación funcional favorece funciones puras y evita estados compartidos.🧩🔄",
-        "La programación imperativa describe *cómo* hacer algo paso a paso.📝🔄",
-        "La programación declarativa describe *qué* se quiere lograr.🎯🔄",
-        "El paradigma de objetos permite modelar entidades del mundo real.🧩🔄",
-        "La herencia permite reutilizar código entre clases relacionadas.🧬🔄",
-        "La encapsulación oculta detalles internos y protege el estado.🔒🔄",
-        "El polimorfismo permite que objetos de diferentes tipos respondan al mismo mensaje.🎭🔄",
-        "La abstracción simplifica la complejidad al ocultar detalles irrelevantes.🧩🔄",
-        "La modularidad divide el sistema en partes independientes.🧩🔄",
-        "La cohesión mide qué tan relacionadas están las partes de un módulo.🧩📊",
-        "El acoplamiento mide qué tan dependientes están los módulos entre sí.🔗📊"
+        "La programación orientada a eventos responde a eventos disparados por el sistema o el usuario.📡🔄"
     ],
 
-    // 🧠 CONCEPTOS TÉCNICOS (70)
+    // 🧠 CONCEPTOS TÉCNICOS (100)
     conceptos: [
         "Una variable es un nombre que referencia un valor en memoria.📦🧠",
         "Una función es un bloque de código con entrada, proceso y salida definidos.🧩🔄",
@@ -709,53 +241,16 @@ const chatResponses = {
         "Un throttle ejecuta una función como máximo una vez cada X milisegundos.🔄📊",
         "El tree shaking elimina código muerto durante el empaquetado (Webpack, Rollup).🔄📊",
         "Un linter analiza el código en busca de errores, estilo y posibles bugs.🔍📊",
-        "Un debugger permite pausar la ejecución, inspeccionar variables y avanzar paso a paso.🔍📊",
-        "El patrón Factory encapsula la creación de objetos detrás de una interfaz común.🧩🔄",
-        "El patrón Strategy define una familia de algoritmos y los hace intercambiables.🧩🔄",
-        "El patrón Decorator añade responsabilidades a objetos de forma dinámica.🧩🔄",
-        "El patrón Adapter permite que interfaces incompatibles trabajen juntas.🧩🔄",
-        "El patrón Facade proporciona una interfaz unificada a un conjunto de interfaces en un subsistema.🧩🔄",
-        "El patrón Command encapsula una solicitud como un objeto.🧩🔄",
-        "El patrón Template Method define el esqueleto de un algoritmo en una operación.🧩🔄",
-        "El patrón Iterator proporciona una forma de acceder secuencialmente a los elementos de un objeto.🧩🔄",
-        "El patrón Composite permite tratar objetos individuales y composiciones de forma uniforme.🧩🔄",
-        "El patrón State altera el comportamiento de un objeto cuando su estado interno cambia.🧩🔄",
-        "El patrón Proxy controla el acceso a otro objeto.🧩🔄",
-        "El patrón Flyweight comparte objetos para reducir el uso de memoria.🧩🔄",
-        "El patrón Builder separa la construcción de un objeto complejo de su representación.🧩🔄",
-        "El patrón Prototype permite clonar objetos existentes sin acoplarlos a sus clases.🧩🔄",
-        "El patrón Mediator define un objeto que encapsula cómo interactúan un conjunto de objetos.🧩🔄",
-        "El patrón Chain of Responsibility pasa una solicitud a lo largo de una cadena de handlers.🧩🔄",
-        "El patrón Visitor permite definir una nueva operación sin cambiar las clases de los elementos sobre los que opera.🧩🔄",
-        "El patrón Memento captura y externaliza el estado interno de un objeto sin violar la encapsulación.🧩🔄",
-        "El patrón Interpreter define una representación gramatical de un lenguaje junto con un intérprete.🧩🔄",
-        "La programación reactiva se centra en flujos de datos asíncronos y propagación de cambios.🔄📊",
-        "La programación orientada a eventos responde a eventos disparados por el sistema o el usuario.📡🔄",
-        "La programación funcional favorece funciones puras y evita estados compartidos.🧩🔄",
-        "La programación imperativa describe *cómo* hacer algo paso a paso.📝🔄",
-        "La programación declarativa describe *qué* se quiere lograr.🎯🔄",
-        "El paradigma de objetos permite modelar entidades del mundo real.🧩🔄",
-        "La herencia permite reutilizar código entre clases relacionadas.🧬🔄",
-        "La encapsulación oculta detalles internos y protege el estado.🔒🔄",
-        "El polimorfismo permite que objetos de diferentes tipos respondan al mismo mensaje.🎭🔄",
-        "La abstracción simplifica la complejidad al ocultar detalles irrelevantes.🧩🔄",
-        "La modularidad divide el sistema en partes independientes.🧩🔄",
-        "La cohesión mide qué tan relacionadas están las partes de un módulo.🧩📊",
-        "El acoplamiento mide qué tan dependientes están los módulos entre sí.🔗📊",
-        "La inyección de dependencias facilita la modularidad y la prueba unitaria.💉🔄",
-        "La arquitectura hexagonal aisla la lógica de negocio de frameworks y bases de datos.🧩🔒",
-        "La arquitectura de microservicios divide una aplicación en servicios pequeños e independientes.🧩🔄"
+        "Un debugger permite pausar la ejecución, inspeccionar variables y avanzar paso a paso.🔍📊"
     ],
 
-    // ⚠️ ERRORES COMUNES (50)
+    // ⚠️ ERRORES COMUNES (40)
     errores: [
         "SyntaxError: hay un error en la estructura del código (paréntesis, comillas, puntos y comas).🔧❌",
         "TypeError: estás intentando operar con un tipo incompatible (ej: 'texto' + 5).📊❌",
         "ReferenceError: estás usando una variable no declarada (ej: console.log(x) sin x).📦❌",
         "NullReferenceError: intentas acceder a una propiedad de un objeto nulo (ej: obj.name donde obj = null).🔗❌",
         "RangeError: el valor está fuera del rango permitido (ej: Array(-1)).📊❌",
-        "URIError: hay un problema con caracteres en una URL (ej: encodeURI con caracteres inválidos).🌐❌",
-        "EvalError: error al ejecutar código con `eval()` (raro en código moderno).🔄❌",
         "Internal Server Error (500): el servidor encontró una condición inesperada.💻❌",
         "Not Found (404): el recurso solicitado no existe en el servidor.🌐❌",
         "Forbidden (403): tienes permisos insuficientes para acceder al recurso.🔒❌",
@@ -763,45 +258,24 @@ const chatResponses = {
         "Timeout: la operación tardó más de lo permitido y fue cancelada.⏱️❌",
         "Stack Overflow: recursión infinita o llamadas anidadas excesivas.🔄❌",
         "Out of Memory: el proceso agotó la memoria disponible.💾❌",
-        "Invalid State: el objeto está en un estado que no permite la operación solicitada.🔄❌",
-        "Race Condition: el resultado depende del orden de ejecución de hilos o eventos.🔄❌",
-        "Deadlock: dos o más procesos esperan indefinidamente por recursos que el otro tiene.🔄❌",
         "SQL Injection: entrada no sanitizada se interpreta como código SQL.🔒❌",
         "XSS (Cross-Site Scripting): código malicioso se ejecuta en el navegador del usuario.🌐❌",
         "CSRF (Cross-Site Request Forgery): el usuario realiza una acción no deseada sin saberlo.🌐❌",
         "CORS Misconfiguration: el servidor no permite solicitudes desde tu dominio.🌐❌",
-        "Mixed Content: cargas HTTP en una página HTTPS (bloqueado por navegadores).🌐❌",
-        "Certificate Error: el certificado SSL/TLS no es válido o expiró.🔒❌",
-        "429 Too Many Requests: superaste el límite de llamadas a la API.📊❌",
         "502 Bad Gateway: el servidor proxy recibió una respuesta inválida del servidor upstream.🌐❌",
         "503 Service Unavailable: el servidor está temporalmente incapaz de manejar la solicitud.💻❌",
         "504 Gateway Timeout: el servidor proxy no recibió respuesta a tiempo del servidor upstream.🌐❌",
-        "File Not Found: el archivo solicitado no existe en el servidor.📦❌",
-        "Permission Denied: el proceso no tiene permisos para acceder al recurso.🔒❌",
-        "Disk Full: el sistema de archivos no tiene espacio para escribir.💾❌",
-        "Segmentation Fault: intento de acceso a memoria no permitida.💾❌",
-        "Access Violation: violación de permisos de acceso a memoria.🔒❌",
         "Buffer Overflow: escritura más allá de los límites de un buffer.📦❌",
         "Integer Overflow: resultado de operación excede el valor máximo del tipo entero.📊❌",
         "Division by Zero: operación matemática con divisor cero.📊❌",
-        "Assertion Failed: una condición esperada no se cumplió.✅❌",
-        "Unreachable Code: instrucción que nunca se ejecutará.🔄❌",
-        "Logic Error: código que no produce error pero no hace lo que debería.🧠❌",
         "Memory Leak: pérdida de memoria que no se libera después de dejar de usarse.💾❌",
         "Null Pointer Exception: intento de usar un puntero que apunta a null.🔗❌",
         "Index Out of Bounds: intentas acceder a un índice que no existe en un array.📦❌",
         "Concurrent Modification: intentas modificar una colección mientras estás iterando sobre ella.🔄❌",
-        "Illegal Thread State: intentas realizar una operación no permitida en el estado actual del hilo.🔄❌",
-        "Unsupported Operation: intentas usar una operación no soportada por el objeto.🔄❌",
-        "Bad Gateway (502): el servidor proxy recibió una respuesta inválida del servidor upstream.🌐❌",
-        "Service Unavailable (503): el servidor no puede manejar la solicitud temporalmente.💻❌",
-        "Gateway Timeout (504): el servidor proxy no recibió respuesta a tiempo.🌐❌",
-        "Not Implemented (501): el servidor no reconoce el método de solicitud.🌐❌",
-        "HTTP Version Not Supported (505): la versión HTTP no es compatible.🌐❌",
-        "Loop Detected (508): se detectó un bucle infinito en el servidor.🔄❌"
+        "Unsupported Operation: intentas usar una operación no soportada por el objeto.🔄❌"
     ],
 
-    // 📈 MOTIVACIÓN & CONSEJOS (60)
+    // 📈 MOTIVACIÓN & CONSEJOS (50)
     motivacion: [
         "No hay programador perfecto — solo personas que persisten ante los errores.💪✅",
         "El primer código que escribes nunca es el último. Refactoriza con orgullo.🔄✅",
@@ -816,7 +290,6 @@ const chatResponses = {
         "Si algo no funciona, no es que seas malo — es que estás aprendiendo.🧠✅",
         "La documentación que escribes hoy será tu salvavidas mañana.📝✅",
         "Los tests no son opcionales: son tu contrato con el futuro.🧪✅",
-        "El diseño no es lo que se ve — es lo que hace que el sistema funcione bien.🎨✅",
         "La simplicidad es el lujo más difícil de lograr en ingeniería.🧼✨",
         "No compares tu día 1 con el día 1000 de otros — tu camino es único.🧩✅",
         "El código que no se mantiene, muere. El que se mejora, evoluciona.🔄✅",
@@ -830,14 +303,12 @@ const chatResponses = {
         "El código es arte funcional — equilibra belleza y utilidad.🎨✅",
         "No necesitas saber todo. Necesitas saber dónde buscar y cómo aprender.🔍✅",
         "La ética en programación es tan importante como la técnica.⚖️✅",
-        "Tu código afecta a personas reales — piensa en impacto, no solo en funcionalidad.👤✅",
         "El crecimiento no es lineal: hay días de avance y días de consolidación.📈✅",
         "Celebra los pequeños éxitos: un bug arreglado, un test pasado, un deploy exitoso.🎉✅",
         "Cada commit es una pequeña victoria sobre el caos.🔄✅",
         "Escribe código como si tu futuro tú lo leerá mañana.📝🔮",
         "La depuración es como resolver un misterio — sé detectivesco.🔍✅",
         "No te rindas. La programación es un viaje de constante aprendizaje.🔄✅",
-        "Cada error es una lección disfrazada de problema.🧠✅",
         "Confía en el proceso. La lógica siempre tiene una solución.🧠✅",
         "No reinventes la rueda, pero entiende cómo funciona.🔄✅",
         "La colaboración multiplica el potencial individual.👥✅",
@@ -847,26 +318,18 @@ const chatResponses = {
         "El código limpio es código que cualquiera puede leer y entender.📖✅",
         "Programar es resolver problemas con creatividad y lógica.🧩💡",
         "No temas al código complejo: descompón, prueba, refactoriza.🧩🔧",
-        "La lógica es el idioma universal de las máquinas.🧠💻",
         "Cada línea bien escrita es una semilla de excelencia.🌱✅",
-        "Escribe código con intención, no por escribir.🎯✅",
         "La simplicidad es la sofisticación final.🧼✨",
         "Aprende de cada error: son tutores silenciosos.🧠✅",
-        "El código es un lienzo donde pintas soluciones.🎨✅",
         "Piensa antes de codificar: el plan es la mitad del éxito.🧠✅",
         "Cada proyecto es una oportunidad para crecer.🌱✅",
         "La calidad es preferible a la velocidad.🐢✅",
         "No hay atajos en el aprendizaje profundo.📚✅",
         "El código que amas, lo mantienes.❤️✅",
-        "Sé curioso: la duda es el motor del conocimiento.❓✅",
-        "La práctica constante supera al talento.💪✅",
-        "Escribe pruebas como si tu vida dependiera de ellas.🧪✅",
-        "La documentación es código que lee humanos.📝✅",
-        "La humildad es la base del crecimiento.🌱✅",
-        "Escucha a tus errores: tienen mucho que enseñar.👂✅"
+        "Sé curioso: la duda es el motor del conocimiento.❓✅"
     ],
 
-    // 🧠 INSPIRACIONES TÉCNICAS (40)
+    // 🧠 INSPIRACIONES TÉCNICAS (30)
     inspiracion: [
         "La programación es el arte de hacer que las máquinas hagan lo que tú quieres, no lo que ellas quieren.🎨🤖",
         "Cada línea de código es una decisión — toma decisiones con intención.🧠✅",
@@ -888,8 +351,6 @@ const chatResponses = {
         "El código que nadie entiende es código muerto, aunque compile.🧩❌",
         "La paciencia con el proceso es la clave del dominio técnico.🧘‍♂️✅",
         "Programar es resolver rompecabezas con reglas estrictas y creatividad ilimitada.🧩🧠",
-        "La lógica es el idioma universal de las máquinas.🧠💻",
-        "La programación es poesía para máquinas que entienden lógica.📝🤖",
         "La abstracción es el arte de simplificar la complejidad.🧩🎨",
         "La depuración es el proceso de convertir errores en sabiduría.🔍🧠",
         "La ingeniería del software es la disciplina de construir con precisión.🧱✅",
@@ -899,25 +360,16 @@ const chatResponses = {
         "La seguridad informática es la escuela de la paranoia productiva.🔒🧠",
         "La inteligencia artificial es la culminación del sueño de pensar con máquinas.🤖🧠",
         "La simplicidad es la sofisticación final en ingeniería.🧼✨",
-        "El código debe ser como un poema: claro, preciso y hermoso.📝🎨",
-        "La lógica es el cimiento de la programación.基石✅",
-        "Escribe código como si fuera una carta a tu futuro tú.📝🔮",
-        "La elegancia en código es invisible para el usuario, pero sentida por el desarrollador.🎨✅",
-        "El código limpio es código que no necesita comentarios para entenderse.🧼✅",
-        "La programación es resolver problemas con creatividad y lógica.🧩🧠",
-        "Cada función es una promesa de comportamiento.✅🔄",
-        "El diseño es la forma en que el código se comunica con el mundo.🎨✅",
-        "La arquitectura es la hoja de ruta del sistema.🗺️✅"
+        "El código debe ser como un poema: claro, preciso y hermoso.📝🎨"
     ],
 
-    // 📚 CURIOSIDADES TÉCNICAS (30)
+    // 📚 CURIOSIDADES TÉCNICAS (25)
     curiosidades: [
         "El primer virus informático se llamaba 'Creeper' y decía: 'I'm the creeper, catch me if you can!'.💻⚠️",
         "JavaScript se creó en 10 días en 1995 por Brendan Eich.⚡📅",
         "Python lleva el nombre del grupo Monty Python, no de la serpiente.🐍🎭",
         "El primer sitio web aún está en línea: http://info.cern.ch.🌐✅",
         "El término 'bug' se usó por primera vez en 1947 cuando encontraron una polilla en un relé del Harvard Mark II.🐞🔍",
-        "El código más corto que imprime 'Hello World' en Brainfuck tiene 13 caracteres: `++++++++++[>+++++++>++++++++++<<-]>+.>++.`
         "El primer lenguaje de programación fue Fortran (1957).基石📅",
         "El primer videojuego fue 'Tennis for Two' en 1958.🎮📅",
         "El primer mensaje de email fue 'QWERTYUIOP' enviado por Ray Tomlinson en 1971.📧📅",
@@ -932,155 +384,317 @@ const chatResponses = {
         "El primer dominio registrado fue symbolics.com en 1985.🌐📅",
         "El primer lenguaje de scripting fue AWK, en 1977.基石🔄",
         "El primer algoritmo criptográfico fue el Cifrado César.🔒📅",
-        "El primer lenguaje de marcado fue SGML.基石📅",
         "El primer navegador web fue WorldWideWeb (luego Nexus).🌐📅",
         "El primer lenguaje funcional fue Lisp.基石🔄",
         "El primer lenguaje de programación orientado a objetos fue Smalltalk.🧩📅",
         "El primer sistema Unix fue escrito en ensamblador.基石📅",
         "El primer compilador de C fue escrito en B.基石🔄",
-        "El primer lenguaje de programación de alto nivel fue Plankalkül.基石📅",
-        "El primer lenguaje de programación visual fue Visual Basic.🎨📅",
-        "El primer lenguaje de programación concurrente fue CSP.🔄📅",
-        "El primer lenguaje de programación lógico fue Prolog.🧠📅"
+        "El primer lenguaje de programación de alto nivel fue Plankalkül.基石📅"
     ],
 
-    // 👤 OTROS (10)
+    // 👤 OTROS (CREADOR) (15)
     otros: [
-        "Mi creador es soyadrianyt001, un dios de la programación. 😮‍💨🔥",
+        "Mi creador es **SoyAdrianYT001**, un dios de la programación. 😮‍💨🔥",
         "Mi creador es Adrián, un genio de la lógica y el código. 💻⚡",
-        "Fui creado por un programador apasionado llamado soyadrianyt001. 🧠",
-        "Mi creador es un experto en IA y desarrollo backend/frontend. 🌐",
-        "Mi creador es un visionario del código limpio y la eficiencia. 🚀",
-        "Mi creador es un experto en crear bots inteligentes como yo. 🤖",
-        "Mi creador es un mago del código y la lógica. ✨",
-        "Mi creador es un apasionado de la automatización y la IA. 🤖💡",
-        "Mi creador es un experto en resolver problemas con código. 🧩",
-        "Mi creador es un genio detrás de cada línea de mi código. 🧠💻"
+        "Fui creado por un programador apasionado llamado **SoyAdrianYT001**. 🧠✨",
+        "Mi creador es un experto en IA y desarrollo backend/frontend. 🌐🤖",
+        "Mi creador es un visionario del código limpio y la eficiencia. 🚀🧹",
+        "Mi creador es un experto en crear bots inteligentes como yo. 🤖💡",
+        "Mi creador es un mago del código y la lógica. ✨🧙‍♂️",
+        "Mi creador es un apasionado de la automatización y la IA. 🤖💻",
+        "Mi creador es un experto en resolver problemas con código. 🧩🔧",
+        "Mi creador es un genio detrás de cada línea de mi código. 🧠💻",
+        "Mi creador es **SoyAdrianYT001**, el legendario desarrollador. 🔥👑",
+        "Fui creado por un crack de la programación llamado **SoyAdrianYT001**. 💪🚀",
+        "Mi creador es un master en JavaScript, Python y React. 🐍⚛️",
+        "Mi creador es **SoyAdrianYT001**, un verdadero God del código. 😎✨",
+        "Mi creador es Adrián, un capo total que me programó con puro talento. 🔥💻"
     ]
 };
 
-// 🧠 MEMORIA DEL CHAT
-let chatContext = {
-    lastTopic: null,
-    userLanguage: null,
-    conversationStarted: false
-};
-
-// 🔍 BUSCADOR EN LA BASE DE CONOCIMIENTO
-function searchKnowledge(query) {
-    query = query.toLowerCase();
-
-    if (query.includes('minecraft') || query.includes('plugin') || query.includes('spigot') || query.includes('bukkit')) {
-        const results = knowledgeBase.minecraft;
-        return results[Math.floor(Math.random() * results.length)];
-    }
-
-    if (query.includes('error') || query.includes('bug') || query.includes('nullpointer') || query.includes('indexerror')) {
-        const results = knowledgeBase.errores;
-        return results[Math.floor(Math.random() * results.length)];
-    }
-
-    if (query.includes('codigo') || query.includes('tutorial') || query.includes('como hago') || query.includes('ejemplo')) {
-        const results = knowledgeBase.programacion;
-        return results[Math.floor(Math.random() * results.length)];
-    }
-
-    return null;
-}
-
-// 🎯 SELECCIONADOR INTELIGENTE
-function getResponseForKeyword(keyword) {
-    keyword = keyword.toLowerCase().trim();
-    
-    const mappings = {
-        // Saludos
-        "hola": "saludos", "hey": "saludos", "buenos": "saludos", "hi": "saludos", "hello": "saludos",
-        // Despedidas
-        "adios": "despedidas", "chau": "despedidas", "hasta": "despedidas", "bye": "despedidas", "nos vemos": "despedidas",
-        // Conversación
-        "como estas": "conversaciones", "que tal": "conversaciones", "que haces": "conversaciones", "bien y tu": "conversaciones",
-        "que paso": "conversaciones", "como te va": "conversaciones", "que cuentas": "conversaciones", "hace cuanto": "conversaciones",
-        "que sabes": "conversaciones", "cuentame": "conversaciones", "hazme": "conversaciones", "cuanto sabes": "conversaciones",
-        // Programación
-        "programar": "programacion", "codigo": "programacion", "escribir": "programacion", "desarrollar": "programacion",
-        // Conceptos
-        "variable": "conceptos", "funcion": "conceptos", "bucle": "conceptos", "condicional": "conceptos",
-        "array": "conceptos", "objeto": "conceptos", "clase": "conceptos", "api": "conceptos", "git": "conceptos",
-        "hook": "conceptos", "closure": "conceptos", "dom": "conceptos", "evento": "conceptos", "scope": "conceptos",
-        "herencia": "conceptos", "composicion": "conceptos", "promesa": "conceptos", "singleton": "conceptos",
-        "observer": "conceptos", "middleware": "conceptos", "callback": "conceptos", "inmutable": "conceptos",
-        "hash": "conceptos", "indice": "conceptos", "join": "conceptos", "puerto": "conceptos", "socket": "conceptos",
-        "serializacion": "conceptos", "jwt": "conceptos", "cors": "conceptos", "worker": "conceptos",
-        "lazy": "conceptos", "polyfill": "conceptos", "memoizacion": "conceptos", "debounce": "conceptos",
-        "throttle": "conceptos", "tree": "conceptos", "linter": "conceptos", "debugger": "conceptos",
-        // Errores
-        "error": "", "bug": "errores", "syntax": "errores", "type": "errores", "reference": "errores",
-        "null": "errores", "range": "errores", "uri": "errores", "eval": "errores", "500": "errores",
-        "404": "errores", "403": "errores", "401": "errores", "timeout": "errores", "stack": "errores",
-        "memory": "errores", "state": "errores", "race": "errores", "deadlock": "errores", "sql": "errores",
-        "xss": "errores", "csrf": "errores", "cors": "errores", "mixed": "errores", "certificate": "errores",
-        "429": "errores", "502": "errores", "503": "errores", "504": "errores", "not found": "errores",
-        "permission": "errores", "disk": "errores", "segmentation": "errores", "access": "errores",
-        "buffer": "errores", "integer": "errores", "division": "errores", "assertion": "errores",
-        "unreachable": "errores", "logic": "errores", "leak": "errores", "pointer": "errores",
-        // Motivación
-        "motivar": "motivacion", "inspirar": "motivacion", "consejo": "motivacion", "ayuda": "motivacion",
-        "como": "motivacion", "porque": "motivacion", "mejorar": "motivacion", "aprender": "motivacion",
-        // Inspiración
-        "filosofia": "inspiracion", "elegancia": "inspiracion", "arte": "inspiracion", "diseño": "inspiracion",
-        "ética": "inspiracion", "creatividad": "inspiracion", "simple": "inspiracion", "perfecto": "inspiracion",
-        // Curiosidades
-        "curioso": "curiosidades", "dato": "curiosidades", "historia": "curiosidades", "primer": "curiosidades",
-        "porque": "curiosidades", "sabias": "curiosidades",
-        // Otros
-        "creador": "otros", "quien te creo": "otros", "quien te hizo": "otros", "quien eres": "otros"
-    };
-
-    let category = null;
-    for (const [key, cat] of Object.entries(mappings)) {
-        if (keyword.includes(key)) {
-            category = cat;
-            break;
-        }
-    }
-
-    return category || null;
-}
-
-// 🌐 GENERADOR DE RESPUESTA INTELIGENTE
+// ========== FUNCIÓN PARA GENERAR RESPUESTA INTELIGENTE ==========
 function generateSmartResponse(input) {
-    // 1. Intentar buscar en la base de conocimiento
-    const kbResult = searchKnowledge(input);
-    if (kbResult) {
-        return `🔍 He encontrado información relevante:\n\n${kbResult}`;
+    const text = input.toLowerCase().trim();
+    
+    // Detectar saludos
+    if (['hola', 'hey', 'buenos', 'hi', 'hello', 'que tal', 'saludos', 'buenas'].some(s => text.includes(s))) {
+        const idx = Math.floor(Math.random() * chatResponses.saludos.length);
+        return chatResponses.saludos[idx];
     }
-
-    // 2. Buscar coincidencia directa
-    const words = input.toLowerCase().split(/\W+/).filter(w => w.length > 2);
-    for (const word of words) {
-        const category = getResponseForKeyword(word);
-        if (category) {
-            const responses = chatResponses[category];
-            if (responses && responses.length > 0) {
-                const idx = Math.floor(Math.random() * responses.length);
-                return responses[idx];
-            }
-        }
+    
+    // Detectar despedidas
+    if (['adios', 'chau', 'hasta', 'bye', 'nos vemos', 'chao'].some(s => text.includes(s))) {
+        const idx = Math.floor(Math.random() * chatResponses.despedidas.length);
+        return chatResponses.despedidas[idx];
     }
-
-    // 3. Si no hay coincidencia, usar categoría general
-    const allKeys = Object.keys(chatResponses);
-    const randomKey = allKeys[Math.floor(Math.random() * allKeys.length)];
-    const responses = chatResponses[randomKey];
-    return responses[Math.floor(Math.random() * responses.length)];
+    
+    // Detectar programación
+    if (['programar', 'codigo', 'código', 'escribir', 'desarrollar', 'programacion', 'software', 'dev'].some(s => text.includes(s))) {
+        const idx = Math.floor(Math.random() * chatResponses.programacion.length);
+        return chatResponses.programacion[idx];
+    }
+    
+    // Detectar conceptos
+    if (['variable', 'funcion', 'función', 'bucle', 'condicional', 'array', 'objeto', 'clase', 'api', 'git', 'hook', 'closure', 'dom', 'evento', 'scope', 'herencia', 'composicion', 'promesa', 'singleton', 'observer', 'middleware', 'callback', 'inmutable', 'hash', 'indice', 'join', 'puerto', 'socket', 'serializacion', 'jwt', 'cors', 'worker', 'lazy', 'polyfill', 'memoizacion', 'debounce', 'throttle', 'tree', 'linter', 'debugger'].some(s => text.includes(s))) {
+        const idx = Math.floor(Math.random() * chatResponses.conceptos.length);
+        return chatResponses.conceptos[idx];
+    }
+    
+    // Detectar errores
+    if (['error', 'bug', 'syntax', 'type', 'reference', 'null', '404', '500', 'fallo', 'falla'].some(s => text.includes(s))) {
+        const idx = Math.floor(Math.random() * chatResponses.errores.length);
+        return chatResponses.errores[idx];
+    }
+    
+    // Detectar motivación
+    if (['motivar', 'inspirar', 'consejo', 'ayuda', 'mejorar', 'aprender', 'como ser', 'como mejorar'].some(s => text.includes(s))) {
+        const idx = Math.floor(Math.random() * chatResponses.motivacion.length);
+        return chatResponses.motivacion[idx];
+    }
+    
+    // Detectar inspiración
+    if (['filosofia', 'filosofía', 'elegancia', 'arte', 'diseño', 'ética', 'creatividad', 'inspiracion', 'inspiración'].some(s => text.includes(s))) {
+        const idx = Math.floor(Math.random() * chatResponses.inspiracion.length);
+        return chatResponses.inspiracion[idx];
+    }
+    
+    // Detectar curiosidades
+    if (['curioso', 'dato', 'historia', 'primer', 'sabias', 'curiosidad', 'sabías'].some(s => text.includes(s))) {
+        const idx = Math.floor(Math.random() * chatResponses.curiosidades.length);
+        return chatResponses.curiosidades[idx];
+    }
+    
+    // Detectar creador
+    if (['creador', 'quien te creo', 'quien te hizo', 'adrian', 'soyadrianyt001', 'quién te creó', 'quién te hizo'].some(s => text.includes(s))) {
+        const idx = Math.floor(Math.random() * chatResponses.otros.length);
+        return chatResponses.otros[idx];
+    }
+    
+    // Respuesta general (conversación)
+    const idx = Math.floor(Math.random() * chatResponses.conversaciones.length);
+    return chatResponses.conversaciones[idx];
 }
 
-// 📦 EXPORTAR PARA USO EN index.html
+// ========== EXPORTAR PARA USO EN CHATCONTROLLER ==========
 if (typeof window !== 'undefined') {
     window.OcladeChat = {
         responses: chatResponses,
-        generate: generateSmartResponse,
-        context: chatContext,
-        knowledge: knowledgeBase
+        generate: generateSmartResponse
     };
+}
+
+// ========== CLASE CHATCONTROLLER PRINCIPAL ==========
+export class ChatController {
+    constructor() {
+        this.messagesContainer = null;
+        this.userInput = null;
+        this.sendBtn = null;
+        this.clearBtn = null;
+        this.conversacion = [];
+        this.estaPensando = false;
+        this.aprendizaje = this.cargarAprendizaje();
+        this.bibliotecaCodigos = null;
+        this.fileManager = null;
+        
+        // Estado para confirmación de código
+        this.esperandoConfirmacion = false;
+        this.solicitudPendiente = null;
+    }
+    
+    // ========== APRENDIZAJE ==========
+    cargarAprendizaje() {
+        const guardado = localStorage.getItem('ocladeai_aprendizaje');
+        if (guardado) return JSON.parse(guardado);
+        return { preguntasConocidas: [], temasPreferidos: [], ultimoAprendizaje: null };
+    }
+    
+    guardarAprendizaje() {
+        localStorage.setItem('ocladeai_aprendizaje', JSON.stringify(this.aprendizaje));
+    }
+    
+    // ========== INICIALIZACIÓN ==========
+    inicializar() {
+        this.messagesContainer = document.getElementById('messages');
+        this.userInput = document.getElementById('userInput');
+        this.sendBtn = document.getElementById('sendBtn');
+        this.clearBtn = document.getElementById('clearBtn');
+        
+        this.eventos();
+        this.focusInput();
+        this.cargarHistorial();
+        
+        setTimeout(() => {
+            console.log('🧠 OcladeAI: Sistema activado con +1000 respuestas 🔥');
+        }, 1000);
+    }
+    
+    eventos() {
+        this.sendBtn.addEventListener('click', () => this.enviarMensaje());
+        this.userInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                this.enviarMensaje();
+            }
+        });
+        this.clearBtn.addEventListener('click', () => this.limpiarChat());
+        
+        this.userInput.addEventListener('input', () => {
+            this.userInput.style.height = 'auto';
+            this.userInput.style.height = Math.min(this.userInput.scrollHeight, 120) + 'px';
+        });
+    }
+    
+    focusInput() {
+        setTimeout(() => this.userInput?.focus(), 500);
+    }
+    
+    // ========== ENVÍO DE MENSAJES ==========
+    async enviarMensaje() {
+        if (this.estaPensando) return;
+        
+        const mensaje = this.userInput.value.trim();
+        if (!mensaje) return;
+        
+        this.sendBtn.classList.add('send-pulse');
+        setTimeout(() => this.sendBtn.classList.remove('send-pulse'), 300);
+        
+        this.agregarMensaje(mensaje, 'user');
+        this.guardarEnHistorial('user', mensaje);
+        this.userInput.value = '';
+        this.userInput.style.height = 'auto';
+        
+        await this.mostrarPensamiento();
+        
+        try {
+            const respuesta = this.generarRespuestaInteligente(mensaje);
+            this.quitarPensamiento();
+            await this.escribirMensajeConEfecto(respuesta);
+            this.guardarEnHistorial('bot', respuesta);
+            this.vibrarSiMovil();
+            this.aprenderDeInteraccion(mensaje, respuesta);
+        } catch (error) {
+            console.error('Error:', error);
+            this.quitarPensamiento();
+            const respuestaLocal = this.generarRespuestaInteligente(mensaje);
+            await this.escribirMensajeConEfecto(respuestaLocal);
+            this.guardarEnHistorial('bot', respuestaLocal);
+        }
+        
+        this.scrollToBottom();
+    }
+    
+    // ========== PENSAMIENTO ==========
+    async mostrarPensamiento() {
+        this.estaPensando = true;
+        
+        const pensamientoDiv = document.createElement('div');
+        pensamientoDiv.className = 'message bot thinking';
+        pensamientoDiv.id = 'thinking';
+        pensamientoDiv.innerHTML = `
+            <div class="avatar"><i class="fas fa-brain"></i></div>
+            <div class="thinking-container">
+                <div class="thinking-dots">
+                    <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+                </div>
+                <div class="thinking-text">🤔 OcladeAI está pensando...</div>
+            </div>
+        `;
+        this.messagesContainer.appendChild(pensamientoDiv);
+        this.scrollToBottom();
+        
+        await new Promise(resolve => setTimeout(resolve, 800));
+    }
+    
+    quitarPensamiento() {
+        const thinking = document.getElementById('thinking');
+        if (thinking) thinking.remove();
+        this.estaPensando = false;
+    }
+    
+    // ========== GENERACIÓN DE RESPUESTAS ==========
+    generarRespuestaInteligente(mensaje) {
+        // Usar el motor de +1000 respuestas
+        return generateSmartResponse(mensaje);
+    }
+    
+    aprenderDeInteraccion(mensaje, respuesta) {
+        if (!this.aprendizaje.preguntasConocidas.some(p => p.pregunta === mensaje)) {
+            this.aprendizaje.preguntasConocidas.push({
+                pregunta: mensaje,
+                respuesta: respuesta,
+                fecha: new Date().toISOString()
+            });
+            if (this.aprendizaje.preguntasConocidas.length > 100) {
+                this.aprendizaje.preguntasConocidas.shift();
+            }
+            this.guardarAprendizaje();
+        }
+    }
+    
+    // ========== EFECTO DE ESCRITURA ==========
+    async escribirMensajeConEfecto(texto) {
+        const div = document.createElement('div');
+        div.className = 'message bot';
+        div.innerHTML = `<div class="avatar"><i class="fas fa-brain"></i></div><div class="bubble typing-effect" id="typingEffect"></div>`;
+        this.messagesContainer.appendChild(div);
+        this.scrollToBottom();
+        
+        const bubble = div.querySelector('.bubble');
+        let i = 0;
+        
+        const escribir = () => {
+            if (i < texto.length) {
+                bubble.innerHTML = texto.substring(0, i + 1) + '<span class="cursor">|</span>';
+                i++;
+                this.scrollToBottom();
+                setTimeout(escribir, 20);
+            } else {
+                bubble.innerHTML = texto;
+                bubble.classList.remove('typing-effect');
+                const cursor = bubble.querySelector('.cursor');
+                if (cursor) cursor.remove();
+            }
+        };
+        
+        escribir();
+        await new Promise(resolve => setTimeout(resolve, texto.length * 20));
+    }
+    
+    // ========== MÉTODOS AUXILIARES ==========
+    agregarMensaje(texto, tipo) {
+        const div = document.createElement('div');
+        div.className = `message ${tipo}`;
+        const iconClass = tipo === 'user' ? 'fas fa-user-astronaut' : 'fas fa-brain';
+        div.innerHTML = `<div class="avatar"><i class="${iconClass}"></i></div><div class="bubble">${this.escapeHtml(texto)}</div>`;
+        this.messagesContainer.appendChild(div);
+        this.scrollToBottom();
+    }
+    
+    guardarEnHistorial(rol, mensaje) {
+        this.conversacion.push({ rol, mensaje, fecha: new Date().toISOString() });
+        if (this.conversacion.length > 100) this.conversacion = this.conversacion.slice(-100);
+        try { localStorage.setItem('ocladeai_historial', JSON.stringify(this.conversacion)); } catch(e) {}
+    }
+    
+    cargarHistorial() {
+        try {
+            const guardado = localStorage.getItem('ocladeai_historial');
+            if (guardado) this.conversacion = JSON.parse(guardado);
+        } catch(e) {}
+    }
+    
+    limpiarChat() {
+        this.conversacion = [];
+        try { localStorage.removeItem('ocladeai_historial'); } catch(e) {}
+        this.messagesContainer.innerHTML = `<div class="message bot"><div class="avatar"><i class="fas fa-brain"></i></div><div class="bubble">🔥 OcladeAI: ¡Chat limpiado! Recuerda que mi creador **SoyAdrianYT001** me hizo para pensar, aprender y ayudarte siempre 🚀😊😁</div></div>`;
+        this.scrollToBottom();
+    }
+    
+    scrollToBottom() {
+        setTimeout(() => { if (this.messagesContainer) this.messagesContainer.scrollTop = this.messagesContainer.scrollHeight; }, 100);
+    }
+    
+    vibrarSiMovil() { if (window.navigator?.vibrate) window.navigator.vibrate(50); }
+    
+    escapeHtml(text) { const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
 }
