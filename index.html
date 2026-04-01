@@ -43,7 +43,7 @@
         /* 📱 HEADER */
         .header {
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
             align-items: center;
             padding: 15px 20px;
             background: linear-gradient(180deg, rgba(0,0,0,0.8) 0%, transparent 100%);
@@ -57,6 +57,13 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             animation: glow 2s ease-in-out infinite;
+        }
+        
+        .subtitle {
+            color: #aaa;
+            font-size: 14px;
+            margin-top: 5px;
+            font-weight: 400;
         }
         
         @keyframes glow {
@@ -73,6 +80,8 @@
             font-size: 20px;
             cursor: pointer;
             transition: all 0.3s;
+            align-self: flex-end;
+            margin-top: 10px;
         }
         
         .menu-btn:active {
@@ -131,18 +140,13 @@
             border-radius: 25px;
             backdrop-filter: blur(20px);
             border: 1px solid var(--border);
-            animation: welcomePulse 3s infinite, hueRotate 5s infinite alternate;
+            animation: welcomePulse 3s infinite;
             max-width: 90%;
         }
         
         @keyframes welcomePulse {
             0%, 100% { transform: scale(1); box-shadow: 0 0 20px rgba(0,217,255,0.3); }
             50% { transform: scale(1.05); box-shadow: 0 0 40px rgba(0,217,255,0.6); }
-        }
-        
-        @keyframes hueRotate {
-            0% { filter: hue-rotate(0deg); }
-            100% { filter: hue-rotate(360deg); }
         }
         
         /* 📝 BLOQUES DE CÓDIGO */
@@ -297,6 +301,7 @@
         <!-- HEADER -->
         <div class="header">
             <div class="logo">🔷 OcladeAI</div>
+            <div class="subtitle">¿En qué te puedo ayudar hoy?</div>
             <button class="menu-btn" onclick="toggleMenu()">☰</button>
         </div>
         
@@ -305,15 +310,6 @@
             <!-- 🎉 MENSAJE DE BIENVENIDA CENTRAL -->
             <div class="welcome-msg" id="welcomeMessage">
                 <!-- Se llenará con JavaScript -->
-            </div>
-            
-            <!-- 🤖 MENSAJE DE AYUDA -->
-            <div class="message ai-msg">
-                💻 Te ayudo con código<br>
-                🐛 Debugging y errores<br>
-                📚 Explico conceptos<br>
-                🔷 100% código propio<br><br>
-                <b>¿En qué te puedo ayudar hoy?</b>
             </div>
         </div>
         
@@ -350,14 +346,15 @@
             document.getElementById('welcomeMessage').innerHTML = generarBienvenida();
         });
 
-        // 🔷 OCLADEAI - CEREBRO DE // 100% JavaScript puro, sin dependencias
+        // 🔷 OCLADEAI - CEREBRO DE PROGRAMACIÓN
+        // 100% JavaScript puro, sin dependencias
 
         // ═══════════════════════════════════════════════════════════════
         // 🧠 BASE DE CONOCIMIENTO DE PROGRAMACIÓN
         // ═══════════════════════════════════════════════════════════════
         const conocimiento = {
-            saludos: ["hola", "hey", "buenos", "hi"],
-            despedidas: ["adios", "chauasta", "bye"],
+           hola", "hey", "buenos", "hi"],
+            despedidas: ["adios", "chau", "hasta", "bye"],
             lenguajes: {
                 "python": "Python es un lenguaje interpretado, ideal para IA, datos y backend. ¿Qué quieres hacer con Python?",
                 "javascript": "JavaScript es el lenguaje de la web. Sirve para frontend, backend (Node.js) y apps móviles. ¿En qué te ayudo?",
@@ -613,7 +610,6 @@
         function limpiarChat() {
             chatArea.innerHTML = `
                 <div class="welcome-msg">${generarBienvenida()}</div>
-                <div class="message ai-msg"><b>¿En qué te puedo ayudar hoy?</b></div>
             `;
             toggleMenu();
         }
