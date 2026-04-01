@@ -37,7 +37,7 @@
             position: relative;
             z-index: 1;
             height: 100vh;
-            display: flex;
+            display:;
             flex-direction: column;
         }
 
@@ -66,23 +66,182 @@
             50% { filter: drop-shadow(0 0 20px var(--secondary)); }
         }
 
-        .menu-btn {
-            background: var(--glass);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 10px 15px;
-            color: #fff;
-            font-sizepx;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+        /* 🧊 ANIMACIÓN 3 (cubo rotante) */
+        #model3d {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 20;
+            width: 60px;
+            height: 60px;
+            pointer-events: none;
+            display: none;
         }
 
-        .menu-btn:active {
-            background: var(--primary);
-            transform: scale(0.95);
+        /* 💬 CHAT */
+        .chat-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            position: relative;
+        }
+
+        /* 🎉 SALUDO CENTRAL */
+        .welcome-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 5;
+            animation: fadeInUp 1.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .welcome-title {
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 12px;
+        }
+
+        .welcome-subtitle {
+            font-size: 16px;
+            color: #aaa;
+            max-width: 80%;
+            margin: 0 auto;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translate(-50%, 20px); }
+            to { opacity: 1; transform: translate(-50%, 0); }
+        }
+
+        .message {
+            max-width: 85%;
+            padding: 15px 20px;
+            border-radius: 20px;
+            line-height: ¡Entiendo perfectamente!  
+Lo que ves en los videos es:
+
+- ✅ El menú lateral (con las 3 rayitas) **se abre abajo**, no a la derecha — y se ve mal (sobre el input, sin fondo, sin estilo).
+- ❌ La animación 3D **no aparece** al enviar mensaje.
+- 📱 El diseño **no está optimizado para iPhone** (el input se corta, el menú se desborda 🖥️ En PC tampoco se ve profesional.
+
+---
+
+## ✅ Solución inmediata: **Menú flotante fijo + Animación  funcional + Diseño responsive 100%**
+
+Vamos a hacer lo siguiente:
+
+### 1. **Reemplazar el menú lateral por un menú flotante en la esquina inferior izquierda** (como en apps modernas: WhatsApp, Telegram, Claude).
+   - Se abre **al tocar el ícono de menú**.
+   - Se cierra al tocar fuera o al seleccionar una opción.
+   - No interfiere con el input ni el chat.
+   - Funciona en iPhone y PC.
+
+### 2. **Arreglar la animación 3D**: ahora usaremos un **cubo 3D simple con `canvas` + `requestAnimationFrame`**, que se muestre **en el centro del chat durante 1.5 segundos**, luego desaparece y aparece la respuesta.
+
+### 3. **Ajustar todo para iPhone**:
+   - `viewport` correcto
+   - `input` con `padding` adecuado
+   - `font-size` legible en móvil
+   - Menú flotante con `position: fixed` y `bottom: 20px`, `left: 20px`
+
+---
+
+## ✅ `index.html` — Versión Final Corregida ( en iPhone y PC)
+
+> ⚠️ **Este código ya está listo para copiar y pegar**. Solo necesitas:
+> - Guardarlo como `index.html`
+> - Tener `chat.js` en la misma carpeta
+> - Subir a GitHub → Vercel
+
+```html
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>🔷 OcladeAI - Bot de Programación</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --primary: #00d9ff;
+            --secondary: #7b2ff7;
+            --dark: #0a0a0f;
+            --glass: rgba(255,255,255,0.05);
+            --border: rgba(0,217,255,0.3);
+            --code-bg: #1a1a2e;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--dark);
+            color: #fff;
+            overflow: hidden;
+            height: 100vh;
+            position: relative;
+        }
+
+        /* 🔷 FONDO DE PARTÍCULAS */
+        #particles {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 0;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            height: 100vh;
+            display:;
+            flex-direction: column;
+        }
+
+        /* 📱 HEADER FIJO */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: linear-gradient(180deg, rgba(0,0,0,0.8) transparent 100%);
+            backdrop-filter: blur(10px);
+            z-index: 10;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 800;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: glow 2s ease-in-out infinite;
+        }
+
+        @keyframes glow {
+            0%, 100% { filter: drop-shadow(0 0 10px var(--primary)); }
+            50% { filter: drop-shadow(0 0 20px var(--secondary)); }
+        }
+
+        /* 🧊 ANIMACIÓN 3 (cubo rotante) */
+        #model3d {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 20;
+            width: 60px;
+            height: 60px;
+            pointer-events: none;
+            display: none;
         }
 
         /* 💬 CHAT */
@@ -181,7 +340,7 @@
 
         /* ⌨️ INPUT AREA */
         .input-area {
-            padding: 20px;
+           : 20px;
             background: linear-gradient(0deg, rgba(0,0,0,0.9) 0%, transparent 100%);
             backdrop-filter: blur(10px);
             display: flex;
@@ -214,7 +373,7 @@
             align-items: center;
         }
 
-        /* 🧠 SELECTOR DE MODELO (sin emojis) */
+        /* 🧠 SELECTOR DE MODELO */
         .model-selector {
             position: relative;
             display: inline-block;
@@ -222,7 +381,7 @@
 
         .model-btn {
             background: var(--glass);
-            border: 1px solid var(--border);
+ 1px solid var(--border);
             border-radius: 12px;
             padding: 10px 15px;
             color: #fff;
@@ -241,7 +400,7 @@
         .model-dropdown {
             position: absolute;
             bottom: 100%;
-            left: 0;
+            left: ;
             width: 220px;
             background: var(--glass);
             backdrop-filter: blur(10px);
@@ -293,7 +452,7 @@
             background: var(--primary);
         }
 
-        /* 🟦 BOTÓN ENVIAR (único, premium) */
+        /* 🟦 BOTÓN ENVIAR */
         .send-btn {
             background: linear-gradient(135deg, var(--primary), var(--secondary));
             border: none;
@@ -329,8 +488,12 @@
             animation: bounce 1.4s infinite;
         }
 
-        .thinking span:nth-child(2) { animation-delay: 0.2 .thinking span:nth-child(3) { animation-delay: 0.4s;frames bounce {
-            0%, 80%, 100% { transform: scale( 40% { transform: scale(1); }
+        .thinking span:nth-child(2) { animation-delay: 0.2s; }
+        .thinking span:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
         }
 
         /* 📱 RESPONSIVE */
@@ -349,6 +512,10 @@
                 width: 100%;
                 left: 0;
             }
+            #userInput {
+                padding: 14px 16px;
+                font-size: 15px;
+            }
         }
 
         /* 🌟 SCROLLBAR */
@@ -356,69 +523,63 @@
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 3px; }
 
-        /* 🎯 MENÚ LATERAL */
-        .sidebar {
+        /* 🎯 MENÚ FLOTANTE (como Claude) */
+        .menu-float {
             position: fixed;
-            top: 0;
-            right: -300px;
-            width: 300px;
-            height: 100vh;
-            background: rgba(10,10,15,0.95);
-            backdrop-filter: blur(20px);
-            border-left: 1px solid var(--border);
-            z-index: 100;
-            transition: right 0.3s ease;
-            padding: 20px;
-        }
-
-        .sidebar.active {
-            right: 0;
-        }
-
-        .sidebar h3 {
-            color: var(--primary);
-            margin-bottom: 20px;
-        }
-
-        .sidebar ul {
-            list-style: none;
-        }
-
-        .sidebar li {
-            padding: 15px 0;
-            border-bottom: 1px solid var(--glass);
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .sidebar li:hover {
-            color: var(--primary);
-            padding-left: 10px;
-        }
-
-        .close-btn {
-            position: absolute;
-            top: 20px;
-            right: 20px;
+            bottom: 20px;
+            left: 20px;
+            width: 50px;
+            height: 50px;
             background: var(--glass);
             border: 1px solid var(--border);
             border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             cursor: pointer;
+            z-index: 100;
+            transition: all 0.3s;
         }
 
-        /* 🧊 ANIMACIÓN 3D */
-        #model3d {
+        .menu-float:hover {
+            background: var(--primary);
+        }
+
+        .menu-options {
             position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 20;
-            width: 80px;
-            height: 80px;
-            pointer-events: none;
+            bottom: 80px;
+            left: 20px;
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 12px;
+            z-index: 99;
+            display: none;
+            backdrop-filter: blur(10px);
+            max-width: 200px;
+        }
+
+        .menu-options.active {
+            display: block;
+        }
+
+        .menu-option {
+            padding: 10px 12px;
+            color: #fff;
+            cursor: pointer;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .menu-option:hover {
+            background: rgba(0,217,255,0.2);
+        }
+
+        /* 🧊 ESTILO PARA EL CUBO 3D */
+        #model3d {
+            background: rgba(0,0,0,0.7);
+            border-radius: 12px;
             display: none;
         }
     </style>
@@ -427,7 +588,7 @@
     <!-- 🎨 FONDO DE PARTÍCULAS -->
     <canvas id="particles"></canvas>
 
-    <!-- 🧊 MODELO 3D AL ENVIAR MENSAJE -->
+    <!-- 🧊 MODELO 3D -->
     <canvas id="model3d"></canvas>
 
     <!-- 📱 CONTENEDOR PRINCIPAL -->
@@ -435,7 +596,11 @@
         <!-- HEADER -->
         <div class="header">
             <div class="logo">🔷 OcladeAI</div>
-            <button class="menu-btn" onclick="toggleMenu()">☰</button>
+            <div class="menu-float" onclick="toggleMenu()">
+                <svg width="20" height="20" fill="#fff" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M3 12h18M3 6h18M3 18h18"/>
+                </svg>
+            </div>
         </div>
 
         <!-- 💬 ÁREA DE CHAT -->
@@ -465,13 +630,13 @@
                     </div>
 
                     <!-- BOTÓN ADJUNTAR -->
-                    <button class="attach-btn" title="Adjuntar archivo" onclick="alert('Funcionalidad de adjuntar archivos próximamente.')">
+                    <button class="attach-btn" title="Adjuntar archivo" onclick="alert('Próximamente: subida de archivos.')">
                         <svg width="18" height="18" fill="#fff" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path d="M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5c0-1.38 1.12-2.5 2.5-2.5s2.5 1.12 2.5 2.5v10.5c0 .55-.45 1-1 1s-1-.45-1-1V6H10v9.5c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V5c0-2.21-1.79-4-4-4S7 2.79 7 5v12.5c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5V6h-1.5z"/>
                         </svg>
                     </button>
 
-                    <!-- BOTÓN ENVIAR (único, premium) -->
+                    <!-- BOTÓN ENVIAR -->
                     <button class="send-btn" onclick="sendMessage()">
                         Enviar
                     </button>
@@ -480,18 +645,19 @@
         </div>
     </div>
 
-    <!-- 🎯 MENÚ LATERAL -->
-    <div class="sidebar" id="sidebar">
-        <button class="close-btn" onclick="toggleMenu()">✕</button>
-        <h3>🔷 OcladeAI</h3>
-        <ul>
-            <li onclick="limpiarChat(); toggleMenu();">🗑️ Nueva Conversación</li>
-            <li onclick="alert('Historial de conversaciones próximamente.'); toggleMenu();">💬 Ver Conversaciones</li>
-            <li onclick="mostrarAyuda(); toggleMenu();">❓ Ayuda</li>
-            <li onclick="mostrarLenguajes(); toggleMenu();">💻 Lenguajes</li>
-            <li onclick="mostrarConceptos(); toggleMenu();">📚 Conceptos</li>
-            <li onclick="about(); toggleMenu();">ℹ️ Acerca de</li>
-        </ul>
+    <!-- 🎯 MENÚ FLOTANTE -->
+    <div class="menu-float" id="menuFloat">
+        <svg width="20" height="20" fill="#fff" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M3 12h18M3 6h18M3 18h8"/>
+        </svg>
+    </div>
+    <div class="menu-options" id="menuOptions">
+        <div class="menu-option" onclick="limpiarChat(); closeMenu();">🗑️ Nueva Conversación</div>
+        <div class="menu-option" onclick="alert('Historial próximamente.'); closeMenu();">💬 Ver Conversaciones</div>
+        <div class="menu-option" onclick="mostrarAyuda(); closeMenu();">❓ Ayuda</div>
+        <div class="menu-option" onclick="mostrarLenguajes(); closeMenu();">💻 Lenguajes</div>
+        <div class="menu-option" onclick="mostrarConceptos(); closeMenu();">📚 Conceptos</div>
+        <div class="menu-option" onclick="about(); closeMenu();">ℹ️ Acerca de</div>
     </div>
 
     <!-- 🧠 LÓGICA DEL BOT -->
@@ -540,7 +706,7 @@
         }
 
         function closeDropdown() {
-            document.getElementById('modelDropdown').classList.remove('show');
+            document.getElementByIdmodelDropdown').classList.remove('show');
         }
 
         window.onclick = function(e) {
@@ -549,13 +715,47 @@
             }
         };
 
-        // 🎯 MENÚ LATERAL
+        // 🎯 MENÚ FLOTANTE
         function toggleMenu() {
-            const sidebar = document.getElementById('sidebar');
-            sidebar.classList.toggle('active');
+            const options = document.getElementById('menuOptions');
+            options.classList.toggle('active');
         }
 
-        // 🔷 CEREBRO ACTUALIZADO
+        function closeMenu() {
+            document.getElementById('menuOptions').classList.remove('active');
+        }
+
+        // 🧊 ANIMACIÓN 3D AL ENVIAR MENSAJE
+        function iniciarAnimacion3D() {
+            const canvas = document.getElementById('model3d');
+            const ctx = canvas.getContext('2d');
+            canvas.width = 60;
+            canvas.height = 60;
+            canvas.style.display = 'block';
+
+            let rotation = 0;
+
+            function dibujarCubo() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.save();
+                ctx.translate(canvas.width / 2, canvas.height / 2);
+                ctx.rotate(rotation);
+                ctx.strokeStyle = '#00d9ff';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(-20, -20, 40, 40);
+                ctx.restore();
+                rotation += 0.08;
+            }
+
+            const interval = setInterval(dibujarCubo, 30);
+
+            setTimeout(() => {
+                clearInterval(interval);
+                canvas.style.display = 'none';
+            }, 1500);
+        }
+
+        // 🔷 CEREBRO
         const conocimiento = {
             saludos: ["hola", "hey", "buenos", "hi"],
             despedidas: ["adios", "chau", "hasta", "bye"],
@@ -621,8 +821,18 @@
                     return this.analizarCodigo(m);
                 }
 
-                // ✅ AHORA USA CHAT.JS PARA RESPUESTAS INTELIGENTES
-                return this.respuestaInteligente(m);
+                // ✅ Usa chat.js si está cargado
+                if (window.OcladeChat) {
+                    return OcladeChat.generate(m);
+                } else {
+                    const respuestas = [
+                        "Interesante pregunta. ¿Podrías darme más contexto sobre qué lenguaje o framework estás usando?",
+                        "Déjame analizar... ¿Esto es para web, móvil, backend?",
+                        "Para ayudarte mejor, ¿me compartes un ejemplo de código o el error específico?",
+                        "Esa es una gran pregunta de programación. ¿Qué estás intentando construir?"
+                    ];
+                    return respuestas[Math.floor(Math.random() * respuestas.length)];
+                }
             }
 
             analizarCodigo(codigo) {
@@ -634,23 +844,6 @@
                 if (codigo.includes('var') || codigo.includes('let') || codigo.includes('const')) analisis += "✅ Detecté declaración de variables.\n";
                 return analisis + "\n💡 ¿Quieres que optimice, explique o debuggee este código?";
             }
-
-            // 🔥 ESTA FUNCIÓN AHORA USA CHAT.JS
-            respuestaInteligente(m) {
-                // Asegúrate de que chat.js esté cargado
-                if (window.OcladeChat) {
-                    return OcladeChat.generate(m);
-                } else {
-                    // Fallback si chat.js no se carga
-                    const respuestas = [
-                        "Interesante pregunta. ¿Podrías darme más contexto sobre qué lenguaje o framework estás usando?",
-                        "Déjame analizar... ¿Esto es para web, móvil, backend?",
-                        "Para ayudarte mejor, ¿me compartes un ejemplo de código o el error específico?",
-                        "Esa es una gran pregunta de programación. ¿Qué estás intentando construir?"
-                    ];
-                    return respuestas[Math.floor(Math.random() * respuestas.length)];
-                }
-            }
         }
 
         const brain = new OcladeBrain();
@@ -658,44 +851,13 @@
         const userInput = document.getElementById('userInput');
         const sendBtn = document.querySelector('.send-btn');
 
-        // 🧊 ANIMACIÓN 3D AL ENVIAR MENSAJE
-        function iniciarAnimacion3D() {
-            const canvas = document.getElementById('model3d');
-            const ctx = canvas.getContext('2d');
-            canvas.width = 80;
-            canvas.height = 80;
-            canvas.style.display = 'block';
-
-            let rotation = 0;
-
-            function dibujarCubo() {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                ctx.save();
-                ctx.translate(canvas.width / 2, canvas.height / 2);
-                ctx.rotate(rotation);
-                ctx.strokeStyle = '#00d9ff';
-                ctx.lineWidth = 2;
-                ctx.strokeRect(-20, -20, 40, 40);
-                ctx.restore();
-                rotation += 0.05;
-            }
-
-            const interval = setInterval(() => {
-                dibujarCubo();
-            }, 30);
-
-            setTimeout(() => {
-                clearInterval(interval);
-                canvas.style.display = 'none';
-            }, 1500);
-        }
-
         function sendMessage() {
             const message = userInput.value.trim();
             if (!message) return;
 
             eliminarSaludo();
 
+            // Mensaje del usuario
             const userMsg = document.createElement('div');
             userMsg.className = 'message user-msg';
             userMsg.innerHTML = formatResponse(message);
@@ -786,7 +948,7 @@
         }
         animate();
 
-        // 🎯 FUNCIONES DEL MENÚ LATERAL
+        // 🎯 FUNCIONES DEL MENÚ
         function limpiarChat() {
             chatArea.innerHTML = `
                 <div class="welcome-center" id="welcomeCenter">
@@ -835,7 +997,7 @@
         });
     </script>
 
-    <!-- 📦 INTEGRACIÓN CON CHAT.JS -->
+    <!-- 📦 CHAT.JS -->
     <script src="chat.js"></script>
 </body>
 </html>
