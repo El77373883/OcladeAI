@@ -117,6 +117,34 @@
             backdrop-filter: blur(10px);
         }
         
+        /* 🎉 BIENVENIDA ESPECIAL */
+        .welcome-msg {
+            align-self: center;
+            text-align: center;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 24px;
+            font-weight: bold;
+            padding: 30px 40px;
+            border-radius: 25px;
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            animation: welcomePulse 3s infinite, hueRotate 5s infinite alternate;
+            max-width: 90%;
+        }
+        
+        @keyframes welcomePulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 20px rgba(0,217,255,0.3); }
+            50% { transform: scale(1.05); box-shadow: 0 0 40px rgba(0,217,255,0.6); }
+        }
+        
+        @keyframes hueRotate {
+            0% { filter: hue-rotate(0deg); }
+            100% { filter: hue-rotate(360deg); }
+        }
+        
         /* 📝 BLOQUES DE CÓDIGO */
         .code-block {
             background: var(--code-bg);
@@ -198,6 +226,7 @@
         @media (max-width: 768px) {
             .logo { font-size: 20px; }
             .message { max-width: 90%; }
+            .welcome-msg { font-size: 20px; padding: 20px 30px; }
         }
         
         /* 🌟 SCROLLBAR */
@@ -273,13 +302,18 @@
         
         <!-- 💬 ÁREA DE CHAT -->
         <div class="chat-area" id="chatArea">
+            <!-- 🎉 MENSAJE DE BIENVENIDA CENTRAL -->
+            <div class="welcome-msg" id="welcomeMessage">
+                <!-- Se llenará con JavaScript -->
+            </div>
+            
+            <!-- 🤖 MENSAJE DE AYUDA -->
             <div class="message ai-msg">
-                ¡Hola! 🚀 Soy <b>OcladeAI</b>, tu asistente de programación.<br><br>
                 💻 Te ayudo con código<br>
                 🐛 Debugging y errores<br>
                 📚 Explico conceptos<br>
                 🔷 100% código propio<br><br>
-                ¿Qué quieres programar hoy?
+                <b>¿En qué te puedo ayudar hoy?</b>
             </div>
         </div>
         
@@ -294,15 +328,36 @@
 
     <!-- 🧠 LÓGICA DEL BOT -->
     <script>
-        // 🔷 OCLADEAI - CEREBRO DE PROGRAMACIÓN
-        // 100% JavaScript puro, sin dependencias
+        // 🎉 GENERAR MENSAJE DE BIENVENIDA DINÁMICO
+        function generarBienvenida() {
+            const ahora = new Date();
+            const hora = ahora.getHours();
+            
+            let saludo = "";
+            if (hora >= 6 && hora < 12) {
+                saludo = "Buenos días";
+            } else if (hora >= 12 && hora < 18) {
+                saludo = "Buenas tardes";
+            } else {
+                saludo = "Buenas noches";
+            }
+            
+            return `${saludo}<br><span style="font-size: 18px; opacity: 0.8;">Soy OcladeAI, tu asistente de programación</span>`;
+        }
+        
+        // Mostrar el mensaje cuando se carga la página
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('welcomeMessage').innerHTML = generarBienvenida();
+        });
+
+        // 🔷 OCLADEAI - CEREBRO DE // 100% JavaScript puro, sin dependencias
 
         // ═══════════════════════════════════════════════════════════════
         // 🧠 BASE DE CONOCIMIENTO DE PROGRAMACIÓN
         // ═══════════════════════════════════════════════════════════════
         const conocimiento = {
             saludos: ["hola", "hey", "buenos", "hi"],
-            despedidas: ["adios", "chau", "hasta", "bye"],
+            despedidas: ["adios", "chauasta", "bye"],
             lenguajes: {
                 "python": "Python es un lenguaje interpretado, ideal para IA, datos y backend. ¿Qué quieres hacer con Python?",
                 "javascript": "JavaScript es el lenguaje de la web. Sirve para frontend, backend (Node.js) y apps móviles. ¿En qué te ayudo?",
@@ -556,7 +611,10 @@
         }
 
         function limpiarChat() {
-            chatArea.innerHTML = '<div class="message ai-msg">💬 Chat limpiado. ¿Qué quieres programar?</div>';
+            chatArea.innerHTML = `
+                <div class="welcome-msg">${generarBienvenida()}</div>
+                <div class="message ai-msg"><b>¿En qué te puedo ayudar hoy?</b></div>
+            `;
             toggleMenu();
         }
 
