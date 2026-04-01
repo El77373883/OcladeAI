@@ -6,7 +6,7 @@
     <title>🔷 OcladeAI - Bot de Programación</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        
+
         :root {
             --primary: #00d9ff;
             --secondary: #7b2ff7;
@@ -15,15 +15,16 @@
             --border: rgba(0,217,255,0.3);
             --code-bg: #1a1a2e;
         }
-        
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: var(--dark);
             color: #fff;
             overflow: hidden;
             height: 100vh;
+            position: relative;
         }
-        
+
         /* 🔷 FONDO DE PARTÍCULAS */
         #particles {
             position: fixed;
@@ -31,7 +32,7 @@
             width: 100%; height: 100%;
             z-index: 0;
         }
-        
+
         .container {
             position: relative;
             z-index: 1;
@@ -39,17 +40,17 @@
             display: flex;
             flex-direction: column;
         }
-        
+
         /* 📱 HEADER */
         .header {
             display: flex;
-            flex-direction: column;
+            justify-content: space-between;
             align-items: center;
             padding: 15px 20px;
-            background: linear-gradient(180deg, rgba(0,0,0,0.8) 0%, transparent 100%);
+            background: linear-gradient(180deg, rgba(0,0,0,0.8) transparent 100%);
             backdrop-filter: blur(10px);
         }
-        
+
         .logo {
             font-size: 24px;
             font-weight: 800;
@@ -58,19 +59,12 @@
             -webkit-text-fill-color: transparent;
             animation: glow 2s ease-in-out infinite;
         }
-        
-        .subtitle {
-            color: #aaa;
-            font-size: 14px;
-            margin-top: 5px;
-            font-weight: 400;
-        }
-        
+
         @keyframes glow {
             0%, 100% { filter: drop-shadow(0 0 10px var(--primary)); }
             50% { filter: drop-shadow(0 0 20px var(--secondary)); }
         }
-        
+
         .menu-btn {
             background: var(--glass);
             border: 1px solid var(--border);
@@ -80,15 +74,13 @@
             font-size: 20px;
             cursor: pointer;
             transition: all 0.3s;
-            align-self: flex-end;
-            margin-top: 10px;
         }
-        
+
         .menu-btn:active {
             background: var(--primary);
             transform: scale(0.95);
         }
-        
+
         /* 💬 CHAT */
         .chat-area {
             flex: 1;
@@ -97,58 +89,96 @@
             display: flex;
             flex-direction: column;
             gap: 15px;
+            position: relative;
         }
-        
+
+        /* 🎉 SALUDO CENTRAL (al cargar) */
+        .welcome-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 5;
+            animation: fadeInUp 1.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .welcome-title {
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 12px;
+        }
+
+        .welcome-subtitle {
+            font-size: 16px;
+            color: #aaa;
+            max-width: 80%;
+            margin: 0 auto;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translate(-50%, 20px);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, 0);
+            }
+        }
+
+        /* 🧠 MENSAJE INICIAL DEL BOT */
+        .initial-msg {
+            opacity: 0;
+            animation: slideIn 0.6s forwards;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         .message {
             max-width: 85%;
             padding: 15px 20px;
             border-radius: 20px;
-            animation: slideIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
             line-height: 1.5;
+            transition: all 0.3s ease;
         }
-        
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(30px) scale(0.9); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
-        }
-        
+
         .user-msg {
             align-self: flex-end;
             background: linear-gradient(135deg, var(--primary), var(--secondary));
             border-bottom-right-radius: 5px;
+            transform: translateX(20px);
+            opacity: 0;
+            animation: slideInRight 0.5s forwards;
         }
-        
+
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(20px) scale(0.95); }
+            to { opacity: 1; transform: translateX(0) scale(1); }
+        }
+
         .ai-msg {
             align-self: flex-start;
             background: var(--glass);
             border: 1px solid var(--border);
             border-bottom-left-radius: 5px;
             backdrop-filter: blur(10px);
+            transform: translateX(-20px);
+            opacity: 0;
+            animation: slideInLeft 0.5s forwards;
         }
-        
-        /* 🎉 BIENVENIDA ESPECIAL */
-        .welcome-msg {
-            align-self: center;
-            text-align: center;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
-            background-clip: text;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-size: 24px;
-            font-weight: bold;
-            padding: 30px 40px;
-            border-radius: 25px;
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--border);
-            animation: welcomePulse 3s infinite;
-            max-width: 90%;
+
+        @keyframes slideInLeft {
+            from { opacity: 0; transform: translateX(-20px) scale(0.95); }
+            to { opacity: 1; transform: translateX(0) scale(1); }
         }
-        
-        @keyframes welcomePulse {
-            0%, 100% { transform: scale(1); box-shadow: 0 0 20px rgba(0,217,255,0.3); }
-            50% { transform: scale(1.05); box-shadow: 0 0 40px rgba(0,217,255,0.6); }
-        }
-        
+
         /* 📝 BLOQUES DE CÓDIGO */
         .code-block {
             background: var(--code-bg);
@@ -161,14 +191,14 @@
             overflow-x: auto;
             white-space: pre;
         }
-        
+
         /* ⌨️ INPUT */
         .input-area {
             padding: 20px;
             background: linear-gradient(0deg, rgba(0,0,0,0.9) 0%, transparent 100%);
             backdrop-filter: blur(10px);
         }
-        
+
         .input-container {
             display: flex;
             gap: 10px;
@@ -177,7 +207,7 @@
             border-radius: 25px;
             padding: 5px;
         }
-        
+
         #userInput {
             flex: 1;
             background: transparent;
@@ -187,7 +217,7 @@
             font-size: 16px;
             outline: none;
         }
-        
+
         #sendBtn {
             background: linear-gradient(135deg, var(--primary), var(--secondary));
             border: none;
@@ -197,19 +227,29 @@
             font-weight: 700;
             cursor: pointer;
             transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        
+
         #sendBtn:active {
             transform: scale(0.95);
         }
-        
+
+        #sendBtn svg {
+            width: 18px;
+            height: 18px;
+            fill: white;
+        }
+
         /* 🔄 PENSANDO */
         .thinking {
             display: flex;
-            gap: 5px;
+            gap: 6px;
             padding: 15px 20px;
+            align-items: center;
         }
-        
+
         .thinking span {
             width: 8px;
             height: 8px;
@@ -217,27 +257,27 @@
             border-radius: 50%;
             animation: bounce 1.4s infinite;
         }
-        
+
         .thinking span:nth-child(2) { animation-delay: 0.2s; }
         .thinking span:nth-child(3) { animation-delay: 0.4s; }
-        
+
         @keyframes bounce {
             0%, 80%, 100% { transform: scale(0); }
             40% { transform: scale(1); }
         }
-        
+
         /* 📱 RESPONSIVE */
         @media (max-width: 768px) {
             .logo { font-size: 20px; }
             .message { max-width: 90%; }
-            .welcome-msg { font-size: 20px; padding: 20px 30px; }
+            .welcome-title { font-size: 24px; }
         }
-        
+
         /* 🌟 SCROLLBAR */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 3px; }
-        
+
         /* 🎯 MENÚ LATERAL */
         .sidebar {
             position: fixed;
@@ -252,32 +292,32 @@
             transition: right 0.3s ease;
             padding: 20px;
         }
-        
+
         .sidebar.active {
             right: 0;
         }
-        
+
         .sidebar h3 {
             color: var(--primary);
             margin-bottom: 20px;
         }
-        
+
         .sidebar ul {
             list-style: none;
         }
-        
+
         .sidebar li {
             padding: 15px 0;
             border-bottom: 1px solid var(--glass);
             cursor: pointer;
             transition: all 0.3s;
         }
-        
+
         .sidebar li:hover {
             color: var(--primary);
             padding-left: 10px;
         }
-        
+
         .close-btn {
             position: absolute;
             top: 20px;
@@ -294,66 +334,86 @@
 </head>
 <body>
     <!-- 🎨 FONDO DE PARTÍCULAS -->
-    <canvascanvas>
-    
+    <canvas id="particles"></canvas>
+
     <!-- 📱 CONTENEDOR PRINCIPAL -->
     <div class="container">
         <!-- HEADER -->
         <div class="header">
             <div class="logo">🔷 OcladeAI</div>
-            <div class="subtitle">¿En qué te puedo ayudar hoy?</div>
             <button class="menu-btn" onclick="toggleMenu()">☰</button>
         </div>
-        
+
         <!-- 💬 ÁREA DE CHAT -->
         <div class="chat-area" id="chatArea">
-            <!-- 🎉 MENSAJE DE BIENVENIDA CENTRAL -->
-            <div class="welcome-msg" id="welcomeMessage">
-                <!-- Se llenará con JavaScript -->
+            <!-- 🎉 SALUDO CENTRAL (se elimina al enviar primer mensaje) -->
+            <div class="welcome-center" id="welcomeCenter">
+                <div class="welcome-title" id="saludoTitle">Buenos días</div>
+                <div class="welcome-subtitle">¿En qué te puedo ayudar hoy?</div>
+            </div>
+
+            <!-- 🤖 MENSAJE INICIAL DEL BOT -->
+            <div class="message ai-msg initial-msg">
+                ¡Hola! 🚀 Soy <b>OcladeAI</b>, tu asistente de programación.<br><br>
+                💻 Te ayudo con código<br>
+                🐛 Debugging y errores<br>
+                📚 Explico conceptos<br>
+                🔷 100% código propio
             </div>
         </div>
-        
+
         <!-- ⌨️ INPUT AREA -->
         <div class="input-area">
             <div class="input-container">
                 <input type="text" id="userInput" placeholder="Escribe tu código o pregunta..." autocomplete="off">
-                <button id="sendBtn" onclick="sendMessage()">➤</button>
+                <button id="sendBtn" onclick="sendMessage()">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                    </svg>
+                </button>
             </div>
         </div>
     </div>
 
     <!-- 🧠 LÓGICA DEL BOT -->
     <script>
-        // 🎉 GENERAR MENSAJE DE BIENVENIDA DINÁMICO
-        function generarBienvenida() {
+        // 🎉 GENERAR SALUDO DINÁMICO (buenos días/tardes/noches)
+        function actualizarSaludo() {
             const ahora = new Date();
             const hora = ahora.getHours();
-            
             let saludo = "";
-            if (hora >= 6 && hora < 12) {
-                saludo = "Buenos días";
-            } else if (hora >= 12 && hora < 18) {
-                saludo = "Buenas tardes";
-            } else {
-                saludo = "Buenas noches";
-            }
-            
-            return `${saludo}<br><span style="font-size: 18px; opacity: 0.8;">Soy OcladeAI, tu asistente de programación</span>`;
+            if (hora >= 6 && hora < 12) saludo = "Buenos días";
+            else if (hora >= 12 && hora < 18) saludo = "Buenas tardes";
+            else saludo = "Buenas noches";
+
+            document.getElementById('saludoTitle').textContent = saludo;
         }
-        
-        // Mostrar el mensaje cuando se carga la página
-        document.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('welcomeMessage').innerHTML = generarBienvenida();
+
+        // Eliminar saludo central al enviar primer mensaje
+        function eliminarSaludo() {
+            const welcome = document.getElementById('welcomeCenter');
+            if (welcome) {
+                welcome.style.opacity = '0';
+                welcome.style.transform = 'translate(-50%, -20px)';
+                setTimeout(() => {
+                    welcome.remove();
+                }, 500);
+            }
+        }
+
+        // Inicializar al cargar
+        document.addEventListener('DOMContentLoaded', () =>udo();
+
+            // Esperar 1.5s para mostrar el mensaje inicial del bot
+            setTimeout(() => {
+                const msg = document.querySelector('.initial-msg');
+                if (msg) msg.style.opacity = '1';
+            }, 1500);
         });
 
         // 🔷 OCLADEAI - CEREBRO DE PROGRAMACIÓN
-        // 100% JavaScript puro, sin dependencias
-
-        // ═══════════════════════════════════════════════════════════════
-        // 🧠 BASE DE CONOCIMIENTO DE PROGRAMACIÓN
-        // ═══════════════════════════════════════════════════════════════
         const conocimiento = {
-           hola", "hey", "buenos", "hi"],
+            saludos: ["hola", "hey", "buenos", "hi"],
             despedidas: ["adios", "chau", "hasta", "bye"],
             lenguajes: {
                 "python": "Python es un lenguaje interpretado, ideal para IA, datos y backend. ¿Qué quieres hacer con Python?",
@@ -390,78 +450,44 @@
             }
         };
 
-        // ═══════════════════════════════════════════════════════════════
-        // 🧠 MOTOR DE ANÁLISIS
-        // ═══════════════════════════════════════════════════════════════
         class OcladeBrain {
-            constructor() {
-                this.historial = [];
-            }
+            constructor() { this.historial = []; }
 
             analizar(mensaje) {
                 const m = mensaje.toLowerCase().trim();
                 
-                // 1. Saludos
                 if (conocimiento.saludos.some(p => m.includes(p))) {
                     return "¡Hola! 🚀 Soy OcladeAI, tu asistente de programación. ¿En qué lenguaje o tema te ayudo hoy?";
                 }
-
-                // 2. Despedidas
                 if (conocimiento.despedidas.some(p => m.includes(p))) {
                     return "¡Hasta pronto! 🔷 Recuerda: el código es poesía lógica. ¡Vuelve cuando necesites ayuda!";
                 }
 
-                // 3. Lenguajes de programación
                 for (const [lang, respuesta] of Object.entries(conocimiento.lenguajes)) {
-                    if (m.includes(lang)) {
-                        return respuesta;
-                    }
+                    if (m.includes(lang)) return respuesta;
                 }
-
-                // 4. Conceptos de programación
                 for (const [concepto, explicacion] of Object.entries(conocimiento.conceptos)) {
-                    if (m.includes(concepto)) {
-                        return `📚 **${concepto.toUpperCase()}**\n\n${explicacion}`;
-                    }
+                    if (m.includes(concepto)) return `📚 **${concepto.toUpperCase()}**\n\n${explicacion}`;
                 }
-
-                // 5. Errores comunes
                 for (const [error, solucion] of Object.entries(conocimiento.errores)) {
-                    if (m.includes(error)) {
-                        return `🐛 **ERROR DETECTADO**\n\n${solucion}`;
-                    }
+                    if (m.includes(error)) return `🐛 **ERROR DETECTADO**\n\n${solucion}`;
                 }
 
-                // 6. Detección de código (si contiene caracteres de programación)
                 if (/[{};=function\(\)console\.log]/.test(m)) {
                     return this.analizarCodigo(m);
                 }
 
-                // 7. Respuesta por defecto
                 return this.respuestaInteligente(m);
             }
 
             analizarCodigo(codigo) {
                 let analisis = "🔍 **Análisis de Código**\n\n";
-                
-                if (codigo.includes('function') || codigo.includes('=>')) {
-                    analisis += "✅ Detecté una función.\n";
-                }
-                if (codigo.includes('console.log') || codigo.includes('print')) {
-                    analisis += "✅ Detecté una salida/imprimir.\n";
-                }
-                if (codigo.includes('for') || codigo.includes('while')) {
-                    analisis += "✅ Detecté un bucle.\n";
-                }
-                if (codigo.includes('if') || codigo.includes('else')) {
-                    analisis += "✅ Detecté un condicional.\n";
-                }
-                if (codigo.includes('var') || codigo.includes('let') || codigo.includes('const')) {
-                    analisis += "✅ Detecté declaración de variables.\n";
-                }
-
-                analisis += "\n💡 ¿Quieres que optimice, explique o debuggee este código?";
-                return analisis;
+                if (codigo.includes('function') || codigo.includes('=>')) analisis += "✅ Detecté una función.\n";
+                if (codigo.includes('console.log') || codigo.includes('print')) analisis += "✅ Detecté una salida/imprimir.\n";
+                if (codigo.includes('for') || codigo.includes('while')) analisis += "✅ Detecté un bucle.\n";
+                if (codigo.includes('if') || codigo.includes('else')) analisis += "✅ Detecté un condicional.\n";
+                if (codigo.includes('var') || codigo.includes('let') || codigo.includes('const')) analisis += "✅ Detecté declaración de variables.\n";
+                return analisis + "\n💡 ¿Quieres que optimice, explique o debuggee este código?";
             }
 
             respuestaInteligente(m) {
@@ -476,10 +502,6 @@
         }
 
         const brain = new OcladeBrain();
-
-        // ═══════════════════════════════════════════════════════════════
-        // 💬 INTERFAZ DE CHAT
-        // ═══════════════════════════════════════════════════════════════
         const chatArea = document.getElementById('chatArea');
         const userInput = document.getElementById('userInput');
         const sendBtn = document.getElementById('sendBtn');
@@ -488,27 +510,31 @@
             const message = userInput.value.trim();
             if (!message) return;
 
+            // Eliminar saludo central si aún está
+            eliminarSaludo();
+
             // Mensaje del usuario
-            addMessageToChat(message, 'user-msg');
+            const userMsg = document.createElement('div');
+            userMsg.className = 'message user-msg';
+            userMsg.innerHTML = formatResponse(message);
+            chatArea.appendChild(userMsg);
+            chatArea.scrollTop = chatArea.scrollHeight;
+
             userInput.value = '';
 
             // Indicador de pensando
             showThinking();
 
-            // Simular "procesamiento" del bot
+            // Simular procesamiento
             setTimeout(() => {
                 hideThinking();
                 const respuesta = brain.analizar(message);
-                addMessageToChat(respuesta, 'ai-msg');
+                const aiMsg = document.createElement('div');
+                aiMsg.className = 'message ai-msg';
+                aiMsg.innerHTML = formatResponse(respuesta);
+                chatArea.appendChild(aiMsg);
+                chatArea.scrollTop = chatArea.scrollHeight;
             }, 1000 + Math.random() * 1000);
-        }
-
-        function addMessageToChat(text, className) {
-            const div = document.createElement('div');
-            div.className = `message ${className}`;
-            div.innerHTML = formatResponse(text);
-            chatArea.appendChild(div);
-            chatArea.scrollTop = chatArea.scrollHeight;
         }
 
         function showThinking() {
@@ -526,13 +552,10 @@
         }
 
         function formatResponse(text) {
-            // Negritas
-            text = text.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
-            // Saltos de línea
-            text = text.replace(/\n/g, '<br>');
-            // Bloques de código (detectar por indent)
-            text = text.replace(/```([\s\S]*?)```/g, '<div class="code-block">$1</div>');
-            return text;
+            return text
+                .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
+                .replace(/\n/g, '<br>')
+                .replace(/```([\s\S]*?)```/g, '<div class="code-block">$1</div>');
         }
 
         // Enter para enviar
@@ -540,9 +563,7 @@
             if (e.key === 'Enter') sendMessage();
         });
 
-        // ═══════════════════════════════════════════════════════════════
-        // 🎨 FONDO DE PARTÍCULAS ANIMADAS
-        // ═══════════════════════════════════════════════════════════════
+        // 🎨 FONDO DE PARTÍCULAS
         const canvas = document.getElementById('particles');
         const ctx = canvas.getContext('2d');
         canvas.width = window.innerWidth;
@@ -583,9 +604,7 @@
         }
         animate();
 
-        // ═══════════════════════════════════════════════════════════════
         // 🎯 MENÚ LATERAL
-        // ═══════════════════════════════════════════════════════════════
         function toggleMenu() {
             let sidebar = document.querySelector('.sidebar');
             if (!sidebar) {
@@ -609,29 +628,56 @@
 
         function limpiarChat() {
             chatArea.innerHTML = `
-                <div class="welcome-msg">${generarBienvenida()}</div>
+                <div class="welcome-center" id="welcomeCenter">
+                    <div class="welcome-title" id="saludoTitle">${generarSaludo()}</div>
+                    <div class="welcome-subtitle">¿En qué te puedo ayudar hoy?</div>
+                </div>
+                <div class="message ai-msg initial-msg">
+                    ¡Hola! 🚀 Soy OcladeAI, tu asistente de programación.<br><br>
+                    💻 Te ayudo con código<br>
+                    🐛 Debugging y errores<br>
+                    📚 Explico conceptos<br>
+                    🔷 100% código propio
+                </div>
             `;
+            actualizarSaludo();
             toggleMenu();
         }
 
+        function generarSaludo() {
+            const ahora = new Date();
+            const hora = ahora.getHours();
+            if (hora >= 6 && hora < 12) return "Buenos días";
+            if (hora >= 12 && hora < 18) return "Buenas tardes";
+            return "Buenas noches";
+        }
+
         function mostrarAyuda() {
-            addMessageToChat("❓ **AYUDA**\n\n• Escribe el nombre de un lenguaje (Python, JavaScript, etc.)\n• Pregunta sobre conceptos (variable, función, bucle)\n• Comparte errores para debuggear\n• Pega código para analizar", 'ai-msg');
+            addMessage("❓ **AYUDA**\n\n• Escribe el nombre de un lenguaje (Python, JavaScript, etc.)\n• Pregunta sobre conceptos (variable, función, bucle)\n• Comparte errores para debuggear\n• Pega código para analizar", 'ai-msg');
             toggleMenu();
         }
 
         function mostrarLenguajes() {
-            addMessageToChat("💻 **LENGUAJES SOPORTADOS**\n\nPython • JavaScript • HTML • CSS\nJava • C++ • SQL • PHP\nReact • Node.js • Git", 'ai-msg');
+            addMessage("💻 **LENGUAJES SOPORTADOS**\n\nPython • JavaScript • HTML • CSS\nJava • C++ • SQL • PHP\nReact • Node.js • Git", 'ai-msg');
             toggleMenu();
         }
 
         function mostrarConceptos() {
-            addMessageToChat("📚 **CONCEPTOS**\n\nVariables • Funciones • Bucles\nCondicionales • Arrays • Objetos\nClases • APIs • Git • Debugging", 'ai-msg');
+            addMessage("📚 **CONCEPTOS**\n\nVariables • Funciones • Bucles\nCondicionales • Arrays • Objetos\nClases • APIs • Git • Debugging", 'ai-msg');
             toggleMenu();
         }
 
         function about() {
-            addMessageToChat("🔷 **OcladeAI v1.0**\n\n✨ Bot de programación\n📱 100% desde iPhone\n🌐 GitHub + Vercel\n🧠 Sin dependencias\n💻 Código 100% propio", 'ai-msg');
+            addMessage("🔷 **OcladeAI v1.0**\n\n✨ Bot de programación\n📱 100% desde iPhone\n🌐 GitHub + Vercel\n🧠 Sin dependencias\n💻 Código 100% propio", 'ai-msg');
             toggleMenu();
+        }
+
+        function addMessage(text, className) {
+            const div = document.createElement('div');
+            div.className = `message ${className}`;
+            div.innerHTML = formatResponse(text);
+            chatArea.appendChild(div);
+            chatArea.scrollTop = chatArea.scrollHeight;
         }
 
         // Resize
