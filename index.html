@@ -66,13 +66,13 @@
             50% { filter: drop-shadow(0 0 20px var(--secondary)); }
         }
 
-        .new-chat-btn {
+        .menu-btn {
             background: var(--glass);
             border: 1px solid var(--border);
             border-radius: 12px;
             padding: 10px 15px;
             color: #fff;
-            font-size: 14px;
+            font-sizepx;
             cursor: pointer;
             transition: all 0.3s;
             display: flex;
@@ -80,7 +80,7 @@
             gap: 8px;
         }
 
-        .new-chat-btn:active {
+        .menu-btn:active {
             background: var(--primary);
             transform: scale(0.95);
         }
@@ -329,12 +329,8 @@
             animation: bounce 1.4s infinite;
         }
 
-        .thinking span:nth-child(2) { animation-delay: 0.2s; }
-        .thinking span:nth-child(3) { animation-delay: 0.4s; }
-
-        @keyframes bounce {
-            0%, 80%, 100% { transform: scale(0); }
-            40% { transform: scale(1); }
+        .thinking span:nth-child(2) { animation-delay: 0.2 .thinking span:nth-child(3) { animation-delay: 0.4s;frames bounce {
+            0%, 80%, 100% { transform: scale( 40% { transform: scale(1); }
         }
 
         /* 📱 RESPONSIVE */
@@ -360,58 +356,86 @@
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 3px; }
 
-        /* 🌐 GOOGLE CUSTOM SEARCH WIDGET */
-        .gsc-control-cse {
-            padding: 10px !important;
-            background: transparent !important;
-            border: none !important;
-            max-width: 100% !important;
+        /* 🎯 MENÚ LATERAL */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            right: -300px;
+            width: 300px;
+            height: 100vh;
+            background: rgba(10,10,15,0.95);
+            backdrop-filter: blur(20px);
+            border-left: 1px solid var(--border);
+            z-index: 100;
+            transition: right 0.3s ease;
+            padding: 20px;
         }
 
-        .gsc-input-box {
-            background: var(--glass) !important;
-            border: 1px solid var(--border) !important;
-            border-radius: 12px !important;
-            padding: 8px !important;
+        .sidebar.active {
+            right: 0;
         }
 
-        .gsc-search-button {
-            background: linear-gradient(135deg, var(--primary), var(--secondary)) !important;
-            border-radius: 8px !important;
-            color: white !important;
+        .sidebar h3 {
+            color: var(--primary);
+            margin-bottom: 20px;
         }
 
-        .gsc-results-wrapper-overlay {
-            background: var(--dark) !important;
-            border: 1px solid var(--border) !important;
-            border-radius: 12px !important;
+        .sidebar ul {
+            list-style: none;
         }
 
-        .gsc-result-info {
-            color: #aaa !important;
+        .sidebar li {
+            padding: 15px 0;
+            border-bottom: 1px solid var(--glass);
+            cursor: pointer;
+            transition: all 0.3s;
         }
 
-        .gsc-url-top {
-            color: !important;
+        .sidebar li:hover {
+            color: var(--primary);
+            padding-left: 10px;
         }
 
-        .gsc-webResult .gsc-result {
-            border-bottom: 1px solid var(--border) !important;
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        /* 🧊 ANIMACIÓN 3D */
+        #model3d {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 20;
+            width: 80px;
+            height: 80px;
+            pointer-events: none;
+            display: none;
         }
     </style>
-    <!-- 🔍 SCRIPT DE GOOGLE CUSTOM SEARCH -->
-    <script async src="https://cse.google.com/cse.js?cx=a27ba8624db9440d0"></script>
 </head>
 <body>
     <!-- 🎨 FONDO DE PARTÍCULAS -->
     <canvas id="particles"></canvas>
+
+    <!-- 🧊 MODELO 3D AL ENVIAR MENSAJE -->
+    <canvas id="model3d"></canvas>
 
     <!-- 📱 CONTENEDOR PRINCIPAL -->
     <div class="container">
         <!-- HEADER -->
         <div class="header">
             <div class="logo">🔷 OcladeAI</div>
-            <button class="new-chat-btn" onclick="limpiarChat()">+ Nuevo Chat</button>
+            <button class="menu-btn" onclick="toggleMenu()">☰</button>
         </div>
 
         <!-- 💬 ÁREA DE CHAT -->
@@ -436,12 +460,12 @@
                         <div class="model-dropdown" id="modelDropdown">
                             <div class="model-option selected" onclick="selectModel(this, 'Oclade Code 1.0')">Oclade Code 1.0</div>
                             <div class="model-option" onclick="selectModel(this, 'Oclade Debug Pro')">Oclade Debug Pro</div>
-                            <div class="model-optionModel(this, 'Oclade Learn AI')">Oclade Learn AI</div>
+                            <div class="model-option" onclick="selectModel(this, 'Oclade Learn AI')">Oclade Learn AI</div>
                         </div>
                     </div>
 
                     <!-- BOTÓN ADJUNTAR -->
-                    <button class="attach-btn" title="Adjuntar archivo">
+                    <button class="attach-btn" title="Adjuntar archivo" onclick="alert('Funcionalidad de adjuntar archivos próximamente.')">
                         <svg width="18" height="18" fill="#fff" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path d="M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5c0-1.38 1.12-2.5 2.5-2.5s2.5 1.12 2.5 2.5v10.5c0 .55-.45 1-1 1s-1-.45-1-1V6H10v9.5c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V5c0-2.21-1.79-4-4-4S7 2.79 7 5v12.5c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5V6h-1.5z"/>
                         </svg>
@@ -454,6 +478,20 @@
                 </div>
             </div>
         </div>
+    </div>
+
+    <!-- 🎯 MENÚ LATERAL -->
+    <div class="sidebar" id="sidebar">
+        <button class="close-btn" onclick="toggleMenu()">✕</button>
+        <h3>🔷 OcladeAI</h3>
+        <ul>
+            <li onclick="limpiarChat(); toggleMenu();">🗑️ Nueva Conversación</li>
+            <li onclick="alert('Historial de conversaciones próximamente.'); toggleMenu();">💬 Ver Conversaciones</li>
+            <li onclick="mostrarAyuda(); toggleMenu();">❓ Ayuda</li>
+            <li onclick="mostrarLenguajes(); toggleMenu();">💻 Lenguajes</li>
+            <li onclick="mostrarConceptos(); toggleMenu();">📚 Conceptos</li>
+            <li onclick="about(); toggleMenu();">ℹ️ Acerca de</li>
+        </ul>
     </div>
 
     <!-- 🧠 LÓGICA DEL BOT -->
@@ -511,9 +549,15 @@
             }
         };
 
+        // 🎯 MENÚ LATERAL
+        function toggleMenu() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('active');
+        }
+
         // 🔷 CEREBRO ACTUALIZADO
         const conocimiento = {
- ["hola", "hey", "buenos", "hi"],
+            saludos: ["hola", "hey", "buenos", "hi"],
             despedidas: ["adios", "chau", "hasta", "bye"],
             lenguajes: {
                 "python": "Python es un lenguaje interpretado, ideal para IA, datos y backend. ¿Qué quieres hacer con Python?",
@@ -553,7 +597,7 @@
         class OcladeBrain {
             constructor() { this.historial = []; }
 
-           ) {
+            analizar(mensaje) {
                 const m = mensaje.toLowerCase().trim();
 
                 if (conocimiento.saludos.some(p => m.includes(p))) {
@@ -591,52 +635,21 @@
                 return analisis + "\n💡 ¿Quieres que optimice, explique o debuggee este código?";
             }
 
-            // 🔥 ESTA FUNCIÓN AHORA USA CHAT.JS + BUSCA EN INTERNET SI NO ENCUENTRA
+            // 🔥 ESTA FUNCIÓN AHORA USA CHAT.JS
             respuestaInteligente(m) {
                 // Asegúrate de que chat.js esté cargado
                 if (window.OcladeChat) {
-                    const respuesta = OcladeChat.generate(m);
-                    // Si chat.js no da una respuesta útil, buscamos en internet
-                    if (respuesta.includes("no tengo una respuesta")) {
-                        return this.buscarEnInternet(m);
-                    }
-                    return respuesta;
+                    return OcladeChat.generate(m);
                 } else {
                     // Fallback si chat.js no se carga
-                    return this.buscarEnInternet(m);
+                    const respuestas = [
+                        "Interesante pregunta. ¿Podrías darme más contexto sobre qué lenguaje o framework estás usando?",
+                        "Déjame analizar... ¿Esto es para web, móvil, backend?",
+                        "Para ayudarte mejor, ¿me compartes un ejemplo de código o el error específico?",
+                        "Esa es una gran pregunta de programación. ¿Qué estás intentando construir?"
+                    ];
+                    return respuestas[Math.floor(Math.random() * respuestas.length)];
                 }
-            }
-
-            // 🔍 FUNCIÓN QUE BUSCA EN INTERNET
-            buscarEnInternet(query) {
-                // Creamos un div para el widget de búsqueda
-                const searchDiv = document.createElement('div');
-                searchDiv.className = 'gsc-control-cse';
-
-                // Creamos un div contenedor para el chat
-                const aiMsg = document.createElement('div');
-                aiMsg.className = 'message ai-msg';
-                aiMsg.innerHTML = `
-                    <p>🔍 <b>No encontré eso en mi base local.</b> Voy a buscar en la web por ti...</p>
-                    <div id="google-search-container-${Date.now()}"></div>
-                `;
-
-                // Insertamos el mensaje en el chat
-                chatArea.appendChild(aiMsg);
-                chatArea.scrollTop = chatArea.scrollHeight;
-
-                // Ahora insertamos el widget en el contenedor específico
-                const container = aiMsg.querySelector('[id^="google-search-container"]');
-                if (container) {
-                    container.appendChild(searchDiv);
-                    
-                    // Forzar recarga del script de Google CSE
-                    if (window.google && google.search && google.search.cse) {
-                        google.search.cse.element.renderAll();
-                    }
-                }
-
-                return "🔍 Estoy buscando en internet por ti..."; // Este mensaje no se mostrará porque ya se insertó el widget
             }
         }
 
@@ -644,6 +657,38 @@
         const chatArea = document.getElementById('chatArea');
         const userInput = document.getElementById('userInput');
         const sendBtn = document.querySelector('.send-btn');
+
+        // 🧊 ANIMACIÓN 3D AL ENVIAR MENSAJE
+        function iniciarAnimacion3D() {
+            const canvas = document.getElementById('model3d');
+            const ctx = canvas.getContext('2d');
+            canvas.width = 80;
+            canvas.height = 80;
+            canvas.style.display = 'block';
+
+            let rotation = 0;
+
+            function dibujarCubo() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.save();
+                ctx.translate(canvas.width / 2, canvas.height / 2);
+                ctx.rotate(rotation);
+                ctx.strokeStyle = '#00d9ff';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(-20, -20, 40, 40);
+                ctx.restore();
+                rotation += 0.05;
+            }
+
+            const interval = setInterval(() => {
+                dibujarCubo();
+            }, 30);
+
+            setTimeout(() => {
+                clearInterval(interval);
+                canvas.style.display = 'none';
+            }, 1500);
+        }
 
         function sendMessage() {
             const message = userInput.value.trim();
@@ -659,19 +704,20 @@
 
             userInput.value = '';
 
+            // 🧊 Mostrar animación 3D
+            iniciarAnimacion3D();
+
             showThinking();
 
             setTimeout(() => {
+                hideThinking();
                 const respuesta = brain.analizar(message);
-                // Solo mostramos la respuesta si no se insertó el widget de búsqueda
-                if (!respuesta.includes("buscando en internet")) {
-                    const aiMsg = document.createElement('div');
-                    aiMsg.className = 'message ai-msg';
-                    aiMsg.innerHTML = formatResponse(respuesta);
-                    chatArea.appendChild(aiMsg);
-                    chatArea.scrollTop = chatArea.scrollHeight;
-                }
-            }, 1000 + Math.random() * 1000);
+                const aiMsg = document.createElement('div');
+                aiMsg.className = 'message ai-msg';
+                aiMsg.innerHTML = formatResponse(respuesta);
+                chatArea.appendChild(aiMsg);
+                chatArea.scrollTop = chatArea.scrollHeight;
+            }, 1500 + Math.random() * 1000);
         }
 
         function showThinking() {
@@ -740,7 +786,7 @@
         }
         animate();
 
-        // 🎯 LIMPIAR CHAT
+        // 🎯 FUNCIONES DEL MENÚ LATERAL
         function limpiarChat() {
             chatArea.innerHTML = `
                 <div class="welcome-center" id="welcomeCenter">
@@ -749,6 +795,30 @@
                 </div>
             `;
             actualizarSaludo();
+        }
+
+        function mostrarAyuda() {
+            addMessage("❓ **AYUDA**\n\n• Escribe el nombre de un lenguaje (Python, JavaScript, etc.)\n• Pregunta sobre conceptos (variable, función, bucle)\n• Comparte errores para debuggear\n• Pega código para analizar", 'ai-msg');
+        }
+
+        function mostrarLenguajes() {
+            addMessage("💻 **LENGUAJES SOPORTADOS**\n\nPython • JavaScript • HTML • CSS\nJava • C++ • SQL • PHP\nReact • Node.js • Git", 'ai-msg');
+        }
+
+        function mostrarConceptos() {
+            addMessage("📚 **CONCEPTOS**\n\nVariables • Funciones • Bucles\nCondicionales • Arrays • Objetos\nClases • APIs • Git • Debugging", 'ai-msg');
+        }
+
+        function about() {
+            addMessage("🔷 **OcladeAI v1.0**\n\n✨ Bot de programación\n📱 100% desde iPhone\n🌐 GitHub + Vercel\n🧠 Sin dependencias\n💻 Código 100% propio", 'ai-msg');
+        }
+
+        function addMessage(text, className) {
+            const div = document.createElement('div');
+            div.className = `message ${className}`;
+            div.innerHTML = formatResponse(text);
+            chatArea.appendChild(div);
+            chatArea.scrollTop = chatArea.scrollHeight;
         }
 
         function generarSaludo() {
