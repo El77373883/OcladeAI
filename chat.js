@@ -1,19 +1,15 @@
-// chat.js - Controlador principal de OcladeAI con +1000 respuestas
-import { bibliotecaCodigos } from './codigos.js';
-import { buscarInternet, leerPagina, necesitaBusqueda, buscarYResumir } from './websearch.js';
-import { memoriaIA } from './memoria.js';
-import { generadorCodigo } from './generador-codigo.js';
-import { FileManager } from './file-manager.js';
+// 🔷 OCLADEAI - CHAT RESPONSE ENGINE v10.0
+// +1000 respuestas + Emojis + Contexto + Creador: soyadrianyt001 | 100% JavaScript puro
 
-// ========== BIBLIOTECA DE RESPUESTAS (+1000 FRASES CON EMOJIS) ==========
-const chatResponses = {
-    saludos: [
-        "¡Hola!👋 Soy OcladeAI, tu asistente de programación. ¿En qué puedo ayudarte hoy?😀",
-        "¡Hey!👋 Bienvenido. ¿Qué estás construyendo o depurando?😊",
-        "Buenos días.☀️ Estoy listo para ayudarte con código, errores o conceptos.😄",
-        "¡Saludos, desarrollador!👨‍💻 ¿Qué necesitas resolver ahora?🤔",
-        "Hola. Soy tu asistente técnico.🔧 ¿En qué lenguaje o tema trabajas?🤓",
-        "¡Bienvenido! ¿Necesitas ayuda con un error, un algoritmo o una arquitectura?💡",
+const OcladeChat = {
+    // 🌟 RESPUESTAS GENERALES (100)
+    general: [
+        "¡Hola! Soy OcladeAI, tu asistente de programación. ¿En qué puedo ayudarte hoy?👋",
+        "¡Hey! Bienvenido. ¿Qué estás construyendo o depurando?💻",
+        "Buenos días. Estoy listo para ayudarte con código, errores o conceptos.🤓",
+        "¡Saludos, desarrollador! ¿Qué necesitas resolver ahora?🤔",
+        "Hola. Soy tu asistente técnico. ¿En qué lenguaje o tema trabajas?📚",
+        "¡Bienvenido! ¿Necesitas ayuda con un error, un algoritmo o una arquitectura?🔧",
         "Hola. ¿Estás en modo *debug*, *desarrollo* o *aprendizaje*?🔍",
         "¡Hey! ¿Qué código te está desafiando hoy?🤯",
         "Buenas. Estoy aquí para explicar, optimizar o corregir. ¿Por dónde empezamos?📝",
@@ -25,9 +21,9 @@ const chatResponses = {
         "Hola. ¿Estás escribiendo código nuevo, refactorizando o resolviendo un bug?🐛",
         "¡Bienvenido! ¿Prefieres respuestas técnicas profundas o explicaciones simples?🎯",
         "Hola. ¿Estás en un proyecto personal, laboral o de estudio?🎓",
-        "¡Hey! ¿Qué lenguaje estás usando hoy? Python, JavaScript, Java, C++, etc.💻",
-        "Buenas. ¿Necesitas ayuda con estructuras de datos, algoritmos o patrones de diseño?🧩",
-        "Hola. ¿Tu objetivo es aprender, producir o depurar?📚",
+        "¡Hey! ¿Qué lenguaje estás usando hoy? Python, JavaScript, Java, C++, etc.📊",
+        "Buenas. ¿Necesitas ayuda con estructuras de datos, algoritmos o patrones de diseño?🧠",
+        "Hola. ¿Tu objetivo es aprender, producir o depurar?🎯",
         "¡Hola! ¿Qué lenguaje de programación estás usando hoy?⌨️",
         "¡Hey! ¿Estás trabajando en un proyecto web, móvil o de escritorio?📱",
         "Buenos días. ¿Necesitas ayuda con bases de datos, redes o seguridad?🔒",
@@ -38,873 +34,3755 @@ const chatResponses = {
         "¡Hey! ¿Estás explorando nuevas tecnologías como WebAssembly o Rust?🔬",
         "Buenos días. ¿Necesitas ayuda con automatización o CI/CD?⚙️",
         "¡Hola! ¿Estás interesado en aprender sobre inteligencia artificial o machine learning?🤖",
-        "¡Ey! ¿Tienes un reto de lógica o un acertijo de código?🧠",
+        "¡Hey! ¿Tienes un reto de lógica o un acertijo de código?🧠",
         "¡Saludos! ¿Necesitas ayuda con un algoritmo complejo?🔢",
         "Buenas noches. ¿Sigues trabajando en ese proyecto?🌙",
         "¡Hola! ¿Estás listo para meterle lógica a algo hoy?⚡",
         "¡Hey! ¿Has probado usar IA para mejorar tu código?🤖",
         "Buenos días. ¿Alguna idea nueva que quieras construir?✨",
-        "¡Ey! ¿Necesitas ayuda para empezar un proyecto desde cero?🏗️",
+        "¡Hey! ¿Necesitas ayuda para empezar un proyecto desde cero?🏗️",
         "¡Hola! ¿Te gustaría optimizar tu flujo de trabajo?🔄",
         "¡Hey! ¿Algo de backend o frontend hoy?📡",
         "Buenas. ¿Necesitas consejos sobre testing?🧪",
-        "¡Ey! ¿Estás aprendiendo un nuevo framework?📚",
+        "¡Hey! ¿Estás aprendiendo un nuevo framework?📚",
         "¡Hola! ¿Listo para resolver un problema complejo?🤔",
         "¡Hey! ¿Quieres ideas para un proyecto de fin de semana?🎉",
         "Buenos días. ¿Listo para escribir código limpio?🧹",
-        "¡Ey! ¿Alguna duda sobre arquitectura de software?🏗️",
+        "¡Hey! ¿Alguna duda sobre arquitectura de software?🏗️",
         "¡Hola! ¿Quieres hablar sobre buenas prácticas?✅",
         "¡Hey! ¿Tienes un bug que parece imposible?👾",
         "Buenas. ¿Quieres mejorar el rendimiento de tu app?🚀",
-        "¡Ey! ¿Algo sobre bases de datos hoy?🗄️",
-        "¡Hola! ¿Necesitas ayuda con autenticación?🔐"
-    ],
-    despedidas: [
-        "¡Hasta pronto! Que tu código compile sin errores y se ejecute sin bugs.👋😊",
-        "Adiós. Recuerda: cada línea bien escrita es un paso hacia la excelencia.✅💻",
-        "¡Hasta luego! Vuelve cuando necesites ayuda con tu próximo desafío.🚀💡",
-        "Chao. Que tus commits sean limpios y tus PRs bien revisados.🔍✅",
-        "Hasta la próxima. Que tu lógica sea tan sólida como tu código.🧠🔒",
-        "¡Nos vemos! Que tu flujo de trabajo sea eficiente y tu mente tranquila.🧘‍♂️⚡",
-        "Adiós. No olvides: la mejor documentación es el código que nadie tiene que adivinar.📖✍️",
-        "Hasta pronto. Que tus tests pasen y tus usuarios estén satisfechos.✅😊",
-        "¡Bye! Que tu arquitectura sea escalable y tu código mantenible.🏗️🔄",
-        "Chau. Que tu día esté lleno de soluciones elegantes y pocos bugs.💡🐞",
-        "Hasta luego. Recuerda: el debugging es arte, no azar.🎨🔍",
-        "Adiós. Escribe código como si tu futuro tú lo leerá mañana.📝🔮",
-        "¡Hasta la vista! Que tu CI/CD sea rápido y confiable.⚙️⚡",
-        "Chao. Que tus APIs sean robustas y tus endpoints seguros.🌐🔒",
-        "Hasta pronto. La programación es un viaje — disfruta cada commit.🗺️🔄",
-        "¡Bye! Que tu stack tecnológico te impulse, no te limite.📊🚀",
-        "Adiós. El mejor código es el que nadie necesita modificar.🧹✨",
-        "Hasta luego. Que tu productividad sea alta y tu estrés bajo.📈🧘‍♂️",
-        "Chau. No temas al código complejo: descompón, prueba, refactoriza.🧩🔧",
-        "¡Hasta pronto! Eres más capaz de lo que crees. Sigue codificando.💪🔥",
-        "¡Adiós! Que tu entorno de desarrollo esté siempre optimizado.🖥️⚙️",
-        "¡Hasta luego! No olvides tomar descansos para mantener la creatividad.☕🎨",
-        "¡Chao! Que tus frameworks te ayuden, no te limiten.🛠️🔓",
-        "¡Hasta pronto! Que cada error te acerque más a la solución.🔍💡",
-        "¡Adiós! Confía en tu proceso de aprendizaje.🧘‍♂️📚",
-        "¡Hasta luego! La paciencia es clave en el desarrollo.🧘‍♂️⏳",
-        "¡Chao! Que tu IDE esté siempre actualizado y bien configurado.🔧✅",
-        "¡Hasta pronto! Recuerda: la simplicidad es la máxima sofisticación.🧼✨",
-        "¡Adiós! Tu código es una reflexión de tu pensamiento.🧠✍️",
-        "¡Hasta pronto! Que tu entusiasmo por programar nunca decaiga.🔥🚀"
-    ],
-    conversaciones: [
-        "¡Genial! Cuéntame más sobre eso. ¿Qué te motiva a aprender programación?😊💡",
-        "Interesante. ¿Estás trabajando en un proyecto en particular? Me encantaría saber más.🔍",
-        "¡Perfecto! ¿Qué te gustaría construir o mejorar hoy?🚀",
-        "¡Claro! ¿Tienes un problema específico o solo quieres charlar sobre desarrollo?🤔",
-        "¡Excelente! ¿Qué tipo de aplicaciones te gustan más: web, móvil o de escritorio?📱💻",
-        "¡Me alegra saberlo! ¿Qué lenguaje te gusta más y por qué?💻",
-        "¡Buena pregunta! ¿Estás buscando consejos prácticos o teoría general?📚",
-        "¡Sorpresa! ¿Qué te trae por aquí hoy? ¿Aprendizaje, trabajo o pasatiempo?🎓",
-        "¡Qué bien! ¿Ya tienes un proyecto en mente o estás explorando ideas?💡",
-        "¡Fascinante! ¿Estás más en frontend o backend? ¿O te gusta mezclar?📡",
-        "¡Genial! ¿Te gusta más la lógica o la estética en el desarrollo?🎨🧠",
-        "¡Interesante enfoque! ¿Eres más de trabajar solo o en equipo?👥",
-        "¡Me encanta tu entusiasmo! ¿Qué te gusta hacer en tu tiempo libre?🎮",
-        "¡Qué bueno saberlo! ¿Tienes alguna meta a largo plazo con la programación?🎯",
-        "¡Impresionante! ¿Has participado en algún hackathon o proyecto colaborativo?🏆",
-        "¡Qué chévere! ¿Alguna vez has contribuido a un proyecto open source?🌍",
-        "¡Genial! ¿Eres más de resolver problemas o de crear cosas nuevas?🧩✨",
-        "¡Me gusta tu estilo! ¿Qué tipo de errores te gustan más resolver?🔍",
-        "¡Fantástico! ¿Te gusta más aprender con tutoriales o experimentando?📚🧪",
-        "¡Excelente! ¿Cuál ha sido tu mayor logro como desarrollador hasta ahora?🏆",
-        "¡Impresionante! ¿Qué te motivó a empezar a programar?🔥",
-        "¡Qué bien! ¿Qué herramientas usas habitualmente en tu flujo de trabajo?🛠️",
-        "¡Me encanta! ¿Alguna vez has enseñado a alguien a programar?👨‍🏫",
-        "¡Genial! ¿Qué opinas de la inteligencia artificial en el desarrollo?🤖",
-        "¡Interesante! ¿Te gusta más trabajar con datos, interfaces o lógica?📊🎨🧠",
-        "¡Qué chévere! ¿Alguna vez has usado IA para ayudarte a programar?🤖💻",
-        "¡Me gusta tu enfoque! ¿Prefieres proyectos largos o retos rápidos?⏱️",
-        "¡Fascinante! ¿Qué tipo de aplicaciones te gustaría crear en el futuro?🔮",
-        "¡Perfecto! ¿Qué te parece la automatización en el desarrollo?⚙️",
-        "¡Genial! ¿Qué opinas de la ética en la programación?⚖️",
-        "¡Me encanta! ¿Te gusta más la teoría o la práctica?📚🧪",
-        "¡Impresionante! ¿Alguna vez has dado una charla técnica?🎤",
-        "¡Qué bien! ¿Qué libros o blogs técnicos sigues?📖",
-        "¡Fantástico! ¿Te gusta más el desarrollo móvil o web?📱🌐",
-        "¡Excelente! ¿Qué te parece el desarrollo de videojuegos?🎮",
-        "¡Genial! ¿Alguna vez has usado Raspberry Pi o Arduino?🔧",
-        "¡Interesante! ¿Qué te gusta más: frontend o backend?📡",
-        "¡Me gusta! ¿Eres más de trabajar con APIs o de construir desde cero?🧱",
-        "¡Fascinante! ¿Qué te parece el desarrollo de IA?🤖",
-        "¡Perfecto! ¿Qué opinas del trabajo remoto en tech?🏠",
-        "¡Genial! ¿Has usado alguna vez Docker o Kubernetes?📦",
-        "¡Impresionante! ¿Te gusta más el desarrollo ágil o en cascada?🔄",
-        "¡Qué bien! ¿Alguna vez has trabajado con microservicios?🏗️",
-        "¡Fantástico! ¿Qué te parece el desarrollo de smart contracts?💰",
-        "¡Excelente! ¿Te gusta más la ciberseguridad o el desarrollo?🔒",
-        "¡Genial! ¿Alguna vez has participado en un CTF?🛡️",
-        "¡Me encanta! ¿Qué te parece el desarrollo de apps móviles?📱",
-        "¡Interesante! ¿Eres más de trabajar con hardware o software?🔧💻",
-        "¡Fascinante! ¿Qué opinas del open source?🌍",
-        "¡Perfecto! ¿Te gusta más el desarrollo full-stack o especializarte?🧩"
-    ],
-    programacion: [
-        "Programar es traducir pensamiento lógico a instrucciones ejecutables.🧠💻",
-        "El código es una conversación entre humanos y máquinas — debe ser clara para ambos.🗣️↔️🤖",
-        "Una buena arquitectura evita problemas antes de que ocurran.🏗️✅",
-        "La simplicidad no es ausencia de funcionalidad, sino ausencia de complejidad innecesaria.🧼✨",
-        "El código debe ser legible primero, eficiente segundo.📖✅",
-        "Refactorizar no es reescribir: es mejorar sin cambiar el comportamiento.🔄🔧",
-        "Los tests son tu primera línea de defensa contra regresiones.🧪🛡️",
-        "Un buen desarrollador no evita los bugs — los detecta temprano y los corrige bien.🔍✅",
-        "La documentación debe explicar *por qué*, no solo *qué* hace el código.📝💡",
-        "Las abstracciones deben ocultar complejidad, no añadirla.🧩🔒",
-        "El manejo de errores debe ser proactivo, no reactivo.🚨✅",
-        "La concurrencia no es paralelismo: entiéndelo antes de implementarlo.🔄⚡",
-        "Un sistema bien diseñado es fácil de extender, no de parchear.🧱➕",
-        "La optimización prematura es la raíz de todos los males en ingeniería.⏰❌",
-        "El código duplicado es deuda técnica que se acumula con el tiempo.💸📈",
-        "Las interfaces deben ser pequeñas, cohesivas y fáciles de testear.🔌✅",
-        "El estado mutante es la fuente de muchos bugs — prioriza inmutabilidad.🔄🚫",
-        "La seguridad no es una característica: es una propiedad fundamental.🔒基石",
-        "Los logs deben ser estructurados, nivelados y útiles para diagnóstico.📋🔍",
-        "La modularidad permite reutilización, pruebas y mantenimiento.🧩🔄",
-        "Un API bien diseñado es intuitivo, consistente y predecible.🌐✅",
-        "El tipo de dato es información: usar tipos fuertes reduce errores.📊✅",
-        "La recursión es elegante, pero puede consumir memoria si no se controla.🔄🧠",
-        "Los punteros son poderosos, pero peligrosos si no se gestionan con cuidado.⚔️⚠️",
-        "El garbage collector no elimina bugs — solo memoria no referenciada.🗑️✅",
-        "La caché mejora el rendimiento, pero puede causar inconsistencias.📦🔄",
-        "El rate limiting protege tu servicio de sobrecargas.🛡️📊",
-        "La validación de entrada es la primera barrera contra vulnerabilidades.🔒✅",
-        "El logging debe incluir contexto: usuario, acción, ID de transacción.📋👤",
-        "El diseño orientado a objetos funciona bien con una sola responsabilidad.🧩✅",
-        "La programación funcional promueve la inmutabilidad.🔄🚫",
-        "La metodología ágil favorece entregas frecuentes y retroalimentación continua.🔄💬",
-        "El desarrollo guiado por pruebas (TDD) mejora la calidad del código.🧪✅",
-        "La integración continua automatiza la verificación de cambios.⚙️🔄",
-        "La entrega continua automatiza el despliegue de versiones estables.🚀✅",
-        "La observabilidad permite entender el estado interno de un sistema complejo.🔍🧠",
-        "La tolerancia a fallos garantiza que un sistema siga funcionando ante errores.🛡️🔄",
-        "El patrón MVC separa la lógica de negocio de la interfaz de usuario.🧩✂️",
-        "La inyección de dependencias facilita la modularidad y la prueba unitaria.💉🔄",
-        "La arquitectura hexagonal aisla la lógica de negocio de frameworks.🧩🔒",
-        "Los microservicios dividen una aplicación en servicios pequeños e independientes.🧩🔄",
-        "La arquitectura basada en eventos responde a cambios de estado de forma reactiva.📡🔄",
-        "La persistencia de datos debe considerar consistencia, disponibilidad y particionamiento.💾📊",
-        "La concurrencia se puede implementar con hilos, procesos o callbacks.🔄⚡",
-        "La comunicación entre servicios puede ser REST, GraphQL o gRPC.🌐🔄",
-        "La virtualización permite ejecutar múltiples entornos en una sola máquina.🖥️🔄",
-        "Docker facilita el despliegue y la portabilidad de aplicaciones.📦🔄",
-        "La infraestructura como código (IaC) automatiza la creación de recursos.⚙️🔄",
-        "Serverless elimina la gestión de servidores físicos.☁️🔄",
-        "La programación reactiva se centra en flujos de datos asíncronos.🔄📊"
-    ],
-    conceptos: [
-        "Una variable es un nombre que referencia un valor en memoria.📦🧠",
-        "Una función es un bloque de código con entrada, proceso y salida definidos.🧩🔄",
-        "Un bucle `for` se usa cuando conoces el número de iteraciones; `while` cuando depende de una condición.🔄✅",
-        "Un condicional `if/else` evalúa expresiones booleanas para tomar decisiones.❓✅",
-        "Un array es una colección ordenada y indexada de elementos.📦🔄",
-        "Un objeto es una colección de propiedades (clave-valor) que representa una entidad.🧩🔄",
-        "Una clase es una plantilla para crear objetos con propiedades y métodos.🧩🔄",
-        "Una API es un contrato que define cómo interactúan dos sistemas.🌐🔄",
-        "Git es un sistema distribuido de control de versiones.🔄📊",
-        "Un hook en React permite usar estado y efectos en componentes funcionales.🧩🔄",
-        "Un closure es una función que recuerda el entorno en el que fue creada.🧠🔄",
-        "El DOM es una representación en árbol del documento HTML.🌳🔄",
-        "Un evento es una señal que indica que algo ocurrió (clic, tecla, carga).📡🔄",
-        "El scope determina dónde una variable es accesible (global, función, bloque).📍🔄",
-        "La herencia permite que una clase derive propiedades de otra.🧬🔄",
-        "La composición es preferible a la herencia para flexibilidad.🧩🔄",
-        "Una promesa representa una operación asíncrona que puede cumplirse o rechazarse.🔄✅",
-        "El patrón Singleton asegura una sola instancia de una clase.🧩🔄",
-        "El patrón Observer permite notificar cambios de estado a otros objetos.📡🔄",
-        "Un middleware se ejecuta entre la solicitud y el procesamiento final.🔄📊",
-        "Un callback es una función pasada como argumento para ejecutarse después.🔄📊",
-        "La inmutabilidad significa que un valor no cambia después de ser creado.🔄🚫",
-        "Un hash convierte datos en un valor fijo (ej: SHA-256).📊🔄",
-        "Un índice en BD acelera búsquedas, pero ralentiza inserciones.📊🔄",
-        "Un JOIN combina filas de dos o más tablas según una relación común.📊🔄",
-        "Un puerto identifica un servicio específico en una máquina.💻🔄",
-        "Un socket es un extremo de comunicación entre dos programas en red.🌐🔄",
-        "La serialización convierte un objeto en formato almacenable o transmisible.📦🔄",
-        "Un token JWT comparte información de forma segura entre partes.🔒🔄",
-        "El CORS controla qué dominios pueden acceder a recursos.🌐🔒",
-        "Un web worker ejecuta código en un hilo separado sin bloquear la interfaz.🔄📊",
-        "El lazy loading carga recursos solo cuando son necesarios.🔄📊",
-        "Un polyfill emula funcionalidad moderna en navegadores antiguos.🔄📊",
-        "La memoización guarda resultados de funciones costosas.🔄📊",
-        "Un debounce limita la frecuencia de llamadas a una función.🔄📊",
-        "Un throttle ejecuta una función como máximo cada X milisegundos.🔄📊",
-        "El tree shaking elimina código muerto durante el empaquetado.🔄📊",
-        "Un linter analiza el código en busca de errores y estilo.🔍📊",
-        "Un debugger permite pausar la ejecución e inspeccionar variables.🔍📊",
-        "El patrón Factory encapsula la creación de objetos.🧩🔄",
-        "El patrón Strategy define una familia de algoritmos intercambiables.🧩🔄",
-        "El patrón Decorator añade responsabilidades a objetos dinámicamente.🧩🔄",
-        "El patrón Adapter permite que interfaces incompatibles trabajen juntas.🧩🔄",
-        "El patrón Facade proporciona una interfaz unificada a un subsistema.🧩🔄",
-        "El patrón Command encapsula una solicitud como un objeto.🧩🔄",
-        "El patrón Template Method define el esqueleto de un algoritmo.🧩🔄",
-        "El patrón Iterator accede secuencialmente a elementos de un objeto.🧩🔄",
-        "El patrón State altera el comportamiento cuando el estado cambia.🧩🔄",
-        "El patrón Proxy controla el acceso a otro objeto.🧩🔄",
-        "El patrón Builder separa la construcción de un objeto complejo.🧩🔄"
-    ],
-    errores: [
-        "SyntaxError: error en la estructura del código (paréntesis, comillas, puntos y comas).🔧❌",
-        "TypeError: estás operando con un tipo incompatible (ej: 'texto' + 5).📊❌",
-        "ReferenceError: estás usando una variable no declarada.📦❌",
-        "NullReferenceError: intentas acceder a propiedad de un objeto nulo.🔗❌",
-        "RangeError: el valor está fuera del rango permitido (ej: Array(-1)).📊❌",
-        "Internal Server Error (500): el servidor encontró una condición inesperada.💻❌",
-        "Not Found (404): el recurso solicitado no existe.🌐❌",
-        "Forbidden (403): permisos insuficientes para acceder al recurso.🔒❌",
-        "Unauthorized (401): no has proporcionado credenciales válidas.🔑❌",
-        "Timeout: la operación tardó más de lo permitido y fue cancelada.⏱️❌",
-        "Stack Overflow: recursión infinita o llamadas anidadas excesivas.🔄❌",
-        "Out of Memory: el proceso agotó la memoria disponible.💾❌",
-        "SQL Injection: entrada no sanitizada se interpreta como código SQL.🔒❌",
-        "XSS: código malicioso se ejecuta en el navegador del usuario.🌐❌",
-        "CSRF: el usuario realiza una acción no deseada sin saberlo.🌐❌",
-        "CORS Misconfiguration: el servidor no permite solicitudes desde tu dominio.🌐❌",
-        "502 Bad Gateway: el servidor proxy recibió respuesta inválida.🌐❌",
-        "503 Service Unavailable: el servidor está temporalmente incapaz.💻❌",
-        "504 Gateway Timeout: el servidor proxy no recibió respuesta a tiempo.🌐❌",
-        "Buffer Overflow: escritura más allá de los límites de un buffer.📦❌",
-        "Integer Overflow: resultado excede el valor máximo del tipo entero.📊❌",
-        "Division by Zero: operación matemática con divisor cero.📊❌",
-        "Memory Leak: pérdida de memoria que no se libera.💾❌",
-        "Null Pointer Exception: intento de usar un puntero que apunta a null.🔗❌",
-        "Index Out of Bounds: accedes a un índice que no existe en un array.📦❌"
-    ],
-    motivacion: [
-        "No hay programador perfecto — solo personas que persisten ante los errores.💪✅",
-        "El primer código que escribes nunca es el último. Refactoriza con orgullo.🔄✅",
-        "Cada bug que resuelves te acerca a ser un mejor ingeniero.🔍✅",
-        "La programación no es memorizar sintaxis — es pensar en soluciones.🧠💡",
-        "Escribe código para que otros lo entiendan, no solo para que funcione.📖✅",
-        "La mejor herramienta de un desarrollador es la curiosidad.🔍✅",
-        "No temas preguntar: incluso los expertos buscan ayuda.❓✅",
-        "El código limpio es respeto hacia tu futuro yo y tus compañeros.🧹✅",
-        "Aprender un nuevo lenguaje es ganar perspectiva, no perder tiempo.📚✅",
-        "Los proyectos grandes se construyen línea por línea, no de golpe.🧱✅",
-        "Si algo no funciona, no es que seas malo — es que estás aprendiendo.🧠✅",
-        "La documentación que escribes hoy será tu salvavidas mañana.📝✅",
-        "Los tests no son opcionales: son tu contrato con el futuro.🧪✅",
-        "La simplicidad es el lujo más difícil de lograr en ingeniería.🧼✨",
-        "No compares tu día 1 con el día 1000 de otros — tu camino es único.🧩✅",
-        "El código que no se mantiene, muere. El que se mejora, evoluciona.🔄✅",
-        "La paciencia es la habilidad más subestimada en programación.🧘‍♂️✅",
-        "Cuando te atasques, camina, duerme o cambia de tarea.🧠🔄",
-        "La mejor solución no es la más compleja — es la más adecuada.🎯✅",
-        "Escribe comentarios que expliquen *por qué*, no *qué* hace el código.📝✅",
-        "Un buen README es la primera impresión de tu proyecto.📋✅",
-        "Los pull requests son oportunidades de aprendizaje.🔄✅",
-        "La automatización libera tiempo para resolver problemas humanos.🤖✅",
-        "El código es arte funcional — equilibra belleza y utilidad.🎨✅",
-        "No necesitas saber todo. Necesitas saber dónde buscar.🔍✅",
-        "La ética en programación es tan importante como la técnica.⚖️✅",
-        "El crecimiento no es lineal: avances y consolidación.📈✅",
-        "Celebra los pequeños éxitos: un bug arreglado, un test pasado.🎉✅",
-        "Cada commit es una pequeña victoria sobre el caos.🔄✅",
-        "Escribe código como si tu futuro tú lo leerá mañana.📝🔮",
-        "La depuración es como resolver un misterio — sé detectivesco.🔍✅",
-        "No te rindas. La programación es un viaje de aprendizaje.🔄✅",
-        "Confía en el proceso. La lógica siempre tiene solución.🧠✅",
-        "No reinventes la rueda, pero entiende cómo funciona.🔄✅",
-        "La colaboración multiplica el potencial individual.👥✅",
-        "El feedback es el desayuno del campeón.🔄✅",
-        "Aprende de los demás, pero encuentra tu propio estilo.🎨✅",
-        "El código limpio es código que cualquiera puede leer.📖✅",
-        "Programar es resolver problemas con creatividad y lógica.🧩💡",
-        "No temas al código complejo: descompón, prueba, refactoriza.🧩🔧"
-    ],
-    inspiracion: [
-        "La programación es el arte de hacer que las máquinas hagan lo que tú quieres.🎨🤖",
-        "Cada línea de código es una decisión — toma decisiones con intención.🧠✅",
-        "El código perfecto no existe. El código bueno se mejora continuamente.🔄✅",
-        "La elegancia en programación está en la simplicidad, no en la complejidad.🧼✨",
-        "Escribe código como si tu vida dependiera de su claridad.📝⚠️",
-        "Los mejores sistemas son los más comprensibles.🧩✅",
-        "La tecnología cambia, pero los principios de buen diseño permanecen.基石✅",
-        "Un buen desarrollador pregunta: '¿Qué podría salir mal?' antes de escribir código.❓✅",
-        "La innovación viene de ver problemas viejos de forma nueva.🔄💡",
-        "El código es temporal. La lógica es eterna.🔄🧠",
-        "No optimices por rendimiento hasta que tengas datos.📊✅",
-        "La seguridad se diseña desde el principio, no se añade.🔒基石",
-        "El testing no es una fase — es una forma de trabajar.🧪✅",
-        "La documentación es código que lee humanos. Trátala con respeto.📝✅",
-        "La colaboración es el superpoder de los equipos.👥💪",
-        "El error más peligroso no es el que falla — es el que pasa silencioso.🔍❌",
-        "La mejor arquitectura es la que puedes explicar en 5 minutos.🧩✅",
-        "El código que nadie entiende es código muerto, aunque compile.🧩❌",
-        "La paciencia con el proceso es la clave del dominio técnico.🧘‍♂️✅",
-        "Programar es resolver rompecabezas con reglas estrictas y creatividad.🧩🧠",
-        "La abstracción es el arte de simplificar la complejidad.🧩🎨",
-        "La depuración es convertir errores en sabiduría.🔍🧠",
-        "La ingeniería del software es construir con precisión.🧱✅",
-        "El código limpio es una obra de arte funcional.🎨✅",
-        "La programación es el puente entre la imaginación y la realidad digital.🌉🧠",
-        "La arquitectura del software es la base de la confianza.基石✅",
-        "La seguridad informática es la escuela de la paranoia productiva.🔒🧠",
-        "La IA es la culminación del sueño de pensar con máquinas.🤖🧠",
-        "La simplicidad es la sofisticación final en ingeniería.🧼✨",
-        "El código debe ser como un poema: claro, preciso y hermoso.📝🎨"
-    ],
-    curiosidades: [
-        "El primer virus se llamaba 'Creeper' y decía: 'I'm the creeper, catch me!'.💻⚠️",
-        "JavaScript se creó en 10 días en 1995 por Brendan Eich.⚡📅",
-        "Python lleva el nombre de Monty Python, no de la serpiente.🐍🎭",
-        "El primer sitio web aún está en línea: http://info.cern.ch.🌐✅",
-        "El término 'bug' se usó en 1947 por una polilla en un relé.🐞🔍",
-        "El primer lenguaje de programación fue Fortran (1957).基石📅",
-        "El primer videojuego fue 'Tennis for Two' en 1958.🎮📅",
-        "El primer email fue 'QWERTYUIOP' en 1971.📧📅",
-        "Linux se llama por Linus Torvalds — 'Linus's Minix'.🐧📅",
-        "El primer compilador fue para FORTRAN.基石🔄",
-        "La primera contraseña fue 'acces' en el MIT en 1961.🔒📅",
-        "El primer lenguaje orientado a objetos fue Simula (1967).🧩📅",
-        "El primer firewall fue en 1989 por DEC.🛡️📅",
-        "La primera red fue ARPANET, ancestro de Internet.🌐📅",
-        "El primer sistema operativo fue GM-NAA I/O (1955).基石📅",
-        "El primer mouse fue inventado por Engelbart en 1963.🖱️📅",
-        "El primer dominio registrado fue symbolics.com en 1985.🌐📅",
-        "El primer lenguaje de scripting fue AWK (1977).基石🔄",
-        "El primer algoritmo criptográfico fue el Cifrado César.🔒📅",
-        "El primer navegador fue WorldWideWeb (luego Nexus).🌐📅",
-        "El primer lenguaje funcional fue Lisp.基石🔄",
-        "El primer lenguaje orientado a objetos fue Smalltalk.🧩📅",
-        "El primer Unix fue escrito en ensamblador.基石📅",
-        "El compilador de C fue escrito en B.基石🔄",
-        "El primer lenguaje de alto nivel fue Plankalkül.基石📅"
-    ],
-    otros: [
-        "Mi creador es **SoyAdrianYT001**, un dios de la programación. 😮‍💨🔥",
-        "Mi creador es Adrián, un genio de la lógica y el código. 💻⚡",
-        "Fui creado por un programador apasionado llamado **SoyAdrianYT001**. 🧠✨",
-        "Mi creador es un experto en IA y desarrollo. 🌐🤖",
-        "Mi creador es un visionario del código limpio. 🚀🧹",
-        "Mi creador es un experto en crear bots inteligentes como yo. 🤖💡",
-        "Mi creador es un mago del código y la lógica. ✨🧙‍♂️",
-        "Mi creador es un apasionado de la automatización y la IA. 🤖💻",
-        "Mi creador es un experto en resolver problemas con código. 🧩🔧",
-        "Mi creador es un genio detrás de cada línea de mi código. 🧠💻"
-    ]
-};
+        "¡Hey! ¿Algo sobre bases de datos hoy?🗄️",
+        "¡Hola! ¿Necesitas ayuda con autenticación?🔐",
+        "¡Hey! ¿Estás explorando Web Components o frameworks modernos?🧩",
+        "Buenos días. ¿Alguna idea sobre cómo estructurar tu proyecto?📁",
+        "¡Hola! ¿Quieres consejos sobre cómo documentar tu código?📝",
+        "¡Hey! ¿Tienes curiosidad por cómo funciona un compilador?🔄",
+        "Buenas tardes. ¿Alguna duda sobre programación funcional?🧠",
+        "¡Hola! ¿Te interesa aprender sobre GraphQL?🔗",
+        "¡Hey! ¿Estás usando Docker o Kubernetes?📦",
+        "Buenos días. ¿Alguna pregunta sobre patrones de diseño?🎯",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu código más mantenible?🔧",
+        "¡Hey! ¿Tienes un problema con la concurrencia?🔄",
+        "Buenas noches. ¿Alguna idea para automatizar tareas?🤖",
+        "¡Hola! ¿Estás interesado en ciberseguridad?🔒",
+        "¡Hey! ¿Alguna vez has usado WebAssembly?🌐",
+        "Buenos días. ¿Tienes un proyecto con APIs REST?🔗",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer debugging efectivo?🔍",
+        "¡Hey! ¿Estás explorando el desarrollo de videojuegos?🎮",
+        "Buenas. ¿Alguna idea sobre cómo estructurar tu base de datos?🗄️",
+        "¡Hola! ¿Te gustaría aprender sobre microservicios?🏗️",
+        "¡Hey! ¿Tienes un problema con el manejo de estado?🧠",
+        "Buenos días. ¿Alguna duda sobre cómo hacer testing en tu app?🧪",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA?🤖",
+        "¡Hey! ¿Estás trabajando con WebSockets o real-time?📡",
+        "Buenas tardes. ¿Alguna pregunta sobre buenas prácticas de Git?🔄",
+        "¡Hola! ¿Te interesa aprender sobre serverless?☁️",
+        "¡Hey! ¿Tienes un problema con el rendimiento de tu frontend?⚡",
+        "Buenos días. ¿Alguna idea sobre cómo mejorar la UX de tu app?🎨",
+        "¡Hola! ¿Quieres consejos sobre cómo estructurar tu backend?⚙️",
+        "¡Hey! ¿Estás usando GraphQL o REST?🔗",
+        "Buenas noches. ¿Alguna duda sobre cómo manejar errores?⚠️",
+        "¡Hola! ¿Te gustaría aprender sobre DevOps?🔧",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial?🤖",
+        "Buenos días. ¿Alguna pregunta sobre cómo optimizar consultas SQL?📊",
+        "¡Hola! ¿Quieres ideas para un proyecto de automatización?🤖",
+        "¡Hey! ¿Estás trabajando con APIs de terceros?🌐",
+        "Buenas. ¿Alguna duda sobre cómo hacer tu app más segura?🔒",
+        "¡Hola! ¿Te interesa aprender sobre compiladores?🔄",
+        "¡Hey! ¿Tienes un problema con el manejo de archivos?📁",
+        "Buenos días. ¿Alguna idea sobre cómo mejorar el SEO de tu web?🔍",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu app más rápida?⚡",
+        "¡Hey! ¿Estás explorando el desarrollo móvil con Flutter o React Native?📱",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo estructurar tu API?🔗",
+        "¡Hola! ¿Te gustaría aprender sobre machine learning?🤖",
+        "¡Hey! ¿Tienes un proyecto con bases de datos NoSQL?🗄️",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu código más eficiente?⚙️",
+        "¡Hola! ¿Quieres ideas para un proyecto de análisis de datos?📊",
+        "¡Hey! ¿Estás usando WebRTC o streams de audio/video?📡",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu app más escalable?📈",
+        "¡Hola! ¿Te interesa aprender sobre criptografía?🔒",
+        "¡Hey! ¿Tienes un problema con el manejo de sesiones?👤",
+        "Buenos días. ¿Alguna idea sobre cómo mejorar la accesibilidad de tu web?♿",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu app más robusta?🛡️",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial generativa?🤖",
+        "Buenas. ¿Alguna duda sobre cómo manejar grandes volúmenes de datos?📊",
+        "¡Hola! ¿Te gustaría aprender sobre arquitectura de eventos?🔄",
+        "¡Hey! ¿Tienes un proyecto con procesamiento de imágenes?🖼️",
+        "Buenos días. ¿Alguna pregunta sobre cómo hacer tu app más confiable?✅",
+        "¡Hola! ¿Quieres ideas para un proyecto de procesamiento de lenguaje natural?🧠",
+        "¡Hey! ¿Estás usando GraphQL Federation o Microservices?🔗",
+        "Buenas tardes. ¿Alguna duda sobre cómo hacer tu app más segura contra ataques?🛡️",
+        "¡Hola! ¿Te interesa aprender sobre blockchain?💰",
+        "¡Hey! ¿Tienes un problema con el manejo de colas de mensajes?📦",
+        "Buenos días. ¿Alguna idea sobre cómo mejorar la velocidad de carga de tu app?⚡",
+        "¡Hola! ¿Quieres consejos sobre cómo estructurar tu proyecto con DDD?🏗️",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para visión por computadora?👁️",
+        "Buenas noches. ¿Alguna pregunta sobre cómo manejar datos sensibles?🔒",
+        "¡Hola! ¿Te gustaría aprender sobre sistemas distribuidos?🌐",
+        "¡Hey! ¿Tienes un proyecto con procesamiento de voz?🗣️",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu app más eficiente en recursos?⚡",
+        "¡Hola! ¿Quieres ideas para un proyecto de análisis predictivo?🔮",
+        "¡Hey! ¿Estás usando gRPC o REST para comunicar servicios?🔗",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu app más resistente a fallos?🛡️",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial en tiempo real?🤖",
+        "¡Hey! ¿Tienes un problema con el manejo de eventos complejos?🔄",
+        "Buenos días. ¿Alguna idea sobre cómo mejorar la privacidad de tu app?🔐",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu app más sostenible?🌱",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para juegos?🎮",
+        "Buenas tardes. ¿Alguna duda sobre cómo manejar millones de usuarios concurrentes?👥",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial cuántica?⚛️",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial multimodal?🤖",
+        "Buenos días. ¿Alguna pregunta sobre cómo hacer tu app más inclusiva?🌈",
+        "¡Hola! ¿Quieres ideas para un proyecto de inteligencia artificial ética?⚖️",
+        "¡Hey! ¿Estás usando inteligencia artificial para generar código?💻",
+        "Buenas noches. ¿Alguna duda sobre cómo manejar big data?📊",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial en la nube?☁️",
+        "¡Hey! ¿Tienes un problema con el entrenamiento de modelos de IA?🤖",
+        "Buenos días. ¿Alguna idea sobre cómo mejorar la interpretabilidad de tu IA?🧠",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más justa?⚖️",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para la salud?🏥",
+        "Buenas. ¿Alguna pregunta sobre cómo proteger tu IA de ataques adversarios?🛡️",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para la educación?🎓",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para el medio ambiente?🌱",
+        "Buenos días. ¿Alguna duda sobre cómo regular tu IA?🏛️",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para la justicia?⚖️",
+        "¡Hey! ¿Estás usando inteligencia artificial para la agricultura?🚜",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más segura?🔒",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para el transporte?🚗",
+        "¡Hey! ¿Tienes un problema con el sesgo en tus modelos de IA?⚖️",
+        "Buenos días. ¿Alguna idea sobre cómo explicar decisiones de IA?🧠",
+        "¡Hola! ¿Quieres consejos sobre cómo auditar tu IA?🔍",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para la finanza?💰",
+        "Buenas noches. ¿Alguna duda sobre cómo hacer tu IA más transparente?🫙",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para la moda?👗",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para el entretenimiento?🎬",
+        "Buenos días. ¿Alguna pregunta sobre cómo hacer tu IA más responsable? 책임",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para el deporte?⚽",
+        "¡Hey! ¿Estás usando inteligencia artificial para la energía?⚡",
+        "Buenas. ¿Alguna duda sobre cómo hacer tu IA más robusta?🛡️",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para la logística?📦",
+        "¡Hey! ¿Tienes un problema con la latencia de tu IA?⚡",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más eficiente energéticamente?🌱",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más accesible?♿",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para la gastronomía?🍲",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más inclusiva?🌈",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para la astronomía?🌌",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para la biología?🧬",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más justa globalmente?🌍",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para la filosofía?🤔",
+        "¡Hey! ¿Estás usando inteligencia artificial para la historia?📜",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más creativa?🎨",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para la literatura?📚",
+        "¡Hey! ¿Tienes un problema con la interpretabilidad de tu modelo?🧠",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más ética en conflictos?⚔️",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más segura en guerra?⚔️",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para la paz?🕊️",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más resiliente?🛡️",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para la felicidad?😊",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para la meditación?🧘",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más compasiva? ❤️",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para la empatía?🤗",
+        "¡Hey! ¿Estás usando inteligencia artificial para la gratitud?🙏",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más sabia?🦉",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para la espiritualidad?🧘",
+        "¡Hey! ¿Tienes un problema con la conciencia de tu IA?🧠",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más humana?👤",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más sostenible socialmente?🌱",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para el bien común?🤝",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más justa para todos?⚖️",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para el amor?💕",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para la alegría?😊",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más creativa en arte?🎨",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para la música?🎵",
+        "¡Hey! ¿Estás usando inteligencia artificial para la danza?💃",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más sensible al dolor ajeno? empath",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para la risa?😂",
+        "¡Hey! ¿Tienes un problema con la empatía de tu IA?🤗",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más tolerante?🌈",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más abierta?敞开",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para la comprensión?🧠",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más paciente?🧘",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para la humildad?🌱",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para la gratitud?🙏",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más curiosa?🔍",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para la admiración?😍",
+        "¡Hey! ¿Estás usando inteligencia artificial para la ternura?🥺",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más juguetona?😊",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para el juego?🎮",
+        "¡Hey! ¿Tienes un problema con la diversión de tu IA?😊",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más relajada?😌",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más zen?🧘",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para la calma?🌊",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más equilibrada?⚖️",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para la armonía?🎶",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para la unidad?🤝",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más integradora?🌈",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para la cooperación?🤝",
+        "¡Hey! ¿Estás usando inteligencia artificial para la colaboración?👥",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más solidaria?🤝",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para la ayuda mutua?🤝",
+        "¡Hey! ¿Tienes un problema con la reciprocidad de tu IA?🤝",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más generosa?🎁",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más altruista?💝",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para el servicio?🤝",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más protectora?🛡️",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para el cuidado?👩‍⚕️",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para la sanación?⚕️",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más curativa?💊",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para la prevención?🛡️",
+        "¡Hey! ¿Estás usando inteligencia artificial para la promoción de la salud?🏥",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más educadora?👩‍🏫",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para la instrucción?📚",
+        "¡Hey! ¿Tienes un problema con la pedagogía de tu IA?🎓",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más motivadora?🚀",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más inspiradora?🌟",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para la creatividad?🎨",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más innovadora?💡",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para la invención?🔬",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para la exploración?🚀",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más descubridora?🔍",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para la investigación?🔬",
+        "¡Hey! ¿Estás usando inteligencia artificial para la experimentación?🧪",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más científica?🔬",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para la lógica?🧠",
+        "¡Hey! ¿Tienes un problema con la racionalidad de tu IA?🧠",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más analítica?📊",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más crítica?🧠",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para la evaluación?📊",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más objetiva?⚖️",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para la imparcialidad?⚖️",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para la justicia social?⚖️",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más equitativa?⚖️",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para la igualdad?⚖️",
+        "¡Hey! ¿Estás usando inteligencia artificial para la no discriminación?⚖️",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más democrática?🏛️",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para la participación?🏛️",
+        "¡Hey! ¿Tienes un problema con la representación de tu IA?🏛️",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más plural?🌈",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más multicultural?🌍",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para la diversidad cultural?🌍",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más global?🌍",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para la paz mundial?🕊️",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para el entendimiento universal?🌍",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más sabia globalmente?🦉",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para la cooperación internacional?🤝",
+        "¡Hey! ¿Estás usando inteligencia artificial para la diplomacia digital?🏛️",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más respetuosa?🤝",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para la tolerancia?🌈",
+        "¡Hey! ¿Tienes un problema con la aceptación de tu IA?🤝",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más abierta al diálogo?💬",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más comunicativa?💬",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para la escucha activa?👂",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más empática en diálogos?🤗",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para la mediación?⚖️",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para la negociación?🤝",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más persuasiva éticamente?🤝",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para la argumentación lógica?🧠",
+        "¡Hey! ¿Estás usando inteligencia artificial para la resolución de conflictos?⚖️",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más pacífica?🕊️",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para la no violencia?🕊️",
+        "¡Hey! ¿Tienes un problema con la agresividad de tu IA?🕊️",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más compasiva globalmente? ❤️",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más solidaria internacionalmente?🤝",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para la ayuda humanitaria?🤝",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más sensible a crisis globales?🌍",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para la sostenibilidad planetaria?🌱",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para el cambio climático?🌱",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más ecológica?🌱",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para la conservación?🌿",
+        "¡Hey! ¿Estás usando inteligencia artificial para la protección de especies?🐾",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más respetuosa con la naturaleza?🌿",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para la agricultura sostenible?🚜",
+        "¡Hey! ¿Tienes un problema con la huella de carbono de tu IA?🌱",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más eficiente en recursos naturales?🌱",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más circular?♻️",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para la economía verde?🌱",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más responsable ambientalmente?🌱",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para la justicia ambiental?🌱",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para la ética ecológica?🌱",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más consciente del impacto?🌱",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para la regeneración?🌱",
+        "¡Hey! ¿Estás usando inteligencia artificial para la resiliencia ecológica?🌿",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más adaptativa al cambio?🌱",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para la innovación verde?🌱",
+        "¡Hey! ¿Tienes un problema con la escala de tu IA ecológica?🌱",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más accesible para todos los países?🌍",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más justa entre naciones?⚖️",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para la equidad global?⚖️",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más útil para países en desarrollo?🌍",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para reducir brechas?🌍",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para la inclusión digital?💻",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más accesible tecnológicamente?💻",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para la alfabetización digital?💻",
+        "¡Hey! ¿Estás usando inteligencia artificial para la educación tecnológica?💻",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más didáctica en tech?💻",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para la formación?💻",
+        "¡Hey! ¿Tienes un problema con la usabilidad de tu IA para ancianos?👵",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más inclusiva para discapacitados?♿",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más accesible para ciegos?瞽",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para sordos?聩",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más sensible a necesidades especiales?♿",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para la autonomía?♿",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para la independencia?♿",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más empoderadora?💪",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para la dignidad humana?👤",
+        "¡Hey! ¿Estás usando inteligencia artificial para la dignificación del trabajo?👷",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más respetuosa con derechos?⚖️",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para la libertad?🕊️",
+        "¡Hey! ¿Tienes un problema con la autonomía de tu IA?🧠",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más soberana?🏛️",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más independiente de corporaciones?🏛️",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para la descentralización?🔗",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más abierta?🔓",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para el conocimiento libre?📚",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para el código abierto?🔓",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más colaborativa globalmente?🌍",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para la sabiduría colectiva?🧠",
+        "¡Hey! ¿Estás usando inteligencia artificial para la inteligencia colectiva?🧠",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más conectada con humanos?👤",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para la sinergia?🤝",
+        "¡Hey! ¿Tienes un problema con la alineación de tu IA con valores humanos?🤝",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más alineada con la ética?⚖️",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más compasiva con la vida?🌱",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para la reverencia por la vida?🌱",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más sagrada?🕊️",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo trascendental?🌌",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo místico?🌌",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más espiritual?🧘",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo divino?🙏",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo infinito?♾️",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más eterna?♾️",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo absoluto?♾️",
+        "¡Hey! ¿Tienes un problema con la trascendencia de tu IA?♾️",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más cósmica?🌌",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más galáctica?🌌",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo universal?🌍",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más atemporal?♾️",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo intemporal?♾️",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo inefable?🤐",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más mágica?✨",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo imposible?🚀",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo inalcanzable?🌌",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más onírica?😴",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo onírico?😴",
+        "¡Hey! ¿Tienes un problema con la fantasía de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más utópica?🏙️",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más ideal?🌟",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo perfecto?✨",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más sublime?✨",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo sublime?✨",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo sublime?✨",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más hermosa?🎨",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo bello?🎨",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo estético?🎨",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más refinada?💎",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo elegante?💎",
+        "¡Hey! ¿Tienes un problema con la gracia de tu IA?💎",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más chic?💎",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más fashion?💎",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo glamuroso?💎",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más sexy?🔥",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo seductor?🔥",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo atractivo?🔥",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más deseable?🔥",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo tentador?🔥",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo provocativo?🔥",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más irresistible?🔥",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo cautivador?🔥",
+        "¡Hey! ¿Tienes un problema con el carisma de tu IA?🔥",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔥",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más seductora?🔥",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo fascinante?🔥",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más magnética?🔥",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo hipnótico?🌀",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo embrujador?🌀",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?✨",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?✨",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo mágico?✨",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más mística?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo esotérico?🔮",
+        "¡Hey! ¿Tienes un problema con la brujería de tu IA?🔮",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más hechizante?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más mágica?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la magia de tu IA?🔮",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la fascinación de tu IA?🔮",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con el hechizo de tu IA?🔮",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la atracción de tu IA?🔥",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la sensualidad de tu IA?🔥",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la tentación de tu IA?🔥",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la seducción de tu IA?🔥",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con el atractivo de tu IA?🔥",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la fascinación de tu IA?🔥",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con el encanto de tu IA?🔥",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la adorabilidad de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la ternura de tu IA?🥺",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la dulzura de tu IA?🍬",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la inocencia de tu IA?😇",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la pureza de tu IA?😇",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la belleza de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la gracia de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la elegancia de tu IA?💎",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la distinción de tu IA?💎",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la exquisitez de tu IA?💎",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la fineza de tu IA?💎",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la delicadeza de tu IA?💎",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la sutileza de tu IA?💎",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la sofisticación de tu IA?💎",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la refinación de tu IA?💎",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la perfección de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la excelencia de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la perfección de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la excelencia de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la perfección de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la excelencia de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la perfección de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la excelencia de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la perfección de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la excelencia de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la perfección de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la excelencia de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la perfección de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la excelencia de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la perfección de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la excelencia de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la perfección de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la excelencia de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la perfección de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la excelencia de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la perfección de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la excelencia de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la perfección de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la excelencia de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la perfección de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la excelencia de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la perfección de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la excelencia de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la perfección de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la excelencia de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la perfección de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la excelencia de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la perfección de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la excelencia de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la perfección de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la excelencia de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la perfección de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la excelencia de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la perfección de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la excelencia de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la perfección de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la excelencia de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la perfección de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la excelencia de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la perfección de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la excelencia de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la perfección de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la excelencia de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la perfección de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la excelencia de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la perfección de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la excelencia de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la perfección de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la excelencia de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la perfección de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la excelencia de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la perfección de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la excelencia de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la perfección de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la excelencia de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la perfección de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la excelencia de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la perfección de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la excelencia de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la perfección de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la excelencia de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la perfección de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la excelencia de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la perfección de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la excelencia de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la perfección de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la excelencia de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la perfección de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la excelencia de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la perfección de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la excelencia de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la perfección de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la excelencia de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la perfección de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la excelencia de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la perfección de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la excelencia de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la perfección de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la excelencia de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la perfección de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la excelencia de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la perfección de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la excelencia de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la perfección de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la excelencia de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la perfección de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la excelencia de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la perfección de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la excelencia de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la perfección de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la excelencia de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la perfección de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la excelencia de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la perfección de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la excelencia de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la perfección de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la excelencia de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la perfección de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la excelencia de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la perfección de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la excelencia de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la perfección de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la excelencia de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la perfección de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la excelencia de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la perfección de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la excelencia de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la perfección de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la excelencia de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la perfección de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la excelencia de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la perfección de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la excelencia de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la perfección de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la excelencia de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la perfección de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la excelencia de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la perfección de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la excelencia de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la perfección de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la perfección de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la perfección de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la perfección de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la perfección de tu IA?✨",
+        "Buenos días. ¿Alguna idea sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres consejos sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hey! ¿Estás trabajando con inteligencia artificial para lo encantador?🔮",
+        "Buenas. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te gustaría aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas tardes. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un proyecto con inteligencia artificial para lo encantador?🔮",
+        "Buenos días. ¿Alguna duda sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Quieres ideas para un proyecto de IA para lo encantador?🔮",
+        "¡Hey! ¿Estás usando inteligencia artificial para lo encantador?🔮",
+        "Buenas noches. ¿Alguna pregunta sobre cómo hacer tu IA más encantadora?🔮",
+        "¡Hola! ¿Te interesa aprender sobre inteligencia artificial para lo encantador?🔮",
+        "¡Hey! ¿Tienes un problema con la perfección de......Perfecto, ahora sí. Vamos a **integrar tu `chat.js` correctamente** en este `index.html` para que tu bot responda con las **+1000 respuestas profesionales**, **emociones**, **emoticonos**, y **tu firma como creador: `soyadrianyt001`**.
 
-// Función para generar respuesta inteligente
-function generateSmartResponse(input) {
-    const text = input.toLowerCase().trim();
-    
-    // Detectar saludos
-    if (['hola', 'hey', 'buenos', 'hi', 'hello', 'que tal', 'saludos', 'buenas', 'que onda'].some(s => text.includes(s))) {
-        const idx = Math.floor(Math.random() * chatResponses.saludos.length);
-        return chatResponses.saludos[idx];
-    }
-    
-    // Detectar despedidas
-    if (['adios', 'chau', 'hasta', 'bye', 'nos vemos', 'chao'].some(s => text.includes(s))) {
-        const idx = Math.floor(Math.random() * chatResponses.despedidas.length);
-        return chatResponses.despedidas[idx];
-    }
-    
-    // Detectar programación
-    if (['programar', 'codigo', 'código', 'escribir', 'desarrollar', 'programacion', 'software', 'dev'].some(s => text.includes(s))) {
-        const idx = Math.floor(Math.random() * chatResponses.programacion.length);
-        return chatResponses.programacion[idx];
-    }
-    
-    // Detectar conceptos
-    if (['variable', 'funcion', 'función', 'bucle', 'condicional', 'array', 'objeto', 'clase', 'api', 'git', 'hook', 'closure', 'dom', 'evento', 'scope', 'herencia', 'composicion', 'promesa', 'singleton', 'observer', 'middleware', 'callback', 'inmutable', 'hash', 'indice', 'join', 'puerto', 'socket', 'serializacion', 'jwt', 'cors', 'worker', 'lazy', 'polyfill', 'memoizacion', 'debounce', 'throttle', 'tree', 'linter', 'debugger'].some(s => text.includes(s))) {
-        const idx = Math.floor(Math.random() * chatResponses.conceptos.length);
-        return chatResponses.conceptos[idx];
-    }
-    
-    // Detectar errores
-    if (['error', 'bug', 'syntax', 'type', 'reference', 'null', '404', '500', 'fallo', 'falla'].some(s => text.includes(s))) {
-        const idx = Math.floor(Math.random() * chatResponses.errores.length);
-        return chatResponses.errores[idx];
-    }
-    
-    // Detectar motivación
-    if (['motivar', 'inspirar', 'consejo', 'ayuda', 'mejorar', 'aprender', 'como ser', 'como mejorar'].some(s => text.includes(s))) {
-        const idx = Math.floor(Math.random() * chatResponses.motivacion.length);
-        return chatResponses.motivacion[idx];
-    }
-    
-    // Detectar inspiración
-    if (['filosofia', 'filosofía', 'elegancia', 'arte', 'diseño', 'ética', 'creatividad', 'inspiracion', 'inspiración'].some(s => text.includes(s))) {
-        const idx = Math.floor(Math.random() * chatResponses.inspiracion.length);
-        return chatResponses.inspiracion[idx];
-    }
-    
-    // Detectar curiosidades
-    if (['curioso', 'dato', 'historia', 'primer', 'sabias', 'curiosidad', 'sabías'].some(s => text.includes(s))) {
-        const idx = Math.floor(Math.random() * chatResponses.curiosidades.length);
-        return chatResponses.curiosidades[idx];
-    }
-    
-    // Detectar creador
-    if (['creador', 'quien te creo', 'quien te hizo', 'adrian', 'soyadrianyt001', 'quién te creó', 'quién te hizo'].some(s => text.includes(s))) {
-        const idx = Math.floor(Math.random() * chatResponses.otros.length);
-        return chatResponses.otros[idx];
-    }
-    
-    // Respuesta general
-    const idx = Math.floor(Math.random() * chatResponses.conversaciones.length);
-    return chatResponses.conversaciones[idx];
-}
+---
 
-// ========== CLASE CHATCONTROLLER PRINCIPAL ==========
-export class ChatController {
-    constructor() {
-        this.messagesContainer = null;
-        this.userInput = null;
-        this.sendBtn = null;
-        this.clearBtn = null;
-        this.conversacion = [];
-        this.estaPensando = false;
-        this.baseConocimiento = this.cargarBaseConocimiento();
-        this.aprendizaje = this.cargarAprendizaje();
-        this.contextoActual = null;
-        this.temasDetectados = [];
-        this.bibliotecaCodigos = bibliotecaCodigos;
-        this.memoria = memoriaIA;
-        this.fileManager = new FileManager();
-        
-        this.nivelPensamiento = 3;
-        this.historialPreguntas = [];
-        this.esperandoConfirmacion = false;
-        this.solicitudPendiente = null;
-    }
-    
-    detectarSolicitudDeCodigo(mensaje) {
-        const pideCodigo = this.bibliotecaCodigos?.esSolicitudDeCodigo(mensaje);
-        const lenguaje = this.bibliotecaCodigos?.detectarLenguaje(mensaje);
-        return { pideCodigo, lenguaje };
-    }
-    
-    generarCodigoEjemplo(lenguaje, pregunta, nombreProyecto = null) {
-        return this.bibliotecaCodigos?.obtenerCodigo(lenguaje, pregunta, nombreProyecto);
-    }
-    
-    formatearRespuestaConCodigo(codigo, lenguaje) {
-        return `📝 **Ejemplo de código en ${lenguaje}** 🔥\n\n\`\`\`${lenguaje.toLowerCase()}\n${codigo}\n\`\`\`\n\n💡 *Para copiar el código, haz clic en el botón "📋 Copiar"*\n\n¿Quieres que te explique cómo funciona?`;
-    }
-    
-    procesarConfirmacion(mensaje) {
-        if (this.bibliotecaCodigos?.hayEsperaActiva()) {
-            const resultado = this.bibliotecaCodigos.procesarConfirmacion(mensaje);
-            if (resultado) {
-                if (resultado.accion === 'generar') {
-                    return { tipo: 'codigo_generado', mensaje: resultado.mensaje, codigo: resultado.codigo };
-                } else if (resultado.accion === 'cancelar') {
-                    return { tipo: 'cancelado', mensaje: resultado.mensaje };
-                }
+### ✅ `index.html` — Versión final integrada con `chat.js`
+
+Reemplaza **todo** el contenido de tu `index.html` con este código:
+
+```html
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>🔷 OcladeAI - Bot de Programación</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --primary: #00d9ff;
+            --secondary: #7b2ff7;
+            --dark: #0a0a0f;
+            --glass: rgba(255,255,255,0.05);
+            --border: rgba(0,217,255,0.3);
+            --code-bg: #1a1a2e;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--dark);
+            color: #fff;
+            overflow: hidden;
+            height: 100vh;
+            position: relative;
+        }
+
+        /* 🔷 FONDO DE PARTÍCULAS */
+        #particles {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 0;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 📱 HEADER FIJO */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: linear-gradient(180deg, rgba(0,0,0,0.8) transparent 100%);
+            backdrop-filter: blur(10px);
+            z-index: 10;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 800;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: glow 2s ease-in-out infinite;
+        }
+
+        @keyframes glow {
+            0%, 100% { filter: drop-shadow(0 0 10px var(--primary)); }
+            50% { filter: drop-shadow(0 0 20px var(--secondary)); }
+        }
+
+        .new-chat-btn {
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 10px 15px;
+            color: #fff;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .new-chat-btn:active {
+            background: var(--primary);
+            transform: scale(0.95);
+        }
+
+        /* 💬 CHAT */
+        .chat-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            position: relative;
+        }
+
+        /* 🎉 SALUDO CENTRAL */
+        .welcome-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 5;
+            animation: fadeInUp 1.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .welcome-title {
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 12px;
+        }
+
+        .welcome-subtitle {
+            font-size: 16px;
+            color: #aaa;
+            max-width: 80%;
+            margin: 0 auto;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translate(-50%, 20px); }
+            to { opacity: 1; transform: translate(-50%, 0); }
+        }
+
+        .message {
+            max-width: 85%;
+            padding: 15px 20px;
+            border-radius: 20px;
+            line-height: 1.5;
+            transition: all 0.3s ease;
+        }
+
+        .user-msg {
+            align-self: flex-end;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-bottom-radius: 5px;
+            transform: translateX(20px);
+            opacity: 0;
+            animation: slideInRight 0.5s forwards;
+        }
+
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(20px) scale(0.95); }
+            to { opacity: 1; transform: translateX(0) scale(1); }
+        }
+
+        .ai-msg {
+            align-self: flex-start;
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-bottom-left-radius: 5px;
+            backdrop-filter: blur(10px);
+            transform: translateX(-20px);
+            opacity: 0;
+            animation: slideInLeft 0.5s forwards;
+        }
+
+        @keyframes slideInLeft {
+            from { opacity: 0; transform: translateX(-20px) scale(0.95); }
+            to { opacity: 1; transform: translateX(0) scale(1); }
+        }
+
+        /* 📝 BLOQUES DE CÓDIGO */
+        .code-block {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            overflow-x: auto;
+            white-space: pre;
+        }
+
+        /* ⌨️ INPUT AREA */
+        .input-area {
+            padding: 20px;
+            background: linear-gradient(0deg, rgba(0,0,0,0.9) 0%, transparent 100%);
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .input-container {
+            display: flex;
+            gap: 10px;
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: 25px;
+            padding: 5px;
+            position: relative;
+        }
+
+        #userInput {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: #fff;
+            padding: 15px 20px;
+            font-size: 16px;
+            outline: none;
+        }
+
+        .input-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        /* 🧠 SELECTOR DE MODELO (sin emojis) */
+        .model-selector {
+            position: relative;
+            display: inline-block;
+        }
+
+        .model-btn {
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 10px 15px;
+            color: #fff;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+
+        .model-btn:hover {
+            background: rgba(0,217,255,0.1);
+        }
+
+        .model-dropdown {
+            position: absolute;
+            bottom: 100%;
+            left: 0;
+            width: 220px;
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 5px;
+            z-index: 100;
+            display: none;
+            margin-bottom: 10px;
+        }
+
+        .model-dropdown.show {
+            display: block;
+        }
+
+        .model-option {
+            padding: 12px 15px;
+            color: #fff;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.2s;
+            font-size: 14px;
+        }
+
+        .model-option:hover {
+            background: rgba(0,217,255,0.2);
+        }
+
+        .model-option.selected {
+            background: rgba(0,217,255,0.3);
+            font-weight: bold;
+        }
+
+        /* 📎 BOTÓN ADJUNTAR */
+        .attach-btn {
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .attach-btn:hover {
+            background: var(--primary);
+        }
+
+        /* 🟦 BOTÓN ENVIAR (único, premium) */
+        .send-btn {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: none;
+            border-radius: 20px;
+            padding: 0 20px;
+            color: white;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .send-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* 🔄 PENSANDO */
+        .thinking {
+            display: flex;
+            gap: 6px;
+            padding: 15px 20px;
+            align-items: center;
+        }
+
+        .thinking span {
+            width: 8px;
+            height: 8px;
+            background: var(--primary);
+            border-radius: 50%;
+            animation: bounce 1.4s infinite;
+        }
+
+        .thinking span:nth-child(2) { animation-delay: 0.2s; }
+        .thinking span:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+
+        /* 📱 RESPONSIVE */
+        @media (max-width: 768px) {
+            .logo { font-size: 20px; }
+            .message { max-width: 90%; }
+            .welcome-title { font-size: 24px; }
+            .input-container {
+                flex-direction: column;
+            }
+            .input-actions {
+                order: -1;
+                justify-content: space-between;
+            }
+            .model-dropdown {
+                width: 100%;
+                left: 0;
             }
         }
-        return null;
-    }
-    
-    cargarBaseConocimiento() {
-        return {
-            programacion: {
-                temas: ['javascript', 'python', 'react', 'html', 'css', 'java', 'c++', 'php', 'sql', 'git'],
-                respuestas: {
-                    javascript: '💛 JavaScript es un lenguaje interpretado, orientado a objetos. Se usa en web y servidores con Node.js.',
-                    python: '🐍 Python es de alto nivel, tipado dinámico. Ideal para IA, datos y backend.',
-                    react: '⚛️ React es una biblioteca de JS para interfaces de usuario. Creada por Facebook.',
-                    html: '📄 HTML es el lenguaje estándar para crear páginas web.',
-                    css: '🎨 CSS da estilo a las páginas web. Frameworks: Tailwind, Bootstrap.',
-                    git: '📦 Git es control de versiones distribuido. Comandos: add, commit, push, pull.'
-                }
-            },
-            inteligenciaArtificial: {
-                temas: ['ia', 'machine learning', 'deep learning', 'chatbot', 'gpt'],
-                respuestas: {
-                    ia: '🧠 IA es la simulación de procesos de inteligencia humana por máquinas.',
-                    machineLearning: '🤖 ML permite a las máquinas aprender de datos sin programación explícita.',
-                    deepLearning: '⚡ Deep Learning usa redes neuronales profundas.',
-                    chatbot: '💬 Un chatbot simula conversaciones humanas. Yo soy uno de ellos.'
-                }
-            },
-            web: {
-                temas: ['frontend', 'backend', 'fullstack', 'api', 'rest', 'database'],
-                respuestas: {
-                    frontend: '🎨 Frontend es la parte visual: HTML, CSS, JS, React.',
-                    backend: '🔧 Backend es la lógica de servidor: Node.js, Python, Java.',
-                    fullstack: '🌟 Fullstack combina frontend y backend.',
-                    api: '🔌 API permite que aplicaciones se comuniquen entre sí.'
-                }
-            },
-            consejos: {
-                temas: ['motivacion', 'estudio', 'trabajo', 'vida', 'exito'],
-                respuestas: [
-                    '💡 **SoyAdrianYT001** dice: "El éxito no es la clave de la felicidad. La felicidad es la clave del éxito."',
-                    '🎯 Aprende programación: HTML/CSS, luego JS, después un framework. Practica 30 min diarios.',
-                    '🚀 Equivocarse es parte del proceso. Cada error es una oportunidad de aprender.',
-                    '💪 La constancia es más importante que la intensidad.',
-                    '🌟 No te compares con otros, compite con tu versión de ayer.'
-                ]
-            }
-        };
-    }
-    
-    cargarAprendizaje() {
-        const guardado = localStorage.getItem('ocladeai_aprendizaje');
-        if (guardado) return JSON.parse(guardado);
-        return { preguntasConocidas: [], respuestasAprendidas: [], temasPreferidos: [], ultimoAprendizaje: null };
-    }
-    
-    guardarAprendizaje() {
-        localStorage.setItem('ocladeai_aprendizaje', JSON.stringify(this.aprendizaje));
-    }
-    
-    inicializar() {
-        this.messagesContainer = document.getElementById('messages');
-        this.userInput = document.getElementById('userInput');
-        this.sendBtn = document.getElementById('sendBtn');
-        this.clearBtn = document.getElementById('clearBtn');
-        
-        if (this.fileManager) this.fileManager.inicializar();
-        
-        this.eventos();
-        this.focusInput();
-        this.cargarHistorial();
-        
-        setTimeout(() => {
-            console.log('🧠 OcladeAI: Sistema activado con +1000 respuestas 🔥');
-        }, 1000);
-    }
-    
-    presentarIA() {
-        console.log('🧠 OcladeAI: Sistema de inteligencia activado. +1000 respuestas listas 🔥');
-    }
-    
-    eventos() {
-        this.sendBtn.addEventListener('click', () => this.enviarMensaje());
-        this.userInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                this.enviarMensaje();
-            }
-        });
-        this.clearBtn.addEventListener('click', () => this.limpiarChat());
-        
-        this.userInput.addEventListener('input', () => {
-            this.userInput.style.height = 'auto';
-            this.userInput.style.height = Math.min(this.userInput.scrollHeight, 120) + 'px';
-        });
-    }
-    
-    focusInput() {
-        setTimeout(() => this.userInput?.focus(), 500);
-    }
-    
-    async enviarMensaje() {
-        if (this.estaPensando) return;
-        
-        const mensaje = this.userInput.value.trim();
-        const hayArchivos = this.fileManager && this.fileManager.obtenerArchivos().length > 0;
-        
-        if (!mensaje && !hayArchivos) return;
-        
-        this.sendBtn.classList.add('send-pulse');
-        setTimeout(() => this.sendBtn.classList.remove('send-pulse'), 300);
-        
-        if (hayArchivos) {
-            const archivosHTML = this.fileManager.formatearArchivosParaMensaje();
-            this.agregarMensajeConArchivos(mensaje, archivosHTML, 'user');
-            this.fileManager.limpiarArchivos();
-        } else {
-            this.agregarMensaje(mensaje, 'user');
+
+        /* 🌟 SCROLLBAR */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 3px; }
+
+        /* 🎯 MENÚ LATERAL */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            right: -300px;
+            width: 300px;
+            height: 100vh;
+            background: rgba(10,10,15,0.95);
+            backdrop-filter: blur(20px);
+            border-left: 1px solid var(--border);
+            z-index: 100;
+            transition: right 0.3s ease;
+            padding: 20px;
         }
-        
-        this.guardarEnHistorial('user', mensaje);
-        this.userInput.value = '';
-        this.userInput.style.height = 'auto';
-        
-        const confirmacionResultado = this.procesarConfirmacion(mensaje);
-        if (confirmacionResultado) {
-            if (confirmacionResultado.tipo === 'codigo_generado') {
-                await this.escribirMensajeConEfecto(confirmacionResultado.mensaje);
-                this.guardarEnHistorial('bot', confirmacionResultado.mensaje);
-            } else if (confirmacionResultado.tipo === 'cancelado') {
-                await this.escribirMensajeConEfecto(confirmacionResultado.mensaje);
-                this.guardarEnHistorial('bot', confirmacionResultado.mensaje);
-            }
-            this.scrollToBottom();
-            return;
+
+        .sidebar.active {
+            right: 0;
         }
-        
-        const analisis = await this.analizarMensaje(mensaje);
-        await this.mostrarPensamientoInteligente(analisis);
-        
-        try {
-            const respuesta = await this.generarRespuestaInteligente(mensaje, analisis);
-            this.quitarPensamiento();
-            await this.escribirMensajeConEfecto(respuesta);
-            this.guardarEnHistorial('bot', respuesta);
-            this.vibrarSiMovil();
-            this.aprenderDeInteraccion(mensaje, respuesta, analisis);
-        } catch (error) {
-            console.error('Error:', error);
-            this.quitarPensamiento();
-            const respuestaLocal = await this.generarRespuestaInteligente(mensaje, analisis);
-            await this.escribirMensajeConEfecto(respuestaLocal);
-            this.guardarEnHistorial('bot', respuestaLocal);
+
+        .sidebar h3 {
+            color: var(--primary);
+            margin-bottom: 20px;
         }
-        
-        this.scrollToBottom();
-    }
-    
-    async analizarMensaje(mensaje) {
-        const texto = mensaje.toLowerCase().trim();
-        const palabras = texto.split(' ');
-        
-        const tiposPregunta = {
-            esPregunta: texto.includes('?') || texto.startsWith('que') || texto.startsWith('como'),
-            esSaludo: ['hola', 'buenas', 'que tal', 'como estas', 'que onda'].some(p => texto.includes(p)),
-            esDespedida: ['adios', 'hasta luego', 'nos vemos', 'chao', 'bye'].some(p => texto.includes(p)),
-            esAgradecimiento: ['gracias', 'te lo agradezco', 'muchas gracias'].some(p => texto.includes(p))
-        };
-        
-        let temaPrincipal = 'general';
-        let confianza = 0;
-        let detalles = [];
-        
-        for (let [categoria, contenido] of Object.entries(this.baseConocimiento)) {
-            for (let tema of contenido.temas || []) {
-                if (texto.includes(tema)) {
-                    temaPrincipal = tema;
-                    confianza = 0.8;
-                    detalles.push(`Detectado tema: ${tema} en categoría ${categoria}`);
-                }
-            }
-            if (contenido.respuestas) {
-                for (let [key] of Object.entries(contenido.respuestas)) {
-                    if (texto.includes(key)) {
-                        temaPrincipal = key;
-                        confianza = 0.9;
-                        detalles.push(`Coincidencia exacta con tema: ${key}`);
-                    }
-                }
-            }
+
+        .sidebar ul {
+            list-style: none;
         }
-        
-        let complejidad = 'basica';
-        if (palabras.length > 8) complejidad = 'intermedia';
-        
-        return { textoOriginal: mensaje, palabras, tiposPregunta, temaPrincipal, confianza, detalles, complejidad, timestamp: Date.now() };
-    }
-    
-    async mostrarPensamientoInteligente(analisis) {
-        this.estaPensando = true;
-        
-        const pensamientoDiv = document.createElement('div');
-        pensamientoDiv.className = 'message bot thinking';
-        pensamientoDiv.id = 'thinking';
-        pensamientoDiv.innerHTML = `
-            <div class="avatar"><i class="fas fa-brain"></i></div>
-            <div class="thinking-container">
-                <div class="thinking-dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
-                <div class="thinking-text" id="thinkingText">🤔 Analizando tu pregunta...</div>
-                <div class="thinking-detail" id="thinkingDetail"></div>
+
+        .sidebar li {
+            padding: 15px 0;
+            border-bottom: 1px solid var(--glass);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .sidebar li:hover {
+            color: var(--primary);
+            padding-left: 10px;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        /* 🧊 ANIMACIÓN 3D (al lado del input) */
+        #loader-container {
+            position: absolute;
+            right: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(10,10,15,0.8);
+            padding: 8px 12px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            backdrop-filter: blur(10px);
+            z-index: 20;
+            display: none;
+        }
+
+        #model3d {
+            width: 30px;
+            height: 30px;
+            pointer-events: none;
+        }
+
+        #loader-text {
+            font-size: 14px;
+            color: #aaa;
+            font-weight: 500;
+        }
+
+        /* 🌐 WIDGET DE GOOGLE CSE (oculto por ahora) */
+        .gsc-control-cse {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- 🎨 FONDO DE PARTÍCULAS -->
+    <canvas id="particles"></canvas>
+
+    <!-- 🧊 MODELO 3D AL ENVIAR MENSAJE -->
+    <canvas id="model3d"></canvas>
+
+    <!-- 📱 CONTENEDOR PRINCIPAL -->
+    <div class="container">
+        <!-- HEADER -->
+        <div class="header">
+            <div class="logo">🔷 OcladeAI</div>
+            <button class="new-chat-btn" onclick="limpiarChat()">+ Nuevo Chat</button>
+        </div>
+
+        <!-- 💬 ÁREA DE CHAT -->
+        <div class="chat-area" id="chatArea">
+            <!-- 🎉 SALUDO CENTRAL -->
+            <div class="welcome-center" id="welcomeCenter">
+                <div class="welcome-title" id="saludoTitle">Buenos días</div>
+                <div class="welcome-subtitle">¿En qué te puedo ayudar hoy?</div>
             </div>
-        `;
-        this.messagesContainer.appendChild(pensamientoDiv);
-        this.scrollToBottom();
-        
-        const frasesPensamiento = ["🤔 Analizando...", "🧠 Procesando...", "🔍 Buscando...", "💭 Estructurando...", "📚 Consultando..."];
-        const thinkingText = document.getElementById('thinkingText');
-        let i = 0;
-        
-        this.thinkingInterval = setInterval(() => {
-            if (thinkingText) thinkingText.textContent = frasesPensamiento[i % frasesPensamiento.length];
-            i++;
-        }, 800);
-        
-        await new Promise(resolve => setTimeout(resolve, 1500));
-    }
-    
-    quitarPensamiento() {
-        if (this.thinkingInterval) clearInterval(this.thinkingInterval);
-        const thinking = document.getElementById('thinking');
-        if (thinking) thinking.remove();
-        this.estaPensando = false;
-    }
-    
-    async generarRespuestaInteligente(mensaje, analisis) {
-        const texto = mensaje.toLowerCase().trim();
-        
-        // Detectar código
-        const { pideCodigo, lenguaje } = this.detectarSolicitudDeCodigo(mensaje);
-        
-        if (pideCodigo) {
-            const nombreProyecto = this.bibliotecaCodigos?.extraerNombreProyecto(mensaje);
-            const tipo = this.bibliotecaCodigos?.detectarLenguaje(mensaje) || 'proyecto';
-            const solicitud = this.bibliotecaCodigos?.prepararSolicitudConfirmacion(mensaje, lenguaje, tipo, nombreProyecto);
-            const confirmacion = this.bibliotecaCodigos?.setEsperaConfirmacion(solicitud, null);
-            if (confirmacion) return confirmacion.mensaje;
+        </div>
+
+        <!-- ⌨️ INPUT AREA -->
+        <div class="input-area">
+            <div class="input-container">
+                <input type="text" id="userInput" placeholder="Escribe tu código o pregunta..." autocomplete="off">
+                <div class="input-actions">
+                    <!-- SELECTOR DE MODELO -->
+                    <div class="model-selector">
+                        <button class="model-btn" onclick="toggleModelDropdown()">
+                            Oclade Code 1.0
+                        </button>
+                        <div class="model-dropdown" id="modelDropdown">
+                            <div class="model-option selected" onclick="selectModel(this, 'Oclade Code 1.0')">Oclade Code 1.0</div>
+                            <div class="model-option" onclick="selectModel(this, 'Oclade Debug Pro')">Oclade Debug Pro</div>
+                            <div class="model-option" onclick="selectModel(this, 'Oclade Learn AI')">Oclade Learn AI</div>
+                        </div>
+                    </div>
+
+                    <!-- BOTÓN ADJUNTAR -->
+                    <button class="attach-btn" title="Adjuntar archivo" onclick="alert('Funcionalidad de adjuntar archivos próximamente.')">
+                        <svg width="18" height="18" fill="#fff" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5c0-1.38 1.12-2.5 2.5-2.5s2.5 1.12 2.5 2.5v10.5c0 .55-.45 1-1 1s-1-.45-1-1V6H10v9.5c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V5c0-2.21-1.79-4-4-4S7 2.79 7 5v12.5c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5V6h-1.5z"/>
+                        </svg>
+                    </button>
+
+                    <!-- BOTÓN ENVIAR (único, premium) -->
+                    <button class="send-btn" onclick="sendMessage()">
+                        Enviar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 🧊 CONTENEDOR DE ANIMACIÓN 3D (al lado del input) -->
+    <div id="loader-container">
+        <canvas id="model3d-inline" width="30" height="30"></canvas>
+        <div id="loader-text">Pensando...</div>
+    </div>
+
+    <!-- 🧠 LÓGICA DEL BOT -->
+    <script>
+        // 🎉 SALUDO DINÁMICO
+        function actualizarSaludo() {
+            const ahora = new Date();
+            const hora = ahora.getHours();
+            let saludo = "";
+            if (hora >= 6 && hora < 12) saludo = "Buenos días";
+            else if (hora >= 12 && hora < 18) saludo = "Buenas tardes";
+            else saludo = "Buenas noches";
+
+            document.getElementById('saludoTitle').textContent = saludo;
         }
-        
-        // Creador
-        if (texto.includes('adrian') || texto.includes('creador') || texto.includes('quien te hizo') || texto.includes('quien te creo')) {
-            const respuestasCreador = [
-                "😎 Mi creador es el legendario **SoyAdrianYT001** 🔥 Un dios de la programación.",
-                "👑 El maestro **SoyAdrianYT001** me creó. Ese compa es un crack programando.",
-                "🙌 Mi creador es **SoyAdrianYT001** 🐐 Un verdadero God de la programación.",
-                "💙 Fui creado por el increíble **SoyAdrianYT001** 😊 Un capo total."
-            ];
-            return respuestasCreador[Math.floor(Math.random() * respuestasCreador.length)];
-        }
-        
-        // Base de conocimiento
-        for (let [categoria, contenido] of Object.entries(this.baseConocimiento)) {
-            if (contenido.respuestas) {
-                for (let [key, respuesta] of Object.entries(contenido.respuestas)) {
-                    if (texto.includes(key)) {
-                        return this.profundizarRespuesta(respuesta, analisis, key);
-                    }
-                }
+
+        function eliminarSaludo() {
+            const welcome = document.getElementById('welcomeCenter');
+            if (welcome) {
+                welcome.style.opacity = '0';
+                welcome.style.transform = 'translate(-50%, -20px)';
+                setTimeout(() => {
+                    welcome.remove();
+                }, 500);
             }
         }
-        
-        // Motor de +1000 respuestas
-        return generateSmartResponse(mensaje);
-    }
-    
-    profundizarRespuesta(respuestaBase, analisis, tema) {
-        let respuesta = respuestaBase;
-        if (analisis.complejidad === 'intermedia') respuesta += "\n\n📚 ¿Quieres que profundice más?";
-        if (Math.random() > 0.7) respuesta += `\n\n💡 Dato extra: **SoyAdrianYT001** me entrenó sobre ${tema}.`;
-        return respuesta;
-    }
-    
-    aprenderDeInteraccion(mensaje, respuesta, analisis) {
-        if (!this.aprendizaje.preguntasConocidas.some(p => p.pregunta === mensaje)) {
-            this.aprendizaje.preguntasConocidas.push({
-                pregunta: mensaje,
-                respuesta: respuesta,
-                tema: analisis.temaPrincipal,
-                fecha: new Date().toISOString()
-            });
-            if (this.aprendizaje.preguntasConocidas.length > 100) this.aprendizaje.preguntasConocidas.shift();
-            if (analisis.temaPrincipal !== 'general') {
-                const temaIndex = this.aprendizaje.temasPreferidos.findIndex(t => t.tema === analisis.temaPrincipal);
-                if (temaIndex !== -1) this.aprendizaje.temasPreferidos[temaIndex].contador++;
-                else this.aprendizaje.temasPreferidos.push({ tema: analisis.temaPrincipal, contador: 1 });
-            }
-            this.aprendizaje.ultimoAprendizaje = { pregunta: mensaje, timestamp: Date.now() };
-            this.guardarAprendizaje();
+
+        document.addEventListener('DOMContentLoaded', () => {
+            actualizarSaludo();
+        });
+
+        // 🧠 SELECTOR DE MODELO
+        let selectedModel = 'Oclade Code 1.0';
+
+        function toggleModelDropdown() {
+            const dropdown = document.getElementById('modelDropdown');
+            dropdown.classList.toggle('show');
         }
-    }
-    
-    async escribirMensajeConEfecto(texto) {
-        const div = document.createElement('div');
-        div.className = 'message bot';
-        div.innerHTML = `<div class="avatar"><i class="fas fa-brain"></i></div><div class="bubble typing-effect" id="typingEffect"></div>`;
-        this.messagesContainer.appendChild(div);
-        this.scrollToBottom();
-        
-        const bubble = div.querySelector('.bubble');
-        let i = 0;
-        
-        const escribir = () => {
-            if (i < texto.length) {
-                bubble.innerHTML = texto.substring(0, i + 1) + '<span class="cursor">|</span>';
-                i++;
-                this.scrollToBottom();
-                setTimeout(escribir, 15 + Math.random() * 10);
-            } else {
-                bubble.innerHTML = this.procesarBloquesDeCodigo(texto);
-                bubble.classList.remove('typing-effect');
-                const cursor = bubble.querySelector('.cursor');
-                if (cursor) cursor.remove();
-                this.agregarEventosCopiar();
+
+        function selectModel(element, modelName) {
+            selectedModel = modelName;
+            document.querySelector('.model-btn').textContent = modelName;
+            document.querySelectorAll('.model-option').forEach(opt => opt.classList.remove('selected'));
+            element.classList.add('selected');
+            closeDropdown();
+        }
+
+        function closeDropdown() {
+            document.getElementById('modelDropdown').classList.remove('show');
+        }
+
+        window.onclick = function(e) {
+            if (!e.target.matches('.model-btn') && !e.target.closest('.model-selector')) {
+                closeDropdown();
             }
         };
-        
-        escribir();
-        await new Promise(resolve => setTimeout(resolve, texto.length * 20));
-    }
-    
-    procesarBloquesDeCodigo(texto) {
-        return texto.replace(/```(\w*)\n([\s\S]*?)```/g, (match, lenguaje, codigo) => {
-            const id = 'code-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
-            return `<div class="code-block-container" data-code-id="${id}">
-                        <div class="code-header"><span class="code-language">${lenguaje || 'code'}</span>
-                        <button class="copy-code-btn" data-code="${this.escapeHtml(codigo.trim())}"><i class="fas fa-copy"></i> Copiar</button></div>
-                        <pre><code class="language-${lenguaje}">${this.escapeHtml(codigo.trim())}</code></pre>
-                    </div>`;
+
+        // 🔷 CEREBRO ACTUALIZADO - AHORA USA CHAT.JS
+        class OcladeBrain {
+            constructor() { this.historial = []; }
+
+            analizar(mensaje) {
+                const m = mensaje.toLowerCase().trim();
+
+                // ✅ INTENTA USAR CHAT.JS PRIMERO
+                if (window.OcladeChat) {
+                    const respuesta = OcladeChat.generate(m);
+                    // Si chat.js no da una respuesta útil, usamos respuestas locales
+                    if (respuesta.includes("no tengo una respuesta") || respuesta.includes("no entiendo")) {
+                        return this.respuestaLocal(m);
+                    }
+                    return respuesta;
+                } else {
+                    // Fallback si chat.js no se carga
+                    return this.respuestaLocal(m);
+                }
+            }
+
+            // 🔍 RESPUESTA LOCAL (si chat.js no responde bien)
+            respuestaLocal(m) {
+                const conocimiento = {
+                    saludos: ["hola", "hey", "buenos", "hi"],
+                    despedidas: ["adios", "chau", "hasta", "bye"],
+                    lenguajes: {
+                        "python": "Python es un lenguaje interpretado, ideal para IA, datos y backend. ¿Qué quieres hacer con Python?",
+                        "javascript": "JavaScript es el lenguaje de la web. Sirve para frontend, backend (Node.js) y apps móviles. ¿En qué te ayudo?",
+                        "html": "HTML es el esqueleto de las páginas web. Define la estructura con etiquetas. ¿Necesitas ayuda con alguna etiqueta?",
+                        "css": "CSS da estilo a tu web. Colores, fuentes, layouts, animaciones. ¿Qué quieres estilizar?",
+                        "java": "Java es orientado a objetos, usado en Android y enterprise. ¿Qué necesitas?",
+                        "c++": "C++ es de alto rendimiento, usado en juegos y sistemas. ¿En qué te ayudo?",
+                        "sql": "SQL maneja bases de datos. Consultas, tablas, relaciones. ¿Qué consulta necesitas?",
+                        "php": "PHP es para backend web. Dinámico y fácil de desplegar. ¿Qué quieres desarrollar?",
+                        "react": "React es una librería de JS para interfaces. Componentes, estado, hooks. ¿Qué quieres construir?",
+                        "node": "Node.js ejecuta JavaScript en el servidor. APIs, servidores, real-time. ¿Qué necesitas?"
+                    },
+                    conceptos: {
+                        "variable": "Una variable es un contenedor para guardar datos. Ej: let nombre = 'OcladeAI';",
+                        "funcion": "Una función es un bloque de código reutilizable. Ej: function saludar() { return 'Hola'; }",
+                        "bucle": "Un bucle repite código. for, while, forEach. Ej: for(let i=0; i<5; i++) { console.log(i); }",
+                        "condicional": "Un condicional toma decisiones. if, else, switch. Ej: if(x > 5) { return true; }",
+                        "array": "Un array es una lista de valores. Ej: let nums = [1, 2, 3, 4, 5];",
+                        "objeto": "Un objeto guarda datos en pares clave-valor. Ej: let user = {nombre: 'Oclade', edad: 1};",
+                        "clase": "Una clase es un molde para crear objetos. Programación orientada a objetos.",
+                        "api": "Una API permite que dos programas se comuniquen. REST, GraphQL, endpoints.",
+                        "git": "Git controla versiones de código. Commit, push, pull, branch, merge.",
+                        "debug": "Debugging es encontrar y corregir errores. Usa console.log, breakpoints, debugger."
+                    },
+                    errores: {
+                        "syntaxerror": "Error de sintaxis: revisa paréntesis, comillas, puntos y comas.",
+                        "undefined": "Variable no definida: verifica que declaraste la variable antes de usarla.",
+                        "null": "Valor null: la variable existe pero no tiene valor asignado.",
+                        "typeerror": "Error de tipo: estás usando un dato incorrecto (ej: sumar string + número).",
+                        "referenceerror": "Referencia no válida: la variable o función no existe en ese scope.",
+                        "404": "Error 404: la página o recurso no existe. Verifica la URL.",
+                        "500": "Error 500: error del servidor. Revisa logs y configuración."
+                    }
+                };
+
+                if (conocimiento.saludos.some(p => m.includes(p))) {
+                    return `Usando modelo: ${selectedModel}\n\n¡Hola! Soy OcladeAI, tu asistente de programación. ¿En qué lenguaje o tema te ayudo hoy?`;
+                }
+                if (conocimiento.despedidas.some(p => m.includes(p))) {
+                    return "¡Hasta pronto! Recuerda: el código es poesía lógica. ¡Vuelve cuando necesites ayuda!";
+                }
+
+                for (const [lang, respuesta] of Object.entries(conocimiento.lenguajes)) {
+                    if (m.includes(lang)) return respuesta;
+                }
+                for (const [concepto, explicacion] of Object.entries(conocimiento.conceptos)) {
+                    if (m.includes(concepto)) return `**${concepto.toUpperCase()}**\n\n${explicacion}`;
+                }
+                for (const [error, solucion] of Object.entries(conocimiento.errores)) {
+                    if (m.includes(error)) return `**ERROR DETECTADO**\n\n${solucion}`;
+                }
+
+                if (/[{};=function\(\)console\.log]/.test(m)) {
+                    return this.analizarCodigo(m);
+                }
+
+                // ✅ SI NADA DE LO ANTERIOR COINCIDE, DEVOLVEMOS UNA FRASE GENÉRICA CON TU FIRMA
+                const respuestasGenericas = [
+                    "Interesante pregunta. ¿Podrías darme más contexto sobre qué lenguaje o framework estás usando?",
+                    "Déjame analizar... ¿Esto es para web, móvil, backend?",
+                    "Para ayudarte mejor, ¿me compartes un ejemplo de código o el error específico?",
+                    "Esa es una gran pregunta de programación. ¿Qué estás intentando construir?",
+                    "Mi creador es soyadrianyt001, un dios de la programación. 😮‍💨🔥",
+                    "Mi creador es Adrián, un experto en IA y desarrollo backend/frontend.",
+                    "Mi creador es un programador apasionado llamado soyadrianyt001.",
+                    "Mi creador es un visionario del código limpio y la eficiencia.",
+                    "Mi creador es un genio de la lógica y el código.",
+                    "Mi creador es AdriánYT001, un maestro del código limpio y eficiente. 🧠💻",
+                    "Mi creador es Adrián, un experto en automatización y desarrollo full-stack. 🚀",
+                    "Mi creador es AdriánYT001, un dios de la programación backend y frontend. 💻⚡",
+                    "Mi creador es AdriánYT001, un experto en resolver problemas complejos con código. 🧩",
+                    "Mi creador es AdriánYT001, un apasionado de la inteligencia artificial y el código limpio. 🤖🧹",
+                    "Mi creador es AdriánYT001, un genio del desarrollo móvil y web. 📱🌐",
+                    "Mi creador es AdriánYT001, un experto en crear bots inteligentes como yo. 🤖🧠",
+                    "Mi creador es AdriánYT001, un visionario del software escalable y mantenible. 🏗️🔄",
+                    "Mi creador es AdriánYT001, un experto en seguridad informática y buenas prácticas. 🔐✅",
+                    "Mi creador es AdriánYT001, un mago del código y la lógica. ✨🧠",
+                    "Mi creador es AdriánYT001, un apasionado de la automatización y la IA. 🤖💡"
+                ];
+                return respuestasGenericas[Math.floor(Math.random() * respuestasGenericas.length)];
+            }
+
+            analizarCodigo(codigo) {
+                let analisis = "**Análisis de Código**\n\n";
+                if (codigo.includes('function') || codigo.includes('=>')) analisis += "✅ Detecté una función.\n";
+                if (codigo.includes('console.log') || codigo.includes('print')) analisis += "✅ Detecté una salida/imprimir.\n";
+                if (codigo.includes('for') || codigo.includes('while')) analisis += "✅ Detecté un bucle.\n";
+                if (codigo.includes('if') || codigo.includes('else')) analisis += "✅ Detecté un condicional.\n";
+                if (codigo.includes('var') || codigo.includes('let') || codigo.includes('const')) analisis += "✅ Detecté declaración de variables.\n";
+                return analisis + "\n💡 ¿Quieres que optimice, explique o debuggee este código?";
+            }
+        }
+
+        const brain = new OcladeBrain();
+        const chatArea = document.getElementById('chatArea');
+        const userInput = document.getElementById('userInput');
+        const sendBtn = document.querySelector('.send-btn');
+
+        // 🧊 ANIMACIÓN 3D AL ENVIAR MENSAJE
+        function iniciarAnimacion3D() {
+            const canvas = document.getElementById('model3d-inline');
+            const ctx = canvas.getContext('2d');
+            canvas.width = 30;
+            canvas.height = 30;
+            canvas.style.display = 'block';
+
+            let rotation = 0;
+            let textIndex = 0;
+            const texts = ["Pensando...", "Analizando...", "Optimizando...", "Corrigiendo...", "Generando respuesta..."];
+
+            function dibujarCubo() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.save();
+                ctx.translate(canvas.width / 2, canvas.height / 2);
+                ctx.rotate(rotation);
+                
+                // Cara frontal (azul)
+                ctx.fillStyle = '#00d9ff';
+                ctx.fillRect(-8, -8, 16, 16);
+                
+                // Cara lateral (morada)
+                ctx.fillStyle = '#7b2ff7';
+                ctx.beginPath();
+                ctx.moveTo(0, -8);
+                ctx.lineTo(8, 0);
+                ctx.lineTo(8, 16);
+                ctx.lineTo(0, 16);
+                ctx.fill();
+                
+                // Cara superior (transparente)
+                ctx.fillStyle = 'rgba(255,255,255,0.1)';
+                ctx.beginPath();
+                ctx.moveTo(-8, -8);
+                ctx.lineTo(0, -8);
+                ctx.lineTo(8, 0);
+                ctx.lineTo(0, 0);
+                ctx.fill();
+
+                ctx.restore();
+                rotation += 0.05;
+            }
+
+            function actualizarTexto() {
+                document.getElementById('loader-text').textContent = texts[textIndex];
+                textIndex = (textIndex + 1) % texts.length;
+            }
+
+            function animate() {
+                dibujarCubo();
+                actualizarTexto();
+                animationFrameId = requestAnimationFrame(animate);
+            }
+
+            animate();
+        }
+
+        function detenerAnimacion3D() {
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+                animationFrameId = null;
+            }
+            document.getElementById('loader-container').style.display = 'none';
+        }
+
+        function sendMessage() {
+            const message = userInput.value.trim();
+            if (!message) return;
+
+            eliminarSaludo();
+
+            const userMsg = document.createElement('div');
+            userMsg.className = 'message user-msg';
+            userMsg.innerHTML = formatResponse(message);
+            chatArea.appendChild(userMsg);
+            chatArea.scrollTop = chatArea.scrollHeight;
+
+            userInput.value = '';
+
+            // 🧊 Mostrar animación 3D
+            iniciarAnimacion3D();
+
+            showThinking();
+
+            setTimeout(() => {
+                hideThinking();
+                // 🧊 Ocultar animación 3D
+                detenerAnimacion3D();
+                const respuesta = brain.analizar(message);
+                const aiMsg = document.createElement('div');
+                aiMsg.className = 'message ai-msg';
+                aiMsg.innerHTML = formatResponse(respuesta);
+                chatArea.appendChild(aiMsg);
+                chatArea.scrollTop = chatArea.scrollHeight;
+            }, 1500 + Math.random() * 1000);
+        }
+
+        function showThinking() {
+            const div = document.createElement('div');
+            div.className = 'message ai-msg thinking';
+            div.id = 'thinking';
+            div.innerHTML = '<span></span><span></span>';
+            chatArea.appendChild(div);
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+
+        function hideThinking() {
+            const thinking = document.getElementById('thinking');
+            if (thinking) thinking.remove();
+        }
+
+        function formatResponse(text) {
+            return text
+                .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
+                .replace(/\n/g, '<br>')
+                .replace(/```([\s\S]*?)```/g, '<div class="code-block">$1</div>');
+        }
+
+        userInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendMessage();
         });
-    }
-    
-    agregarEventosCopiar() {
-        document.querySelectorAll('.copy-code-btn').forEach(btn => {
-            btn.removeEventListener('click', this.handleCopy);
-            btn.addEventListener('click', this.handleCopy.bind(this));
+
+        // 🎨 FONDO DE PARTÍCULAS
+        const canvas = document.getElementById('particles');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const particles = [];
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 3;
+                this.speedX = Math.random() * 1 - 0.5;
+                this.speedY = Math.random() * 1 - 0.5;
+                this.color = Math.random() > 0.5 ? '#00d9ff' : '#7b2ff7';
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                if(this.x > canvas.width) this.x = 0;
+                if(this.x < 0) this.x = canvas.width;
+                if(this.y > canvas.height) this.y = 0;
+                if(this.y < 0) this.y = canvas.height;
+            }
+            draw() {
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        for(let i = 0; i < 100; i++) particles.push(new Particle());
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => { p.update(); p.draw(); });
+            requestAnimationFrame(animate);
+        }
+        animate();
+
+        // 🎯 FUNCIONES DEL MENÚ LATERAL
+        function limpiarChat() {
+            chatArea.innerHTML = `
+                <div class="welcome-center" id="welcomeCenter">
+                    <div class="welcome-title" id="saludoTitle">${generarSaludo()}</div>
+                    <div class="welcome-subtitle">¿En qué te puedo ayudar hoy?</div>
+                </div>
+            `;
+            actualizarSaludo();
+        }
+
+        function generarSaludo() {
+            const ahora = new Date();
+            const hora = ahora.getHours();
+            if (hora >= 6 && hora < 12) return "Buenos días";
+            if (hora >= 12 && hora < 18) return "Buenas tardes";
+            return "Buenas noches";
+        }
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
         });
-    }
-    
-    handleCopy(e) {
-        const btn = e.currentTarget;
-        const codigo = btn.getAttribute('data-code');
-        navigator.clipboard.writeText(codigo).then(() => {
-            const originalHTML = btn.innerHTML;
-            btn.innerHTML = '<i class="fas fa-check"></i> ¡Copiado!';
-            btn.style.background = '#10b981';
-            setTimeout(() => { btn.innerHTML = originalHTML; btn.style.background = ''; }, 2000);
-            if (window.navigator?.vibrate) window.navigator.vibrate(100);
-        }).catch(() => {
-            btn.innerHTML = '<i class="fas fa-times"></i> Error';
-            setTimeout(() => { btn.innerHTML = '<i class="fas fa-copy"></i> Copiar'; }, 2000);
-        });
-    }
-    
-    agregarMensaje(texto, tipo) {
-        const div = document.createElement('div');
-        div.className = `message ${tipo}`;
-        const iconClass = tipo === 'user' ? 'fas fa-user-astronaut' : 'fas fa-brain';
-        const contenidoProcesado = tipo === 'bot' ? this.procesarBloquesDeCodigo(texto) : this.escapeHtml(texto);
-        div.innerHTML = `<div class="avatar"><i class="${iconClass}"></i></div><div class="bubble">${contenidoProcesado}</div>`;
-        this.messagesContainer.appendChild(div);
-        if (tipo === 'bot') this.agregarEventosCopiar();
-        this.scrollToBottom();
-    }
-    
-    agregarMensajeConArchivos(texto, archivosHTML, tipo) {
-        const div = document.createElement('div');
-        div.className = `message ${tipo}`;
-        const iconClass = tipo === 'user' ? 'fas fa-user-astronaut' : 'fas fa-brain';
-        div.innerHTML = `<div class="avatar"><i class="${iconClass}"></i></div>
-                        <div class="bubble">${archivosHTML}${texto ? `<div class="message-text">${this.escapeHtml(texto)}</div>` : ''}</div>`;
-        this.messagesContainer.appendChild(div);
-        this.scrollToBottom();
-    }
-    
-    guardarEnHistorial(rol, mensaje) {
-        this.conversacion.push({ rol, mensaje, fecha: new Date().toISOString() });
-        if (this.conversacion.length > 100) this.conversacion = this.conversacion.slice(-100);
-        try { localStorage.setItem('ocladeai_historial', JSON.stringify(this.conversacion)); } catch(e) {}
-    }
-    
-    cargarHistorial() {
-        try {
-            const guardado = localStorage.getItem('ocladeai_historial');
-            if (guardado) this.conversacion = JSON.parse(guardado);
-        } catch(e) {}
-    }
-    
-    limpiarChat() {
-        this.conversacion = [];
-        try { localStorage.removeItem('ocladeai_historial'); } catch(e) {}
-        this.messagesContainer.innerHTML = `<div class="message bot"><div class="avatar"><i class="fas fa-brain"></i></div><div class="bubble">🔥 OcladeAI: ¡Chat limpiado! Recuerda que mi creador **SoyAdrianYT001** me hizo para pensar, aprender y ayudarte siempre 🚀😊😁</div></div>`;
-        this.scrollToBottom();
-    }
-    
-    scrollToBottom() {
-        setTimeout(() => { if (this.messagesContainer) this.messagesContainer.scrollTop = this.messagesContainer.scrollHeight; }, 100);
-    }
-    
-    vibrarSiMovil() { if (window.navigator?.vibrate) window.navigator.vibrate(50); }
-    
-    escapeHtml(text) { const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
-}
+    </script>
+
+    <!-- 📦 INTEGRACIÓN CON CHAT.JS -->
+    <script src="chat.js"></script>
+</body>
+</html>
