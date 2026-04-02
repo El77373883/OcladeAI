@@ -33,54 +33,6 @@
             z-index: 0;
         }
 
-        .Perfecto. Aquí tienes tu `index.html` **completo y listo**, con todas las mejoras solicitadas:
-
-✅ **Sin Google CSE** (eliminado por completo)  
-✅ **Funcional en iPhone y PC**  
-✅ **Con animación 3D al enviar mensaje**  
-✅ **Integrado con `chat.js`**  
-✅ **Tu firma: `"soyadrianyt001, un dios de la programación. 😮‍💨🔥"`**
-
----
-
-### ✅ `index.html` — Versión Final (100% funcional)
-
-```html
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>🔷 OcladeAI - Bot de Programación</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        :root {
-            --primary: #00d9ff;
-            --secondary: #7b2ff7;
-            --dark: #0a0a0f;
-            --glass: rgba(255,255,255,0.05);
-            --border: rgba(0,217,255,0.3);
-            --code-bg: #1a1a2e;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: var(--dark);
-            color: #fff;
-            overflow: hidden;
-            height: 100vh;
-            position: relative;
-        }
-
-        /* 🔷 FONDO DE PARTÍCULAS */
-        #particles {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            z-index: 0;
-        }
-
         .container {
             position: relative;
             z-index: 1;
@@ -609,74 +561,101 @@
             }
         };
 
-        // 🔷 CEREBRO ACTUALIZADO
-        const conocimiento = {
-            saludos: ["hola", "hey", "buenos", "hi"],
-            despedidas: ["adios", "chau", "hasta", "bye"],
-            lenguajes: {
-                "python": "Python es un lenguaje interpretado, ideal para IA, datos y backend. ¿Qué quieres hacer con Python?",
-                "javascript": "JavaScript es el lenguaje de la web. Sirve para frontend, backend (Node.js) y apps móviles. ¿En qué te ayudo?",
-                "html": "HTML es el esqueleto de las páginas web. Define la estructura con etiquetas. ¿Necesitas ayuda con alguna etiqueta?",
-                "css": "CSS da estilo a tu web. Colores, fuentes, layouts, animaciones. ¿Qué quieres estilizar?",
-                "java": "Java es orientado a objetos, usado en Android y enterprise. ¿Qué necesitas?",
-                "c++": "C++ es de alto rendimiento, usado en juegos y sistemas. ¿En qué te ayudo?",
-                "sql": "SQL maneja bases de datos. Consultas, tablas, relaciones. ¿Qué consulta necesitas?",
-                "php": "PHP es para backend web. Dinámico y fácil de desplegar. ¿Qué quieres desarrollar?",
-                "react": "React es una librería de JS para interfaces. Componentes, estado, hooks. ¿Qué quieres construir?",
-                "node": "Node.js ejecuta JavaScript en el servidor. APIs, servidores, real-time. ¿Qué necesitas?"
-            },
-            conceptos: {
-                "variable": "Una variable es un contenedor para guardar datos. Ej: let nombre = 'OcladeAI';",
-                "funcion": "Una función es un bloque de código reutilizable. Ej: function saludar() { return 'Hola'; }",
-                "bucle": "Un bucle repite código. for, while, forEach. Ej: for(let i=0; i<5; i++) { console.log(i); }",
-                "condicional": "Un condicional toma decisiones. if, else, switch. Ej: if(x > 5) { return true; }",
-                "array": "Un array es una lista de valores. Ej: let nums = [1, 2, 3, 4, 5];",
-                "objeto": "Un objeto guarda datos en pares clave-valor. Ej: let user = {nombre: 'Oclade', edad: 1};",
-                "clase": "Una clase es un molde para crear objetos. Programación orientada a objetos.",
-                "api": "Una API permite que dos programas se comuniquen. REST, GraphQL, endpoints.",
-                "git": "Git controla versiones de código. Commit, push, pull, branch, merge.",
-                "debug": "Debugging es encontrar y corregir errores. Usa console.log, breakpoints, debugger."
-            },
-            errores: {
-                "syntaxerror": "Error de sintaxis: revisa paréntesis, comillas, puntos y comas.",
-                "undefined": "Variable no definida: verifica que declaraste la variable antes de usarla.",
-                "null": "Valor null: la variable existe pero no tiene valor asignado.",
-                "typeerror": "Error de tipo: estás usando un dato incorrecto (ej: sumar string + número).",
-                "referenceerror": "Referencia no válida: la variable o función no existe en ese scope.",
-                "404": "Error 404: la página o recurso no existe. Verifica la URL.",
-                "500": "Error 500: error del servidor. Revisa logs y configuración."
-            }
-        };
-
+        // 🔷 CEREBRO ACTUALIZADO - AHORA USA PROGRAMACION.JS Y CHAT.JS
         class OcladeBrain {
             constructor() { this.historial = []; }
 
             analizar(mensaje) {
                 const m = mensaje.toLowerCase().trim();
 
-                if (conocimiento.saludos.some(p => m.includes(p))) {
+                // 1. Saludos
+                if (this.coincideCon(m, ['hola', 'hey', 'buenos', 'hi'])) {
                     return `Usando modelo: ${selectedModel}\n\n¡Hola! Soy OcladeAI, tu asistente de programación. ¿En qué lenguaje o tema te ayudo hoy?`;
                 }
-                if (conocimiento.despedidas.some(p => m.includes(p))) {
+
+                // 2. Despedidas
+                if (this.coincideCon(m, ['adios', 'chau', 'hasta', 'bye'])) {
                     return "¡Hasta pronto! Recuerda: el código es poesía lógica. ¡Vuelve cuando necesites ayuda!";
                 }
 
-                for (const [lang, respuesta] of Object.entries(conocimiento.lenguajes)) {
-                    if (m.includes(lang)) return respuesta;
-                }
-                for (const [concepto, explicacion] of Object.entries(conocimiento.conceptos)) {
-                    if (m.includes(concepto)) return `**${concepto.toUpperCase()}**\n\n${explicacion}`;
-                }
-                for (const [error, solucion] of Object.entries(conocimiento.errores)) {
-                    if (m.includes(error)) return `**ERROR DETECTADO**\n\n${solucion}`;
-                }
+                // 3. Buscar en PROGRAMACION.JS (técnicas)
+                const respuestaTecnica = this.buscarEnProgramacion(m);
+                if (respuestaTecnica) return respuestaTecnica;
 
-                if (/[{};=function\(\)console\.log]/.test(m)) {
-                    return this.analizarCodigo(m);
-                }
+                // 4. Si no encontró en programacion.js, buscar en CHAT.JS (generales)
+                const respuestaGeneral = this.buscarEnChat(m);
+                if (respuestaGeneral) return respuestaGeneral;
 
-                // ✅ AHORA USA CHAT.JS PARA RESPUESTAS INTELIGENTES
-                return this.respuestaInteligente(m);
+                // 5. Si no encontró en ninguno, respuesta genérica
+                return this.respuestaPorDefecto(m);
+            }
+
+            // 🔍 BUSCAR EN PROGRAMACION.JS
+            buscarEnProgramacion(mensaje) {
+                if (window.programacionDB) {
+                    // Lenguajes
+                    for (const [lang, respuesta] of Object.entries(window.programacionDB.lenguajes)) {
+                        if (mensaje.includes(lang)) return respuesta;
+                    }
+                    // Conceptos
+                    for (const [concepto, explicacion] of Object.entries(window.programacionDB.conceptos)) {
+                        if (mensaje.includes(concepto)) return `**${concepto.toUpperCase()}**: ${explicacion}`;
+                    }
+                    // Errores
+                    for (const [error, solucion] of Object.entries(window.programacionDB.errores)) {
+                        if (mensaje.includes(error)) return `**ERROR DETECTADO**: ${solucion}`;
+                    }
+                }
+                return null;
+            }
+
+            // 🔍 BUSCAR EN CHAT.JS
+            buscarEnChat(mensaje) {
+                if (window.chatDB) {
+                    // Saludos
+                    if (this.coincideCon(mensaje, ['hola', 'hey', 'buenos', 'hi'])) {
+                        const idx = Math.floor(Math.random() * window.chatDB.saludos.length);
+                        return window.chatDB.saludos[idx];
+                    }
+                    // Despedidas
+                    if (this.coincideCon(mensaje, ['adios', 'chau', 'hasta', 'bye'])) {
+                        const idx = Math.floor(Math.random() * window.chatDB.despedidas.length);
+                        return window.chatDB.despedidas[idx];
+                    }
+                    // Conversaciones
+                    if (this.coincideCon(mensaje, ['como estas', 'que tal', 'como te va'])) {
+                        const idx = Math.floor(Math.random() * window.chatDB.conversaciones.length);
+                        return window.chatDB.conversaciones[idx];
+                    }
+                    // Motivación
+                    if (this.coincideCon(mensaje, ['motivar', 'inspirar', 'animo'])) {
+                        const idx = Math.floor(Math.random() * window.chatDB.motivacion.length);
+                        return window.chatDB.motivacion[idx];
+                    }
+                    // Otros (creador)
+                    if (this.coincideCon(mensaje, ['creador', 'quien te creo', 'quien te hizo'])) {
+                        const idx = Math.floor(Math.random() * window.chatDB.otros.length);
+                        return window.chatDB.otros[idx];
+                    }
+                }
+                return null;
+            }
+
+            // 🧠 RESPUESTA POR DEFECTO
+            respuestaPorDefecto(m) {
+                const respuestas = [
+                    "Interesante pregunta. ¿Podrías darme más contexto sobre qué lenguaje o framework estás usando?",
+                    "Déjame analizar... ¿Esto es para web, móvil, backend o IA?",
+                    "Para ayudarte mejor, ¿me compartes un ejemplo de código o el error específico?",
+                    "Esa es una gran pregunta de programación. ¿Qué estás intentando construir?",
+                    "Mi creador es soyadrianyt001, un dios de la programación. 😮‍💨🔥"
+                ];
+                return respuestas[Math.floor(Math.random() * respuestas.length)];
+            }
+
+            // 🧠 FUNCIÓN AUXILIAR
+            coincideCon(mensaje, palabras) {
+                return palabras.some(p => mensaje.includes(p));
             }
 
             analizarCodigo(codigo) {
@@ -687,51 +666,6 @@
                 if (codigo.includes('if') || codigo.includes('else')) analisis += "✅ Detecté un condicional.\n";
                 if (codigo.includes('var') || codigo.includes('let') || codigo.includes('const')) analisis += "✅ Detecté declaración de variables.\n";
                 return analisis + "\n💡 ¿Quieres que optimice, explique o debuggee este código?";
-            }
-
-            // 🔥 ESTA FUNCIÓN AHORA USA CHAT.JS
-            respuestaInteligente(m) {
-                // Asegúrate de que chat.js esté cargado
-                if (window.OcladeChat) {
-                    const respuesta = OcladeChat.generate(m);
-                    // Si chat.js no da una respuesta útil, devolvemos una genérica
-                    if (respuesta.includes("no tengo una respuesta")) {
-                        const respuestasGenericas = [
-                            "Interesante pregunta. ¿Podrías darme más contexto sobre qué lenguaje o framework estás usando?",
-                            "Déjame analizar... ¿Esto es para web, móvil, backend?",
-                            "Para ayudarte mejor, ¿me compartes un ejemplo de código o el error específico?",
-                            "Esa es una gran pregunta de programación. ¿Qué estás intentando construir?",
-                            "Mi creador es soyadrianyt001, un dios de la programación. 😮‍💨🔥",
-                            "Mi creador es Adrián, un experto en IA y desarrollo backend/frontend.",
-                            "Mi creador es un programador apasionado llamado soyadrianyt001.",
-                            "Mi creador es un visionario del código limpio y la eficiencia.",
-                            "Mi creador es un genio de la lógica y el código.",
-                            "Mi creador es un experto en crear bots inteligentes como yo.",
-                            "Mi creador es un mago del código y la lógica.",
-                            "Mi creador es un apasionado de la automatización y la IA.",
-                            "Mi creador es un experto en resolver problemas complejos con código.",
-                            "Mi creador es un genio detrás de cada línea de mi código.",
-                            "Mi creador es un visionario del software escalable y mantenible.",
-                            "Mi creador es un experto en seguridad informática y buenas prácticas.",
-                            "Mi creador es un mago del desarrollo móvil y web.",
-                            "Mi creador es un experto en inteligencia artificial y machine learning.",
-                            "Mi creador es un apasionado de la ética en la programación.",
-                            "Mi creador es un experto en arquitectura de microservicios."
-                        ];
-                        return respuestasGenericas[Math.floor(Math.random() * respuestasGenericas.length)];
-                    }
-                    return respuesta;
-                } else {
-                    // Fallback si chat.js no se carga
-                    const respuestas = [
-                        "Interesante pregunta. ¿Podrías darme más contexto sobre qué lenguaje o framework estás usando?",
-                        "Déjame analizar... ¿Esto es para web, móvil, backend?",
-                        "Para ayudarte mejor, ¿me compartes un ejemplo de código o el error específico?",
-                        "Esa es una gran pregunta de programación. ¿Qué estás intentando construir?",
-                        "Mi creador es soyadrianyt001, un dios de la programación. 😮‍💨🔥"
-                    ];
-                    return respuestas[Math.floor(Math.random() * respuestas.length)];
-                }
             }
         }
 
@@ -928,7 +862,8 @@
         });
     </script>
 
-    <!-- 📦 INTEGRACIÓN CON CHAT.JS -->
-    <script src="chat.js"></script>
+    <!-- 📦 CARGA DE ARCHIVOS EN ORDEN -->
+    <script src="programacion.js"></script> <!-- Técnico -->
+    <script src="chat.js"></script>         <!-- General -->
 </body>
 </html>
